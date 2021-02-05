@@ -1,0 +1,14 @@
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+.signin-wrapper {
+  height: 100vh;
+}
+
+.signin-wrapper .row .col-md-8 {
+  background-image: url("./images/bg-01.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 2% 70%;
+}
