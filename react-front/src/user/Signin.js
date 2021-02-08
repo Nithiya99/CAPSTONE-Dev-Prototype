@@ -4,7 +4,8 @@ import { signin, authenticate } from "./../auth/index";
 import bgImg from "../images/bg-01.jpg";
 import "../styles.css";
 import { Link } from "react-router-dom";
-import Signup from "./Signup";
+// import Signup from "./Signup";
+import ModalButton from "./../utils/signupbutton/ModalButton";
 
 class Signin extends Component {
   constructor() {
@@ -56,8 +57,8 @@ class Signin extends Component {
         <div className="row h-100">
           <div className="col-md-8"></div>
           <div className="col-md-4">
-            <div class="d-flex align-items-center bd-highlight h-100">
-              <div class="box w-100">
+            <div className="d-flex align-items-center bd-highlight h-100">
+              <div className="box w-100">
                 <div
                   className="alert alert-danger mb-5 col-sm-8 offset-2"
                   style={{ display: error ? "" : "none" }}
@@ -114,7 +115,7 @@ class Signin extends Component {
                 </form>
                 <p className="text-muted text-center mt-5">
                   Want to join the community?
-                  <Signup />
+                  <ModalButton />
                 </p>
               </div>
             </div>

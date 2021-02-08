@@ -25,6 +25,20 @@ exports.createPostValidator = (req, res, next) => {
 exports.userSignupValidator = (req, res, next) => {
   // name is not not null and between 4-10 character
   req.check("name", "Name is required").notEmpty();
+  // username check
+  req
+    .check("username")
+    .notEmpty()
+    .withMessage("Username is required")
+    .isLength({
+      min: 5,
+      max: 2000,
+    })
+    .withMessage("Minimum 5 alphanumeric characters")
+    .matches(/^[a-zA-Z0-9_.]+$/)
+    .withMessage(
+      "Username is not valid: Alphanumeric characters and Special characters: '.', '_' are only allowed"
+    );
   // email is not null, valid and normalized
   req
     .check("email", "Email must be between 3 to 32 characters")
@@ -42,6 +56,7 @@ exports.userSignupValidator = (req, res, next) => {
     .withMessage("Password must contain atleast 6 characters")
     .matches(/\d/)
     .withMessage("Password must contain a number");
+
   //   Check for errors
   const errors = req.validationErrors();
   // if error show the first one as they happen

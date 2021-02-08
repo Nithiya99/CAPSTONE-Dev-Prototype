@@ -5,15 +5,31 @@ const User = require("../models/user");
 
 exports.signup = async (req, res) => {
   const userExists = await User.findOne({ email: req.body.email });
+  const userNameExists = await User.findOne({ username: req.body.username });
   if (userExists)
     return res.status(403).json({
       error: "Email is taken!",
     });
+  if (userNameExists)
+    return res.status(403).json({
+      error: "Username is taken!",
+    });
+  const socialObj = {
+    website: req.body.website,
+    facebook: req.body.facebook,
+    instagram: req.body.instagram,
+    youtube: req.body.youtube,
+    linkedin: req.body.linkedin,
+    twitter: req.body.twitter,
+  };
+  req.body.social = socialObj;
   const user = await new User(req.body);
   await user.save();
   res.status(200).json({ message: "Signup success! Please login!" });
 };
-
+// exports.signupProfile = async (req, res) => {
+//   console.log(req.params);
+// };
 exports.signin = (req, res) => {
   // find the user based on email
   const { email, password } = req.body;

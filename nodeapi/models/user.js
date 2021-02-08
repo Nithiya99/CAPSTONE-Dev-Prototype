@@ -8,6 +8,11 @@ var userSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
+  username: {
+    type: String,
+    trim: true,
+    required: true,
+  },
   email: {
     type: String,
     trim: true,
@@ -23,6 +28,39 @@ var userSchema = new mongoose.Schema({
     default: Date.now,
   },
   updated: Date,
+  dob: {
+    type: Date,
+  },
+  location: {
+    type: String,
+  },
+  skills: {
+    type: [String],
+    required: true,
+  },
+  bio: {
+    type: String,
+  },
+  social: {
+    website: {
+      type: String,
+    },
+    facebook: {
+      type: String,
+    },
+    instagram: {
+      type: String,
+    },
+    youtube: {
+      type: String,
+    },
+    linkedin: {
+      type: String,
+    },
+    twitter: {
+      type: String,
+    },
+  },
 });
 
 userSchema

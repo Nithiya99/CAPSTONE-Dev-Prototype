@@ -26,6 +26,12 @@ class EditProfile extends Component {
           id: data._id,
           name: data.name,
           email: data.email,
+          username: data.username,
+          location: data.location,
+          bio: data.bio,
+          dob: data.dob,
+          skills: data.skills,
+          social: data.social,
           error: "",
         });
       }
@@ -40,13 +46,30 @@ class EditProfile extends Component {
   handleChange = (name) => (event) => {
     this.setState({ [name]: event.target.value });
   };
-
+  handleSocialChange = (name) => (event) => {
+    const social = Object.assign({}, this.state.social, {
+      [name]: event.target.value,
+    });
+    this.setState({ social });
+  };
   clickSubmit = (event) => {
     event.preventDefault();
-    const { name, email, password } = this.state;
+    const {
+      name,
+      username,
+      email,
+      password,
+      location,
+      bio,
+      social,
+    } = this.state;
     const user = {
       name,
+      username,
       email,
+      location,
+      bio,
+      social,
       password: password || undefined,
     };
     // console.log(user);
@@ -62,12 +85,23 @@ class EditProfile extends Component {
   };
 
   render() {
-    const { id, name, email, password, redirectToProfile, error } = this.state;
+    const {
+      id,
+      name,
+      email,
+      password,
+      username,
+      location,
+      bio,
+      social,
+      redirectToProfile,
+      error,
+    } = this.state;
 
     if (redirectToProfile) {
       return <Redirect to={`/user/${id}`} />;
     }
-
+    if (social === undefined) return null;
     return (
       <div className="container">
         <h2 className="mt-5 mb-5">Edit Profile</h2>
@@ -80,6 +114,15 @@ class EditProfile extends Component {
 
         <form>
           <div className="form-group">
+            <label>Username</label>
+            <input
+              onChange={this.handleChange("username")}
+              type="text"
+              className="form-control"
+              value={username}
+            />
+          </div>
+          <div className="form-group">
             <label>Name</label>
             <input
               onChange={this.handleChange("name")}
@@ -88,6 +131,7 @@ class EditProfile extends Component {
               value={name}
             />
           </div>
+
           <div className="form-group">
             <label>Email</label>
             <input
@@ -97,6 +141,7 @@ class EditProfile extends Component {
               value={email}
             />
           </div>
+
           <div className="form-group">
             <label>Password</label>
             <input
@@ -104,6 +149,78 @@ class EditProfile extends Component {
               type="password"
               className="form-control"
               value={password}
+            />
+          </div>
+          <div className="form-group">
+            <label>Bio</label>
+            <input
+              onChange={this.handleChange("bio")}
+              type="text"
+              className="form-control"
+              value={bio}
+            />
+          </div>
+          <div className="form-group">
+            <label>Location</label>
+            <input
+              onChange={this.handleChange("location")}
+              type="text"
+              className="form-control"
+              value={location}
+            />
+          </div>
+          <div className="form-group">
+            <label>Instagram</label>
+            <input
+              onChange={this.handleSocialChange("instagram")}
+              type="text"
+              className="form-control"
+              value={social.instagram}
+            />
+          </div>
+          <div className="form-group">
+            <label>Facebook</label>
+            <input
+              onChange={this.handleSocialChange("facebook")}
+              type="text"
+              className="form-control"
+              value={social.instagram}
+            />
+          </div>
+          <div className="form-group">
+            <label>Your Website</label>
+            <input
+              onChange={this.handleSocialChange("website")}
+              type="text"
+              className="form-control"
+              value={social.website}
+            />
+          </div>
+          <div className="form-group">
+            <label>Linkedin</label>
+            <input
+              onChange={this.handleSocialChange("linkedin")}
+              type="text"
+              className="form-control"
+              value={social.linkedin}
+            />
+          </div>
+          <div className="form-group">
+            <label>Youtube</label>
+            <input
+              onChange={this.handleSocialChange("youtube")}
+              type="text"
+              className="form-control"
+              value={social.youtube}
+            />
+          </div>
+          <div className="form-group">
+            <label>Twitter</label>
+            <input
+              onChange={this.handleSocialChange("twitter")}
+              type="text"
+              className="form-control"
+              value={social.twitter}
             />
           </div>
           <button
