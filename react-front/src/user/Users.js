@@ -22,9 +22,9 @@ class Users extends Component {
   }
 
   renderUsers = (users) => (
-    <div className="card-deck">
+    <div className="row row-cols-1 row-cols-md-3">
       {users.map((user, i) => (
-        <div className="card col-md-4" key={i}>
+        <div className="card mb-4" key={i}>
           <img
             className="card-img-top mx-auto"
             src={DefaultProfile}

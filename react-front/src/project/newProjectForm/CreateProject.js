@@ -1,0 +1,164 @@
+import React, { Component } from "react";
+import { newProject } from "../../auth";
+import RoleList from "./RoleCreate";
+
+class CreateProject extends Component {
+  constructor() {
+    super();
+    this.state = {
+      title: "",
+      description: "",
+      skills: [""],
+      roleDetails: [
+        {
+          index: Math.random(),
+          roleName: "",
+          roleSkills: [""],
+        },
+      ],
+      error: "",
+      redirectToReferer: false,
+      loading: false,
+    };
+  }
+
+  handleChange = (proj) => (event) => {
+    this.setState({ error: "" });
+    this.setState({ [proj]: event.target.value });
+  };
+
+  handleRoleChange = (name) => (e) => {
+    let id = parseInt(e.target.attributes.idx.value);
+    const roleDetails = this.state.roleDetails;
+    roleDetails[id][name] = e.target.value;
+    this.setState({ roleDetails });
+  };
+
+  addNewRow = (e) => {
+    this.setState((prevState) => ({
+      roleDetails: [
+        ...prevState.roleDetails,
+        {
+          index: Math.random(),
+          roleName: "",
+          roleSkills: "",
+        },
+      ],
+    }));
+  };
+
+  deteteRow = (index) => {
+    this.setState({
+      roleDetails: this.state.roleDetails.filter(
+        (s, sindex) => index !== sindex
+      ),
+    });
+  };
+
+  clickOnDelete(record) {
+    this.setState({
+      roleDetails: this.state.roleDetails.filter((r) => r !== record),
+    });
+  }
+
+  clickSubmit = (event) => {
+    event.preventDefault();
+    this.setState({ loading: true });
+    let { title, description, skills, roleDetails } = this.state;
+    let project = {
+      title,
+      description,
+      skills,
+      roleDetails,
+    };
+
+    newProject(project).then((data) => {
+      if (data.error) {
+        this.setState({ error: data.error });
+      } else
+        this.setState({
+          title: "",
+          description: "",
+          skills: [""],
+          roleDetails: [
+            {
+              index: Math.random(),
+              roleName: "",
+              roleSkills: [""],
+            },
+          ],
+          error: "",
+        });
+    });
+  };
+
+  render() {
+    let { roleDetails } = this.state;
+    return (
+      <div className="mt-5">
+        <h2>Let's Start a New Project</h2>
+        <p className="text-muted">
+          Fill in the form with all the necessary details to register the
+          project.
+        </p>
+        <form className="mt-5">
+          <div className="form-group">
+            <div className="row">
+              <div className="col-sm-10 offset-1">
+                <label>
+                  <big>Title of your Project</big>
+                </label>
+                <input
+                  className="form-control"
+                  type="text"
+                  onChange={this.handleChange("title")}
+                />
+              </div>
+            </div>
+            <div className="row mt-3">
+              <div className="col-sm-10 offset-1">
+                <label>
+                  <big>Description of the Project</big>
+                </label>
+                <input
+                  className="form-control"
+                  type="text"
+                  onChange={this.handleChange("description")}
+                />
+              </div>
+            </div>
+            <div className="row mt-3">
+              <div className="col-sm-10 offset-1">
+                <label>
+                  <big>Skills Required for the Project</big>
+                </label>
+                <input
+                  className="form-control"
+                  type="text"
+                  onChange={this.handleChange("skills")}
+                />
+              </div>
+            </div>
+            {/*<RoleView />*/}
+            <RoleList
+              add={this.addNewRow}
+              delete={this.clickOnDelete.bind(this)}
+              roleDetails={roleDetails}
+              onChange={this.handleRoleChange}
+            />
+            <div className="row">
+              <button
+                onClick={this.clickSubmit}
+                className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+              >
+                Create Project!
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    );
+  }
+}
+
+export default CreateProject;

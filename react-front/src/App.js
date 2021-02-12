@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import MainRouter from "./MainRouter";
-import { BrowserRouter, Link } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router-dom";
 import Signin from "./user/Signin";
-import { isAuthenticated } from "./auth/index";
 
 class App extends Component {
   render() {

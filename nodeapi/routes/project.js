@@ -15,7 +15,7 @@ const { userById } = require("../controllers/user");
 const router = express.Router();
 
 router.get("/projects", allProjects);
-router.post("/project/new/:userId", requireSignin, createProject);
+router.post("/project/new/:userId", requireSignin,  createProject);
 router.put("/project/request/:userId/:projectId", requireSignin, requestRole);
 router.get("/roles/:projectId", requireSignin, getRoles);
 router.get("/requests/:projectId", requireSignin, getRequests);

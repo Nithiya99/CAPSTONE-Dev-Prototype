@@ -10,6 +10,10 @@ var projectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  skills: {
+    type: String,
+    required: true
+  },
   leader: {
     type: ObjectId,
     ref: "User",

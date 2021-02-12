@@ -1,10 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { signin, authenticate } from "./../auth/index";
-import bgImg from "../images/bg-01.jpg";
 import "../styles.css";
-import { Link } from "react-router-dom";
-// import Signup from "./Signup";
 import ModalButton from "./../utils/signupbutton/ModalButton";
 
 class Signin extends Component {

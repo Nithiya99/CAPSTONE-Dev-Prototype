@@ -2,13 +2,14 @@ const { isBuffer } = require("lodash");
 const Project = require("../models/project");
 
 exports.createProject = (req, res) => {
+  console.log(req.body)
   const project = new Project(req.body);
   req.profile.hashed_password = undefined;
   req.profile.salt = undefined;
   project.leader = req.profile;
   project.save((err, result) => {
     if (err) {
-      return res.status(400).json({ error: err });
+      return res.status(400).json({ error: err});
     }
     res.json(result);
   });

@@ -24,11 +24,14 @@ const Menu = ({ history }) => {
           </div>
 
           <div
-            style={isActive(history, "/users")}
+            style={isActive(history, "/createproject")}
             className="list-group-item list-group-item-action"
           >
-            <Link style={isActive(history, "/users")} to={"/users"}>
-              Users
+            <Link
+              style={isActive(history, "/createproject")}
+              to={`/createproject`}
+            >
+              Create Project
             </Link>
           </div>
 
@@ -41,6 +44,15 @@ const Menu = ({ history }) => {
               to={`/user/${isAuthenticated().user._id}`}
             >
               My Profile
+            </Link>
+          </div>
+
+          <div
+            style={isActive(history, "/users")}
+            className="list-group-item list-group-item-action"
+          >
+            <Link style={isActive(history, "/users")} to={"/users"}>
+              Users
             </Link>
           </div>
 
