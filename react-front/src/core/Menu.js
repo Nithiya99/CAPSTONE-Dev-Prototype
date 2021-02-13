@@ -36,6 +36,15 @@ const Menu = ({ history }) => {
           </div>
 
           <div
+            style={isActive(history, "/joinproject")}
+            className="list-group-item list-group-item-action"
+          >
+            <Link style={isActive(history, "/joinproject")} to={`/joinproject`}>
+              Join Project
+            </Link>
+          </div>
+
+          <div
             style={isActive(history, `/user/${isAuthenticated().user._id}`)}
             className="list-group-item list-group-item-action"
           >

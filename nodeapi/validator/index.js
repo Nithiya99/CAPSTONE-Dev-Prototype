@@ -86,12 +86,12 @@ exports.createProjectValidator = (req, res, next) => {
   req
     .check("skills", "Provide the skills required to work on this project")
     .notEmpty();
-  req
-    .check(
-      "roleDetails",
-      "Fill in Role Title and Skills required for each role"
-    )
-    .notEmpty();
+  // req
+  //   .check(
+  //     "roleDetails",
+  //     "Fill in Role Title and Skills required for each role"
+  //   )
+  //   .notEmpty();
   //   Check for errors
   const errors = req.validationErrors();
   // if error show the first one as they happen

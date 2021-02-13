@@ -8,6 +8,7 @@ import EditProfile from "./user/EditProfile";
 import "./styles.css";
 // import NavBar from "./core/NavBar";
 import CreateProject from "./project/newProjectForm/CreateProject";
+import JoinProject from "./project/JoinProject";
 
 const MainRouter = () => {
   return (
@@ -22,6 +23,7 @@ const MainRouter = () => {
               <Route path="/home" component={Home}></Route>
               <Route path="/users" component={Users}></Route>
               <Route path="/createproject" component={CreateProject}></Route>
+              <Route path="/joinproject" component={JoinProject}></Route>
               <Route path="/user/edit/:userId" component={EditProfile}></Route>
               <Route path="/user/:userId" component={Profile}></Route>
             </Switch>
