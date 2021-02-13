@@ -67,3 +67,38 @@ exports.userSignupValidator = (req, res, next) => {
   // proceed to next middleware
   next();
 };
+
+exports.createProjectValidator = (req, res, next) => {
+  // title
+  req.check("title", "Write a project title").notEmpty();
+  req.check("title", "Title must be between 4 to 150 characters").isLength({
+    min: 4,
+    max: 150,
+  });
+  //   body
+  req.check("description", "Write a description").notEmpty();
+  req
+    .check("description", "Description must be between 4 to 2000 characters")
+    .isLength({
+      min: 4,
+      max: 2000,
+    });
+  req
+    .check("skills", "Provide the skills required to work on this project")
+    .notEmpty();
+  req
+    .check(
+      "roleDetails",
+      "Fill in Role Title and Skills required for each role"
+    )
+    .notEmpty();
+  //   Check for errors
+  const errors = req.validationErrors();
+  // if error show the first one as they happen
+  if (errors) {
+    const firstError = errors.map((error) => error.msg)[0];
+    return res.status(400).json({ error: firstError });
+  }
+  // proceed to next middleware
+  next();
+};

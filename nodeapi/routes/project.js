@@ -12,10 +12,16 @@ const {
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
+const { createProjectValidator } = require("../validator");
 const router = express.Router();
 
 router.get("/projects", allProjects);
-router.post("/project/new/:userId", requireSignin,  createProject);
+router.post(
+  "/project/new/:userId",
+  requireSignin,
+  createProjectValidator,
+  createProject
+);
 router.put("/project/request/:userId/:projectId", requireSignin, requestRole);
 router.get("/roles/:projectId", requireSignin, getRoles);
 router.get("/requests/:projectId", requireSignin, getRequests);

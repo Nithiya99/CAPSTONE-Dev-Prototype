@@ -9,6 +9,7 @@ class CreateProject extends Component {
       title: "",
       description: "",
       skills: [""],
+      error: "",
       roleDetails: [
         {
           index: Math.random(),
@@ -16,9 +17,7 @@ class CreateProject extends Component {
           roleSkills: [""],
         },
       ],
-      error: "",
-      redirectToReferer: false,
-      loading: false,
+      open: false,
     };
   }
 
@@ -88,12 +87,13 @@ class CreateProject extends Component {
             },
           ],
           error: "",
+          open: true,
         });
     });
   };
 
   render() {
-    let { roleDetails } = this.state;
+    let { error, title, description, skills, roleDetails, open } = this.state;
     return (
       <div className="mt-5">
         <h2>Let's Start a New Project</h2>
@@ -101,6 +101,19 @@ class CreateProject extends Component {
           Fill in the form with all the necessary details to register the
           project.
         </p>
+        <div
+          className="alert alert-danger"
+          style={{ display: error ? "" : "none" }}
+        >
+          {error}
+        </div>
+
+        <div
+          className="alert alert-success"
+          style={{ display: open ? "" : "none" }}
+        >
+          Project Successfully Registered. Check "My Projects".
+        </div>
         <form className="mt-5">
           <div className="form-group">
             <div className="row">
@@ -111,6 +124,7 @@ class CreateProject extends Component {
                 <input
                   className="form-control"
                   type="text"
+                  value={title}
                   onChange={this.handleChange("title")}
                 />
               </div>
@@ -123,6 +137,7 @@ class CreateProject extends Component {
                 <input
                   className="form-control"
                   type="text"
+                  value={description}
                   onChange={this.handleChange("description")}
                 />
               </div>
@@ -135,6 +150,7 @@ class CreateProject extends Component {
                 <input
                   className="form-control"
                   type="text"
+                  value={skills}
                   onChange={this.handleChange("skills")}
                 />
               </div>
