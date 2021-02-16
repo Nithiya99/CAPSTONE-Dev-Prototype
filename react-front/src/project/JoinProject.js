@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { listprojects } from "./apiPoject";
-
+import { listprojects, request } from "./apiProject";
+import { getCurrentUser } from "../user/apiUser";
 class JoinProject extends Component {
   constructor() {
     super();
@@ -43,17 +43,34 @@ class JoinProject extends Component {
               </p>
               <table className="table">
                 <thead>
-                  <tr>
-                    <th>Role Name</th>
-                    <th>Skills Required</th>
-                    <th>Status</th>
+                  <tr key={"title"}>
+                    <th key={"rolename"}>Role Name</th>
+                    <th key={"skills"}>Skills Required</th>
+                    <th key={"status"}>Status</th>
                   </tr>
                   {project.roles.map((role) => (
-                    <tr>
-                      <td>{role.roleName}</td>
-                      <td>{role.roleSkills + ","}</td>
+                    <tr key={role._id.toString()}>
+                      <td key={role._id.toString() + role.roleName.toString()}>
+                        {role.roleName}
+                      </td>
+                      <td
+                        key={role._id.toString() + role.roleSkills.toString()}
+                      >
+                        {role.roleSkills + ","}
+                      </td>
                       <td>
-                        <button className="btn btn-outline-primary">
+                        <button
+                          className="btn btn-outline-primary"
+                          onClick={() => {
+                            getCurrentUser()._id === project.leader
+                              ? console.log("Leaders cant request bruh!")
+                              : request(
+                                  getCurrentUser()._id,
+                                  project._id,
+                                  role._id
+                                );
+                          }}
+                        >
                           Request
                         </button>
                       </td>

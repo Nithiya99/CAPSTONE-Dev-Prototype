@@ -2,14 +2,15 @@ const { isBuffer } = require("lodash");
 const Project = require("../models/project");
 
 exports.createProject = (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   const project = new Project(req.body);
   req.profile.hashed_password = undefined;
   req.profile.salt = undefined;
   project.leader = req.profile;
+  project.team.push(req.profile._id);
   project.save((err, result) => {
     if (err) {
-      return res.status(400).json({ error: err});
+      return res.status(400).json({ error: err });
     }
     res.json(result);
   });
@@ -63,6 +64,7 @@ exports.acceptRequest = (req, res) => {
         if (roleId.toString() === role._id.toString()) {
           role.assignedTo = acceptId;
           role.requestBy = [];
+          project.team.push(acceptId);
           res.status(200).json({ role });
         }
       } else {
@@ -131,6 +133,22 @@ exports.getRequests = (req, res) => {
     requests,
   });
 };
+exports.getProjectsOfUser = (req, res) => {
+  let user = req.profile;
+  // console.log(user);
+  Project.find((err, projects) => {
+    if (err) {
+      res.status(400).json({ err });
+    }
+    let userProjects = [];
+    projects.map((project) => {
+      if (project.team.includes(user._id)) {
+        userProjects.push(project);
+      }
+    });
+    res.status(200).json({ userProjects });
+  });
+};
 exports.requestRole = (req, res, next) => {
   let project = req.projectObject;
   let roleId = req.body.roleId;
@@ -141,14 +159,15 @@ exports.requestRole = (req, res, next) => {
         return res.status(400).json({ err: "User already requested" });
       } else {
         role.requestBy.unshift(user);
-        res.status(200).json({ message: "User requested" });
+        // res.status(200).json({ message: "User requested" });
         try {
           project.save();
+          res.status(200).json({ message: "User requested" });
         } catch (err) {
-          res.status(400).json({ err: err });
+          console.log("Not saved");
+          return res.status(400).json({ err: "Not saved" });
         }
       }
-      // return res.status(200).json({ role });
     }
   });
 };

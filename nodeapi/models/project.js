@@ -12,12 +12,18 @@ var projectSchema = new mongoose.Schema({
   },
   skills: {
     type: String,
-    required: true
+    required: true,
   },
   leader: {
     type: ObjectId,
     ref: "User",
   },
+  team: [
+    {
+      type: ObjectId,
+      ref: "User",
+    },
+  ],
   roles: [
     {
       roleName: {

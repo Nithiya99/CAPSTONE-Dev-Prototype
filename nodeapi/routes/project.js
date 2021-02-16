@@ -9,6 +9,7 @@ const {
   declineRequest,
   getRequests,
   getRoles,
+  getProjectsOfUser,
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -16,6 +17,7 @@ const { createProjectValidator } = require("../validator");
 const router = express.Router();
 
 router.get("/projects", allProjects);
+router.get("/projects/user/:userId", requireSignin, getProjectsOfUser);
 router.post(
   "/project/new/:userId",
   requireSignin,

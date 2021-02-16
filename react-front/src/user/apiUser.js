@@ -53,3 +53,7 @@ export const list = () => {
     })
     .catch((err) => console.log(err));
 };
+
+export const getCurrentUser = () => {
+  return JSON.parse(localStorage.getItem("jwt")).user;
+};
