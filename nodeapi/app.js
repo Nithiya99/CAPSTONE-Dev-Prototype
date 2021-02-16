@@ -10,6 +10,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
 
+// "mongodb://localhost/nodeapi"
 // process.env.MONGO_URI
 mongoose
   .connect("mongodb://localhost/nodeapi", {
