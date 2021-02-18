@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import { listmyprojects } from "./apiProject";
 import { Tab, Tabs, TabContent, Button } from "react-bootstrap";
+
 class MyProjects extends Component {
   state = {
     myProjects: [],
     currentProject: {},
   };
   componentDidMount() {
-    listmyprojects().then((data) => [console.log(data)]);
+    listmyprojects().then((data) => this.setState({ myProjects: data }));
   }
   renderProject(project) {
     // return <h5>{project.title}</h5>;
