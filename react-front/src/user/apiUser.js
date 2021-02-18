@@ -57,3 +57,17 @@ export const list = () => {
 export const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("jwt")).user;
 };
+
+export const getUserById = (id) => {
+  return fetch(`http://localhost:8081/userInfo/${id}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

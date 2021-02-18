@@ -13,6 +13,14 @@ exports.userById = (req, res, next, id) => {
   });
 };
 
+exports.getUserInfo = (req, res) => {
+  let user = req.profile;
+  if (user) {
+    res.status(200).json({ user });
+  } else {
+    res.status(200).json({ err: "Could not fetch user" });
+  }
+};
 exports.hasAuthorization = (req, res, next) => {
   const authorized =
     req.profile && req.auth && req.profile._id === req.auth._id;

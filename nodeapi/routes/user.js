@@ -3,6 +3,7 @@ const {
   userById,
   allUsers,
   getUser,
+  getUserInfo,
   updateUser,
   deleteUser,
 } = require("../controllers/user");
@@ -16,6 +17,7 @@ router.get("/users", allUsers);
 router.get("/user/:userId", requireSignin, getUser);
 router.put("/user/:userId", requireSignin, updateUser);
 router.delete("/user/:userId", requireSignin, deleteUser);
+router.get("/userInfo/:userId", getUserInfo);
 
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);

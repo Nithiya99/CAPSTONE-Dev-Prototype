@@ -51,7 +51,52 @@ export const request = (user, project, role) => {
     })
     .catch((err) => console.log(err));
 };
-
+export const acceptRequest = (userId, projectId, acceptUserId, roleId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let acceptObj = {
+    acceptUserId: acceptUserId,
+    roleId: roleId,
+  };
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(acceptObj),
+  };
+  return fetch(
+    `http://localhost:8081/requests/accept/${userId}/${projectId}`,
+    settings
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+export const declineRequest = (userId, projectId, declineUserId, roleId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let declineObj = {
+    rejectUserId: declineUserId,
+    roleId: roleId,
+  };
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(declineObj),
+  };
+  return fetch(
+    `http://localhost:8081/requests/decline/${userId}/${projectId}`,
+    settings
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
 export const listmyprojects = () => {
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
   let token = JSON.parse(localStorage.getItem("jwt")).token;

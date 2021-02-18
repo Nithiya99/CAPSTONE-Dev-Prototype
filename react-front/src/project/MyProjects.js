@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { listmyprojects } from "./apiProject";
 import { Tab, Tabs, TabContent, Button } from "react-bootstrap";
-
+import { getCurrentUser } from "./../user/apiUser";
+import RoleReq from "./RoleReq";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -47,7 +48,8 @@ class MyProjects extends Component {
                     <tr key={"title"}>
                       <th key={"rolename"}>Role Name</th>
                       <th key={"skills"}>Skills Required</th>
-                      <th key={"status"}>Assigned To</th>
+
+                      <th key={"assigned"}>Assigned To</th>
                     </tr>
                     {project.roles.map((role) => (
                       <tr key={role._id.toString()}>
@@ -61,6 +63,17 @@ class MyProjects extends Component {
                         >
                           {role.roleSkills + ","}
                         </td>
+                        {project.leader === getCurrentUser()._id ? (
+                          <>
+                            <RoleReq
+                              requestBy={role.requestBy}
+                              projectId={project._id}
+                              roleId={role._id}
+                            />
+                          </>
+                        ) : (
+                          <>{role.assignedTo}</>
+                        )}
                       </tr>
                     ))}
                   </thead>
