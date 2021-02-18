@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { getUserById } from "../user/apiUser";
 import Requests from "./Requests";
 
 const RoleReq = (props) => {
@@ -12,7 +11,7 @@ const RoleReq = (props) => {
   return (
     <>
       <Button variant="outline-primary" size="sm" onClick={handleShow}>
-        View
+        Assign
       </Button>
       <Modal
         show={show}

@@ -19,9 +19,11 @@ class Requests extends Component {
     return (
       <>
         <div className="row">
-          <div className="ml-2 mt-2">{user.name}</div>
-          {console.log(user)}
-          <div className="ml-5">
+          <div className="ml-2 mt-2">
+            {user.name}
+            <small className="text-mute">(@{user.username})</small>
+          </div>
+          {/* <div className="ml-2">
             <Button
               onClick={() => {
                 console.log(url);
@@ -29,8 +31,8 @@ class Requests extends Component {
             >
               View Profile
             </Button>
-          </div>
-          <div className="ml-5">
+          </div> */}
+          <div className="ml-1">
             <Button
               onClick={() => {
                 acceptRequest(
@@ -46,7 +48,7 @@ class Requests extends Component {
               Accept
             </Button>
           </div>
-          <div className="ml-5">
+          <div className="ml-1">
             <Button
               onClick={() => {
                 declineRequest(

@@ -3,10 +3,12 @@ import { listmyprojects } from "./apiProject";
 import { Tab, Tabs, TabContent, Button } from "react-bootstrap";
 import { getCurrentUser } from "./../user/apiUser";
 import RoleReq from "./RoleReq";
+import AssignedTo from "./AssignedTo";
 class MyProjects extends Component {
   state = {
     myProjects: [],
     currentProject: {},
+    user: {},
   };
   componentDidMount() {
     listmyprojects().then((data) => this.setState({ myProjects: data }));
@@ -63,7 +65,8 @@ class MyProjects extends Component {
                         >
                           {role.roleSkills + ","}
                         </td>
-                        {project.leader === getCurrentUser()._id ? (
+                        {project.leader === getCurrentUser()._id &&
+                        role.assignedTo === undefined ? (
                           <>
                             <RoleReq
                               requestBy={role.requestBy}
@@ -72,7 +75,9 @@ class MyProjects extends Component {
                             />
                           </>
                         ) : (
-                          <>{role.assignedTo}</>
+                          <>
+                            <AssignedTo id={role.assignedTo} />
+                          </>
                         )}
                       </tr>
                     ))}
