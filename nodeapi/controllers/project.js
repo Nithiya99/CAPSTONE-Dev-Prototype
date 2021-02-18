@@ -2,7 +2,7 @@ const { isBuffer } = require("lodash");
 const Project = require("../models/project");
 
 exports.createProject = (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const project = new Project(req.body);
   req.profile.hashed_password = undefined;
   req.profile.salt = undefined;
@@ -15,7 +15,73 @@ exports.createProject = (req, res) => {
     res.json(result);
   });
 };
-
+// exports.updateProject = (req, res) => {
+//   const editedProject = new Project(req.body);
+//   req.profile.hashed_password = undefined;
+//   req.profile.salt = undefined;
+//   let project = req.projectObject;
+//   project.title = editedProject.title;
+//   project.description = editedProject.description;
+//   project.roles.map((role, index) => {
+//     if (roles[index].roleSkills != editedProject.roles[index].roleSkills) {
+//       roles[index].roleSkills = editedProject.roles[index].roleSkills;
+//     }
+//     if (roles[index].roleName != editedProject.roles[index].roleName) {
+//       roles[index].roleName = editedProject.roles[index].roleName;
+//     }
+//   });
+//   console.log(project);
+// project.save((err) => {
+//   if (err) {
+//     return res.status(400).json({ err });
+//   }
+//   return res.status(200).json({ message: "project updated" });
+// });
+// };
+function isRoleSame(role, newRole) {
+  if (
+    role.roleName.toString() !== newRole.roleName.toString() ||
+    role.roleSkills !== newRole.roleSkills
+  ) {
+    return false;
+  }
+  return true;
+}
+exports.updateProject = (req, res) => {
+  let editedProject = req.body;
+  let project = req.projectObject;
+  project.title = editedProject.title;
+  project.description = editedProject.description;
+  let editedRoleProject = new Project(editedProject);
+  project.roles.map((role, index) => {
+    if (isRoleSame(project.roles[index], editedRoleProject.roles[index])) {
+      project.roles[index].roleName = editedRoleProject.roles[index].roleName;
+      project.roles[index].roleSkills =
+        editedRoleProject.roles[index].roleSkills;
+    }
+  });
+  if (editedRoleProject.roles.length > project.roles.length) {
+    let index = editedRoleProject.roles.length - project.roles.length + 1;
+    while (index < editedRoleProject.roles.length) {
+      project.roles.push(editedRoleProject.roles[index++]);
+    }
+  }
+  project.save((err) => {
+    if (err) {
+      return res.status(400).json({ err });
+    }
+    return res.status(200).json({ message: "project updated" });
+  });
+};
+exports.deleteProject = (req, res) => {
+  let project = req.projectObject;
+  try {
+    project.remove();
+    res.status(200).json({ message: "Deleted project" });
+  } catch (err) {
+    res.status(400).json({ err });
+  }
+};
 exports.allProjects = (req, res) => {
   Project.find((err, projects) => {
     if (err) {

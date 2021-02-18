@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-import { signin, authenticate } from "./../auth/index";
+import { signin, authenticate } from "../auth/index";
 import "../styles.css";
 import ModalButton from "./../utils/signupbutton/ModalButton";
-
+import { GoogleLogin } from "react-google-login";
 class Signin extends Component {
   constructor() {
     super();
@@ -16,6 +16,24 @@ class Signin extends Component {
     };
   }
 
+  loginGoogle = (e) => {
+    const user = {
+      email: e.profileObj.email.toString(),
+      password: e.profileObj.googleId.toString(),
+    };
+    signin(user).then((data) => {
+      if (data.error) {
+        this.setState({ error: data.error, loading: false });
+      } else {
+        authenticate(data, () => {
+          this.setState({ redirectToReferer: true });
+        });
+      }
+    });
+  };
+  loginGoogleFailed = (e) => {
+    console.log("Failed event");
+  };
   handleChange = (name) => (event) => {
     this.setState({ error: "" });
     this.setState({ [name]: event.target.value });
@@ -107,6 +125,15 @@ class Signin extends Component {
                       >
                         Login
                       </button>
+                    </div>
+                    <div className="row">
+                      <GoogleLogin
+                        clientId="11029788971-15i4cq1rn9lijdh2k685to3ri1vtb682.apps.googleusercontent.com"
+                        buttonText="Login"
+                        onSuccess={this.loginGoogle}
+                        onFailure={this.loginGoogleFailed}
+                        cookiePolicy={"single_host_origin"}
+                      />
                     </div>
                   </div>
                 </form>

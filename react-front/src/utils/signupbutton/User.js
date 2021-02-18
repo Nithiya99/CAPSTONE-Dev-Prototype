@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import GoogleLogin from "react-google-login";
 class User extends Component {
   state = {};
   back = (e) => {
@@ -10,7 +11,19 @@ class User extends Component {
     this.props.submitStep();
   };
   render() {
-    const { values, inputChange, submitStep } = this.props;
+    const { values, inputChange, handleGoogleChange } = this.props;
+    const responseSuccessGoogle = (response) => {
+      let googleObj = {
+        username: response.profileObj.googleId.toString(),
+        email: response.profileObj.email,
+        password: response.profileObj.googleId.toString(),
+      };
+      handleGoogleChange(googleObj);
+    };
+
+    const responseErrorGoogle = (response) => {
+      console.log("Error");
+    };
 
     return (
       <>
@@ -44,6 +57,7 @@ class User extends Component {
               type="password"
             ></input>
           </div>
+
           <div className="row">
             <div className="col-sm-2">
               <div className=" text-left ">
@@ -58,6 +72,16 @@ class User extends Component {
                   Submit
                 </button>
               </div>
+            </div>
+            <div className="col-md-6- offset-md3 text-center">
+              Or would you like to Sign up with your Google Account?
+              <GoogleLogin
+                clientId="11029788971-15i4cq1rn9lijdh2k685to3ri1vtb682.apps.googleusercontent.com"
+                buttonText="Login"
+                onSuccess={responseSuccessGoogle}
+                onFailure={responseErrorGoogle}
+                cookiePolicy={"single_host_origin"}
+              />
             </div>
           </div>
         </div>

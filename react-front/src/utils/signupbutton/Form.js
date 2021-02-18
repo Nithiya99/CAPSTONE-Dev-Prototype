@@ -1,9 +1,9 @@
-import React, { useState, Component } from "react";
-import { Modal, Button } from "react-bootstrap";
+import React, { Component } from "react";
 import User from "./User";
 import Personal from "./Personal";
 import Social from "./Social";
-import { signup } from "../../auth/index";
+import { Redirect } from "react-router-dom";
+import { signup, signin, authenticate } from "../../auth/index";
 
 class Form extends Component {
   state = {
@@ -24,6 +24,7 @@ class Form extends Component {
     password: "",
     error: "",
     open: false,
+    redirectToReferer: false,
   };
   nextStep = () => {
     const { step } = this.state;
@@ -41,11 +42,20 @@ class Form extends Component {
       [input]: e.target !== undefined ? e.target.value : e,
     });
   };
+
+  handleGoogleChange = (googleObj) => {
+    this.setState({
+      email: googleObj.email,
+      password: googleObj.password,
+      username: googleObj.username,
+    });
+    this.submitStep();
+  };
   submitStep = () => {
     let user = this.state;
     signup(user).then((data) => {
       if (data.error) this.setState({ error: data.error });
-      else
+      else {
         this.setState({
           error: "",
           name: "",
@@ -53,9 +63,24 @@ class Form extends Component {
           password: "",
           open: true,
         });
+        signin(user).then((data) => {
+          if (data.error) {
+            this.setState({ error: data.error, loading: false });
+          } else {
+            authenticate(data, () => {
+              this.setState({ redirectToReferer: true });
+            });
+          }
+        });
+      }
     });
+
+    // console.log(user);
   };
   render() {
+    if (this.state.redirectToReferer) {
+      return <Redirect to="/home" />;
+    }
     const { step, error, open } = this.state;
     const {
       name,
@@ -113,10 +138,6 @@ class Form extends Component {
             />
           </>
         );
-      //   case 2:
-      //     return <Education />;
-      //   case 3:
-      //     return <Experience />;
       case 2:
         return (
           <>
@@ -161,10 +182,13 @@ class Form extends Component {
               submitStep={this.submitStep}
               prevStep={this.prevStep}
               inputChange={this.inputChange}
+              handleGoogleChange={this.handleGoogleChange}
               values={values}
             />
           </>
         );
+      default:
+        return <></>;
     }
   }
 }

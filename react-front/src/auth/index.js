@@ -28,6 +28,21 @@ export const signin = (user) => {
     .catch((err) => console.log(err));
 };
 
+export const googlelogin = (user) => {
+  return fetch("http://localhost:8081/googlelogin", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
 export const authenticate = (jwt, next) => {
   if (typeof window !== "undefined") {
     localStorage.setItem("jwt", JSON.stringify(jwt));
