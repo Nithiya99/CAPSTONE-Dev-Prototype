@@ -42,10 +42,10 @@ export const request = (user, project, role) => {
   )
     .then((response) => {
       if (response.status === 400) {
-        console.log("Already requested");
+        alert("Already requested");
       }
       if (response.status === 200) {
-        console.log(" Requested");
+        alert(" Requested");
       }
       return response.json();
     })
@@ -93,6 +93,7 @@ export const declineRequest = (userId, projectId, declineUserId, roleId) => {
     settings
   )
     .then((response) => {
+      window.location.reload();
       return response.json();
     })
     .catch((err) => console.log(err));
@@ -118,6 +119,22 @@ export const listprojects = () => {
     method: "GET",
   })
     .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const abandon = (projectId, token) => {
+  return fetch("http://localhost:8081/project/delete/" + `${projectId}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      console.log("done");
       return response.json();
     })
     .catch((err) => console.log(err));

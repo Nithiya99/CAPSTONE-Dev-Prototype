@@ -131,6 +131,9 @@ exports.acceptRequest = (req, res) => {
           role.assignedTo = acceptId;
           role.requestBy = [];
           project.team.push(acceptId);
+          project.save((err) => {
+            if (err) res.status(400).json({ err });
+          });
           res.status(200).json({ role });
         }
       } else {
@@ -143,9 +146,6 @@ exports.acceptRequest = (req, res) => {
         err: "Not Authorized to Perform this action",
       });
     }
-  });
-  project.save((err) => {
-    if (err) res.status(400).json({ err });
   });
 };
 function removeRequest(requestBy, value) {
@@ -166,6 +166,9 @@ exports.declineRequest = (req, res) => {
       if (userIsPresent(role.requestBy, rejectId)) {
         if (roleId.toString() === role._id.toString()) {
           removeRequest(role.requestBy, rejectId);
+          project.save((err) => {
+            if (err) res.status(400).json({ err });
+          });
           res.status(200).json({ role });
         }
       } else {
@@ -178,9 +181,6 @@ exports.declineRequest = (req, res) => {
         err: "Not Authorized to Perform this action",
       });
     }
-  });
-  project.save((err) => {
-    if (err) res.status(400).json({ err });
   });
 };
 

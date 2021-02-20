@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { listprojects, request } from "./apiProject";
 import { getCurrentUser } from "../user/apiUser";
+import Badge from "react-bootstrap/Badge";
 class JoinProject extends Component {
   constructor() {
     super();
@@ -59,20 +60,26 @@ class JoinProject extends Component {
                         {role.roleSkills + ","}
                       </td>
                       <td>
-                        <button
-                          className="btn btn-outline-primary"
-                          onClick={() => {
-                            getCurrentUser()._id === project.leader
-                              ? console.log("Leaders cant request bruh!")
-                              : request(
-                                  getCurrentUser()._id,
-                                  project._id,
-                                  role._id
-                                );
-                          }}
-                        >
-                          Request
-                        </button>
+                        {role.assignedTo !== undefined ? (
+                          <Badge pill variant="warning">
+                            Position Full
+                          </Badge>
+                        ) : (
+                          <button
+                            className="btn btn-outline-primary"
+                            onClick={() => {
+                              getCurrentUser()._id === project.leader
+                                ? alert("Leaders cant request bruh!")
+                                : request(
+                                    getCurrentUser()._id,
+                                    project._id,
+                                    role._id
+                                  );
+                            }}
+                          >
+                            Request
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

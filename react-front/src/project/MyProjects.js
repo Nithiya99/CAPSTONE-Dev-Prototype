@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { listmyprojects } from "./apiProject";
 import { Tab, Tabs, TabContent, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { getCurrentUser } from "./../user/apiUser";
 import RoleReq from "./RoleReq";
 import AssignedTo from "./AssignedTo";
+import DeleteProject from "./DeleteProject";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -83,8 +85,24 @@ class MyProjects extends Component {
                     ))}
                   </thead>
                 </table>
-                <Button variant="outline-warning">Edit Project</Button>
-                <Button variant="outline-danger">Abandon Project</Button>
+                {getCurrentUser()._id === project.leader ? (
+                  <>
+                    <Button variant="outline-warning">Edit Project</Button>
+                    <DeleteProject projectId={project._id} />
+                  </>
+                ) : (
+                  <></>
+                )}
+
+                <Link
+                  className="btn btn-info"
+                  to={{
+                    pathname: `/myprojects/dashboard/${project._id}`,
+                    state: { project: project },
+                  }}
+                >
+                  Project Dashboard
+                </Link>
               </TabContent>
             </Tab>
           ))}
