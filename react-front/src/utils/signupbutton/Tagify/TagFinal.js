@@ -4,7 +4,6 @@ import "@yaireo/tagify/dist/tagify.css";
 // Tagify settings object
 const baseTagifySettings = {
   blacklist: [],
-  maxTags: 6,
   enforceWhitelist: true,
   dropdown: {
     enabled: 0,
