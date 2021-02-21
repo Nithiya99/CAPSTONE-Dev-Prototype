@@ -12,14 +12,9 @@ class SkillsInput extends Component {
   }
   render() {
     const { words } = this.state;
-    const { setSkills } = this.props;
     return (
       <>
-        <TagFinal
-          suggestions={words}
-          label={"What are you good at?"}
-          setSkills={setSkills}
-        />
+        <TagFinal suggestions={words} {...this.props} />
       </>
     );
   }

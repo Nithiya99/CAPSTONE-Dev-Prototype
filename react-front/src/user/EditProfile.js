@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { isAuthenticated } from "../auth";
 import { read, update } from "./apiUser";
 import { Redirect } from "react-router-dom";
+import SkillsInput from "../utils/signupbutton/Tagify/SkillsInput";
 
 class EditProfile extends Component {
   constructor() {
@@ -46,6 +47,9 @@ class EditProfile extends Component {
   handleChange = (name) => (event) => {
     this.setState({ [name]: event.target.value });
   };
+  handleSkills = (newSkills) => {
+    this.setState({ skills: newSkills });
+  };
   handleSocialChange = (name) => (event) => {
     const social = Object.assign({}, this.state.social, {
       [name]: event.target.value,
@@ -62,6 +66,7 @@ class EditProfile extends Component {
       location,
       bio,
       social,
+      skills,
     } = this.state;
     const user = {
       name,
@@ -70,6 +75,7 @@ class EditProfile extends Component {
       location,
       bio,
       social,
+      skills,
       password: password || undefined,
     };
     // console.log(user);
@@ -82,6 +88,7 @@ class EditProfile extends Component {
           redirectToProfile: true,
         });
     });
+    // console.log(user);
   };
 
   render() {
@@ -96,6 +103,7 @@ class EditProfile extends Component {
       social,
       redirectToProfile,
       error,
+      skills,
     } = this.state;
 
     if (redirectToProfile) {
@@ -167,6 +175,13 @@ class EditProfile extends Component {
               type="text"
               className="form-control"
               value={location}
+            />
+          </div>
+          <div className="form-group">
+            <SkillsInput
+              label={"Skills"}
+              setSkills={this.handleSkills}
+              initialValue={skills}
             />
           </div>
           <div className="form-group">

@@ -11,13 +11,7 @@ const baseTagifySettings = {
   callbacks: {},
 };
 
-function TagFinal({
-  label = "blehh",
-  name = "bleh",
-  initialValue = ["html"],
-  suggestions = ["html", "css", "JS", "Adbode", "MS"],
-  setSkills,
-}) {
+function TagFinal({ label, name, initialValue, suggestions, setSkills }) {
   const handleChange = (e) => {
     // console.log(e.detail.tagify.value);
     let arr = [];

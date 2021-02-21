@@ -52,7 +52,10 @@ class Personal extends Component {
           ></input>
         </div>
         <div className="form-group">
-          <SkillsInput setSkills={inputChange("skills")} />
+          <SkillsInput
+            setSkills={inputChange("skills")}
+            label={"What are you good at?"}
+          />
         </div>
         <div className="row pt-5">
           <div className=" text-right">
