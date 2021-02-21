@@ -105,7 +105,15 @@ class EditProfile extends Component {
       error,
       skills,
     } = this.state;
-
+    const skillString = () => {
+      let str = "";
+      skills.map((skill) => {
+        str += skill;
+        str += ",";
+      });
+      str = str.slice(0, -1);
+      return str;
+    };
     if (redirectToProfile) {
       return <Redirect to={`/user/${id}`} />;
     }
@@ -181,7 +189,7 @@ class EditProfile extends Component {
             <SkillsInput
               label={"Skills"}
               setSkills={this.handleSkills}
-              initialValue={skills}
+              value={skillString()}
             />
           </div>
           <div className="form-group">

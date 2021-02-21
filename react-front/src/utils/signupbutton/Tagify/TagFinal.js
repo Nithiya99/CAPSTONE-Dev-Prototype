@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 import "@yaireo/tagify/dist/tagify.css";
 // Tagify settings object
@@ -11,7 +11,7 @@ const baseTagifySettings = {
   callbacks: {},
 };
 
-function TagFinal({ label, name, initialValue, suggestions, setSkills }) {
+function TagFinal({ label, name, value, suggestions, setSkills }) {
   const handleChange = (e) => {
     // console.log(e.detail.tagify.value);
     let arr = [];
@@ -20,7 +20,6 @@ function TagFinal({ label, name, initialValue, suggestions, setSkills }) {
     });
     setSkills(arr);
   };
-
   const settings = {
     ...baseTagifySettings,
     whitelist: suggestions,
@@ -39,10 +38,11 @@ function TagFinal({ label, name, initialValue, suggestions, setSkills }) {
   //   console.log("words:");
   //   console.log(suggestions);
   if (suggestions.length === 0) return null;
+  // console.log(initialValue);
   return (
     <div className="form-group">
       <label htmlFor={"field-" + name}>{label}</label>
-      <Tags settings={settings} initialValue={initialValue} />
+      <Tags settings={settings} />
     </div>
   );
 }
