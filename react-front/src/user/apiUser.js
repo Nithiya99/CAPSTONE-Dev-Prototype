@@ -71,3 +71,17 @@ export const getUserById = (id) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const getWords = () => {
+  return fetch("http://localhost:8081/words", {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

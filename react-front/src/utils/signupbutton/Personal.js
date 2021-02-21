@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import SkillsInput from "./Tagify/SkillsInput";
 // import DatePicker from "react-rainbow-components";
 class Personal extends Component {
   state = {};
@@ -25,14 +26,15 @@ class Personal extends Component {
           ></input>
         </div>
         <div className="form-group">
-          <label>Date Of Birth</label>
+          <label>When was this legend born on?</label>
           {/* <DatePicker value={values.dob} onChange={inputChange("dob")} /> */}
           <div>
             <DatePicker selected={values.dob} onChange={inputChange("dob")} />
           </div>
         </div>
+
         <div className="form-group">
-          <label>Bio</label>
+          <label>Tell the community about yourself</label>
           <input
             name="Bio"
             value={values.bio}
@@ -41,13 +43,16 @@ class Personal extends Component {
           ></input>
         </div>
         <div className="form-group">
-          <label>Location</label>
+          <label>Where are you From?</label>
           <input
             name="Location"
             value={values.location}
             onChange={inputChange("location")}
             className="form-control"
           ></input>
+        </div>
+        <div className="form-group">
+          <SkillsInput setSkills={inputChange("skills")} />
         </div>
         <div className="row pt-5">
           <div className=" text-right">

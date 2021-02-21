@@ -25,7 +25,9 @@ class Form extends Component {
     error: "",
     open: false,
     redirectToReferer: false,
+    skills: [],
   };
+
   nextStep = () => {
     const { step } = this.state;
     this.setState({ step: step + 1 });
@@ -74,8 +76,6 @@ class Form extends Component {
         });
       }
     });
-
-    // console.log(user);
   };
   render() {
     if (this.state.redirectToReferer) {

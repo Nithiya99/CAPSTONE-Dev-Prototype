@@ -57,7 +57,6 @@ class User extends Component {
               type="password"
             ></input>
           </div>
-
           <div className="row">
             <div className="col-sm-2">
               <div className=" text-left ">

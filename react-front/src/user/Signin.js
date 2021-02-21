@@ -15,7 +15,6 @@ class Signin extends Component {
       loading: false,
     };
   }
-
   loginGoogle = (e) => {
     const user = {
       email: e.profileObj.email.toString(),
