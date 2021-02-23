@@ -35,6 +35,13 @@ class EditProfile extends Component {
           social: data.social,
           error: "",
         });
+        let str = "";
+        data.skills.map((skill) => {
+          str += skill;
+          str += ",";
+        });
+        str = str.slice(0, -1);
+        this.setState({ skillstr: str });
       }
     });
   };
@@ -43,7 +50,6 @@ class EditProfile extends Component {
     const userId = this.props.match.params.userId;
     this.init(userId);
   }
-
   handleChange = (name) => (event) => {
     this.setState({ [name]: event.target.value });
   };
@@ -103,17 +109,9 @@ class EditProfile extends Component {
       social,
       redirectToProfile,
       error,
-      skills,
+      skillstr,
     } = this.state;
-    const skillString = () => {
-      let str = "";
-      skills.map((skill) => {
-        str += skill;
-        str += ",";
-      });
-      str = str.slice(0, -1);
-      return str;
-    };
+
     if (redirectToProfile) {
       return <Redirect to={`/user/${id}`} />;
     }
@@ -189,7 +187,7 @@ class EditProfile extends Component {
             <SkillsInput
               label={"Skills"}
               setSkills={this.handleSkills}
-              value={skillString()}
+              value={skillstr}
             />
           </div>
           <div className="form-group">

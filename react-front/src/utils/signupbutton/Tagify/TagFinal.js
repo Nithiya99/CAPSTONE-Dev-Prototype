@@ -42,7 +42,7 @@ function TagFinal({ label, name, value, suggestions, setSkills }) {
   return (
     <div className="form-group">
       <label htmlFor={"field-" + name}>{label}</label>
-      <Tags settings={settings} />
+      <Tags settings={settings} value={value} />
     </div>
   );
 }
