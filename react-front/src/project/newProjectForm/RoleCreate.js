@@ -1,5 +1,6 @@
 import React from "react";
- 
+import SkillsInput from "../../utils/signupbutton/Tagify/SkillsInput";
+
 const RoleList = (props) => {
   // if (props.skillDetails === undefined) return null;
   const { onChange } = props;
@@ -24,17 +25,11 @@ const RoleList = (props) => {
         </div>
         {/*<div className="form-row" key={val.index}>*/}
         <div className="form-group col-md-5">
-          <label>
-            <big>Skills Required</big>
-          </label>
-          <input
-            type="text"
-            className="form-control required"
-            // roleskills="roleSkills"
-            idx={idx}
-            id={roleSkills}
-            onChange={onChange("roleSkills")}
-            value={props.roleDetails[idx].roleSkills}
+          <SkillsInput
+            label={<big>Role Skills</big>}
+            setSkills={(e) => {
+              props.roleDetails[idx].roleSkills = e;
+            }}
           />
         </div>
         {/*</div>*/}
@@ -60,5 +55,5 @@ const RoleList = (props) => {
     );
   });
 };
- 
+
 export default RoleList;

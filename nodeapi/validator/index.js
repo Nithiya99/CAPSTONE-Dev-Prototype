@@ -83,9 +83,6 @@ exports.createProjectValidator = (req, res, next) => {
       min: 4,
       max: 2000,
     });
-  req
-    .check("skills", "Provide the skills required to work on this project")
-    .notEmpty();
   // req
   //   .check(
   //     "roleDetails",

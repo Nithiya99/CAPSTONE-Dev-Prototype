@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import RoleList from "./RoleCreate";
 import { newProject } from "./../apiProject";
+import SkillsInput from "./../../utils/signupbutton/Tagify/SkillsInput";
 
 class CreateProject extends Component {
   constructor() {
@@ -8,7 +9,7 @@ class CreateProject extends Component {
     this.state = {
       title: "",
       description: "",
-      skills: [""],
+      skills: [],
       error: "",
       roleDetails: [
         {
@@ -25,7 +26,9 @@ class CreateProject extends Component {
     this.setState({ error: "" });
     this.setState({ [proj]: event.target.value });
   };
-
+  handleSkills = (newSkills) => {
+    this.setState({ skills: newSkills });
+  };
   handleRoleChange = (name) => (e) => {
     let id = parseInt(e.target.attributes.idx.value);
     const roleDetails = this.state.roleDetails;
@@ -78,18 +81,19 @@ class CreateProject extends Component {
         this.setState({
           title: "",
           description: "",
-          skills: [""],
+          skills: [],
           roleDetails: [
             {
               index: Math.random(),
               roleName: "",
-              roleSkills: [""],
+              roleSkills: [],
             },
           ],
           error: "",
           open: true,
         });
     });
+    // console.log(project);
   };
 
   render() {
@@ -144,14 +148,9 @@ class CreateProject extends Component {
             </div>
             <div className="row mt-3">
               <div className="col-sm-10 offset-1">
-                <label>
-                  <big>Skills Required for the Project</big>
-                </label>
-                <input
-                  className="form-control"
-                  type="text"
-                  value={skills}
-                  onChange={this.handleChange("skills")}
+                <SkillsInput
+                  label={<big>Skills</big>}
+                  setSkills={this.handleSkills}
                 />
               </div>
             </div>

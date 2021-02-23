@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { isAuthenticated } from "./../auth/index";
-import { signout } from "../auth";
 import { Redirect } from "react-router-dom";
 import { abandon } from "./apiProject";
 import { Button } from "react-bootstrap";

@@ -15,7 +15,7 @@ export const newProject = (project) => {
     },
     body: JSON.stringify(obj),
   };
-  console.log(settings.body);
+  // console.log(settings.body);
   return fetch(`http://localhost:8081/project/new/${userId}`, settings)
     .then((response) => {
       return response.json();
