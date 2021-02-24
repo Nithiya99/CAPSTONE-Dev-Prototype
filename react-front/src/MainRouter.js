@@ -11,6 +11,7 @@ import CreateProject from "./project/newProjectForm/CreateProject";
 import JoinProject from "./project/JoinProject";
 import MyProjects from "./project/MyProjects";
 import ProjectDashboard from "./project/ProjectDashboard";
+import EditProject from "./project/EditProject";
 
 const MainRouter = () => {
   return (
@@ -30,6 +31,10 @@ const MainRouter = () => {
               <Route
                 path="/myprojects/dashboard/:projectId"
                 component={ProjectDashboard}
+              ></Route>
+              <Route
+                path="/myprojects/edit/:projectId"
+                component={EditProject}
               ></Route>
               <Route path="/user/edit/:userId" component={EditProfile}></Route>
               <Route path="/user/:userId" component={Profile}></Route>

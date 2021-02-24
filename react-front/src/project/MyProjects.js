@@ -87,7 +87,15 @@ class MyProjects extends Component {
                 </table>
                 {getCurrentUser()._id === project.leader ? (
                   <>
-                    <Button variant="outline-warning">Edit Project</Button>
+                    <Link
+                      className="btn btn-warning"
+                      to={{
+                        pathname: `/myprojects/edit/${project._id}`,
+                        state: { project: project },
+                      }}
+                    >
+                      Edit Project
+                    </Link>
                     <DeleteProject projectId={project._id} />
                   </>
                 ) : (
