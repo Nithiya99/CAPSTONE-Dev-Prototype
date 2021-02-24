@@ -39,9 +39,50 @@ var projectSchema = new mongoose.Schema({
         {
           type: ObjectId,
           ref: "User",
-          status: "pending",
         },
       ],
+    },
+  ],
+  tasks: [
+    {
+      taskName: {
+        type: String,
+      },
+      taskDescription: {
+        type: String,
+      },
+      taskSkills: [String],
+      assignedTo: [
+        {
+          type: ObjectId,
+          ref: "User",
+        },
+      ],
+      status: {
+        type: String,
+      },
+      subtasks: [
+        {
+          subTaskName: {
+            type: String,
+          },
+          subTaskDescription: {
+            type: String,
+          },
+          done: {
+            type: Boolean,
+          },
+        },
+      ],
+      pessimisticTime: {
+        type: Number,
+      },
+      mostLikelyTime: {
+        type: Number,
+      },
+      optimisticTime: {
+        type: Number,
+      },
     },
   ],
 });
