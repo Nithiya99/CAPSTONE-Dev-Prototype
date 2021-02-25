@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
-import RoleList from "./newProjectForm/RoleCreate";
+import { updateProject } from "./apiProject";
 
+import RoleEditView from "./RoleEditView";
 export default class EditProject extends Component {
   constructor() {
     super();
@@ -14,13 +15,16 @@ export default class EditProject extends Component {
       open: false,
     };
   }
+
   componentDidMount() {
     let { project } = this.props.location.state;
     this.setState({
       title: project.title,
       description: project.description,
       skills: project.skills,
-      roles: project.roles,
+      roleDetails: project.roles,
+      leader: project.leader,
+      id: project._id,
     });
     let str = "";
     project.skills.map((skill) => {
@@ -52,9 +56,9 @@ export default class EditProject extends Component {
       roleDetails: [
         ...prevState.roleDetails,
         {
-          index: Math.random(),
           roleName: "",
-          roleSkills: "",
+          roleSkills: [],
+          requestBy: [],
         },
       ],
     }));
@@ -84,12 +88,15 @@ export default class EditProject extends Component {
       skills,
       roleDetails,
     };
+    updateProject(project, this.state.id).then((val) => {
+      console.log(val);
+    });
   };
   render() {
-    if (this.props.location.state.project === undefined) {
+    if (!this.props.location.state) {
       return null;
     }
-    const { project } = this.props.location.state;
+
     return (
       <div className="mt-5">
         <h1>Edit Project</h1>
@@ -133,10 +140,54 @@ export default class EditProject extends Component {
                 />
               </div>
             </div>
-            {/*<RoleView />*/}
+            {/* <div className="row mt-3">
+              <div className="col-sm-10 offset-1">
+                <big>Roles</big>
+              </div>
+            </div>
+            {this.state.roleDetails.map((role) => {
+              <div className="row mt-3">
+                <div className="col-sm-10 offset-1">{role.roleName}</div>
+              </div>;
+            })} */}
+            {/* <table className="table ">
+              <thead>
+                <tr key={"title"}>
+                  <th key={"rolename"}>Role Name</th>
+                  <th key={"skills"}>Skills Required</th>
+                </tr>
+                {this.state.roleDetails.map((role) => (
+                  <tr key={role._id.toString()}>
+                    <td key={role._id.toString() + role.roleName.toString()}>
+                      {role.roleName}
+                    </td>
+                    <td key={role._id.toString() + role.roleSkills.toString()}>
+                      {role.roleSkills + ","}
+                    </td>
+                  </tr>
+                ))}
+              </thead>
+            </table> */}
+            <RoleEditView
+              delete={this.clickOnDelete.bind(this)}
+              roleDetails={this.state.roleDetails}
+              onChange={this.handleRoleChange}
+            />
 
             <div className="row">
-              <button className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3">
+              <button
+                onClick={() => this.addNewRow()}
+                type="button"
+                className="btn btn-primary text-center "
+              >
+                <i className="fa fa-plus" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="row">
+              <button
+                className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                onClick={this.clickSubmit}
+              >
                 Save Changes
               </button>
             </div>

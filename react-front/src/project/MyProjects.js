@@ -45,7 +45,7 @@ class MyProjects extends Component {
                 </p>
                 <p>
                   <strong>Skills: </strong>
-                  {project.skills}
+                  {project.skills.join(", ")}
                 </p>
                 <table className="table">
                   <thead>
@@ -65,7 +65,7 @@ class MyProjects extends Component {
                         <td
                           key={role._id.toString() + role.roleSkills.toString()}
                         >
-                          {role.roleSkills + ","}
+                          {role.roleSkills.join(", ")}
                         </td>
                         {project.leader === getCurrentUser()._id &&
                         role.assignedTo === undefined ? (
