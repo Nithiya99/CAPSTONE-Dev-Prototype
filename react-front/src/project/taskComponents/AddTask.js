@@ -1,13 +1,15 @@
 import React, { Component } from "react";
-
+import AssignPerson from "../../utils/signupbutton/Tagify/AssignPerson";
+import { addTask } from "../apiProject";
 class AddTask extends Component {
   constructor() {
     super();
     this.state = {
       task_title: "",
       task_description: "",
-      task_responsible: "",
-      task_completed: false,
+      task_responsible: [],
+      task_responsible_ids: [],
+      task_completed: "not done",
       task_optimistic: "",
       task_pessimistic: "",
       task_mostLikely: "",
@@ -37,33 +39,40 @@ class AddTask extends Component {
   onChangeTaskMostLikely = (e) => {
     this.setState({ task_mostLikely: e.target.value });
   };
-
+  assignTo = (members) => {
+    this.setState({ task_responsible: members });
+  };
+  assignIds = (ids) => {
+    this.setState({ task_responsible_ids: ids });
+  };
   onSubmit = (e) => {
     e.preventDefault();
 
-    console.log("Task Created:");
-    console.log(`Task Title: ${this.state.task_title}`);
-    console.log(`Task Description: ${this.state.task_description}`);
-    console.log(`Task Assigned To: ${this.state.task_responsible}`);
-    console.log(`Optimistic Time: ${this.state.task_optimistic}`);
-    console.log(`Pessimistic Time: ${this.state.task_pessimistic}`);
-    console.log(`Most Likely Time: ${this.state.task_mostLikely}`);
+    // console.log("Task Created:");
+    // console.log(`Task Title: ${this.state.task_title}`);
+    // console.log(`Task Description: ${this.state.task_description}`);
+    // console.log(`Task Assigned To: ${this.state.task_responsible}`);
+    // console.log(`Optimistic Time: ${this.state.task_optimistic}`);
+    // console.log(`Pessimistic Time: ${this.state.task_pessimistic}`);
+    // console.log(`Most Likely Time: ${this.state.task_mostLikely}`);
 
     const newTask = {
       task_title: this.state.task_title,
       task_description: this.state.task_description,
       task_responsible: this.state.task_responsible,
+      task_responsible_ids: this.state.task_responsible_ids,
       task_optimistic: this.state.task_optimistic,
       task_pessimistic: this.state.task_pessimistic,
       task_mostLikely: this.state.task_mostLikely,
       task_completed: this.state.task_completed,
     };
-
+    addTask(this.props.projectId, newTask);
     this.setState({
       task_title: "",
       task_description: "",
-      task_responsible: "",
-      task_completed: false,
+      task_responsible: [],
+      task_responsible_ids: [],
+      task_completed: "not done",
       task_optimistic: "",
       task_pessimistic: "",
       task_mostLikely: "",
@@ -91,17 +100,16 @@ class AddTask extends Component {
           />
         </div>
         <div className="form-group">
-          <label>Assign To: </label>
-          <input
-            type="text"
-            className="form-control"
-            value={this.state.task_responsible}
-            onChange={this.onChangeTaskResponsible}
+          <AssignPerson
+            projectId={this.props.projectId}
+            assignTo={this.assignTo}
+            assignIds={this.assignIds}
+            label={"Assign to"}
           />
         </div>
         <div className="form-row">
           <div className="form-group col-md-4">
-            <label>Optmistic Time: </label>
+            <label>Optimistic Time: </label>
             <input
               type="number"
               className="form-control "

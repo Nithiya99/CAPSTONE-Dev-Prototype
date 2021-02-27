@@ -166,3 +166,55 @@ export const abandon = (projectId, token) => {
     })
     .catch((err) => console.log(err));
 };
+export const getTeam = (projectId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch("http://localhost:8081/project/team/" + projectId.toString(), {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+export const addTask = (projectId, task) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  // task_title: "",
+  //     task_description: "",
+  //     task_responsible: "",
+  //     task_completed: false,
+  //     task_optimistic: "",
+  //     task_pessimistic: "",
+  //     task_mostLikely: "",
+  let Obj = {
+    taskName: task.task_title,
+    taskDescription: task.task_description,
+    assignedTo: task.task_responsible_ids,
+    status: task.task_completed,
+    optimisticTime: task.task_optimistic,
+    mostLikelyTime: task.task_mostLikely,
+    pessimisticTime: task.task_pessimistic,
+  };
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(Obj),
+  };
+  console.log(settings.body);
+  return fetch(
+    `http://localhost:8081/project/tasks/${userId}/${projectId}`,
+    settings
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

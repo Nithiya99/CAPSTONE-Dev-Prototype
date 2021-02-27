@@ -12,6 +12,7 @@ const {
   getProjectsOfUser,
   updateProject,
   deleteProject,
+  getTeam,
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -30,6 +31,7 @@ router.post(
 router.put("/project/edit/:userId/:projectId", requireSignin, updateProject);
 router.put("/project/request/:userId/:projectId", requireSignin, requestRole);
 router.get("/roles/:projectId", requireSignin, getRoles);
+router.get("/project/team/:projectId", requireSignin, getTeam);
 router.get("/requests/:projectId", requireSignin, getRequests);
 router.put("/requests/accept/:userId/:projectId", requireSignin, acceptRequest);
 router.put(

@@ -51,7 +51,6 @@ var projectSchema = new mongoose.Schema({
       taskDescription: {
         type: String,
       },
-      taskSkills: [String],
       assignedTo: [
         {
           type: ObjectId,

@@ -1,5 +1,6 @@
 const { isBuffer } = require("lodash");
 const Project = require("../models/project");
+const User = require("../models/user");
 
 exports.createProject = (req, res) => {
   // console.log(req);
@@ -195,5 +196,11 @@ exports.requestRole = (req, res, next) => {
         }
       }
     }
+  });
+};
+exports.getTeam = async (req, res) => {
+  let project = req.projectObject;
+  await User.find({ _id: { $in: project.team } }).then((team) => {
+    return res.status(200).json({ team });
   });
 };

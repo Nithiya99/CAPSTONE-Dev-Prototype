@@ -22,14 +22,14 @@ class ProjectDashboard extends Component {
             </Card.Header>
             <Accordion.Collapse eventKey="0">
               <Card.Body>
-                <AddTask />
+                <AddTask projectId={project._id} />
               </Card.Body>
             </Accordion.Collapse>
           </Card>
           <Card>
             <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                Show All Taks
+                Show and Connect Tasks
               </Accordion.Toggle>
             </Card.Header>
             <Accordion.Collapse eventKey="1">

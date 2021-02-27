@@ -12,6 +12,12 @@ exports.userById = (req, res, next, id) => {
     next();
   });
 };
+function getUserById(id) {
+  User.findOne({ _id: id }, (err, res) => {
+    if (err) return "User Not Found";
+    return res;
+  });
+}
 
 exports.getUserInfo = (req, res) => {
   let user = req.profile;
