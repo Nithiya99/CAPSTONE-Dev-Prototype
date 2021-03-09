@@ -218,3 +218,150 @@ export const addTask = (projectId, task) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const listmytasks = () => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let requestObj = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  return fetch(`http://localhost:8081/projects/user/${userId}/`, requestObj)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const getTasks = (projectId) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch(
+    "http://localhost:8081/project/tasks/" +
+      userId.toString() +
+      "/" +
+      projectId.toString(),
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const putPredecessors = (projectId, taskId, connectId) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let Obj = {
+    taskId: taskId,
+    connectId: connectId,
+  };
+  return fetch(
+    "http://localhost:8081/project/tasks/predecessors/" +
+      userId.toString() +
+      "/" +
+      projectId.toString(),
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(Obj),
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const putConnections = (projectId, source, target) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let Obj = {
+    from: source,
+    to: target,
+  };
+  return fetch(
+    "http://localhost:8081/project/connections/" +
+      userId.toString() +
+      "/" +
+      projectId.toString(),
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(Obj),
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+export const getConnections = (projectId) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+
+  return fetch(
+    "http://localhost:8081/project/connections/" +
+      userId.toString() +
+      "/" +
+      projectId.toString(),
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const putPosition = (projectId, taskId, position) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let Obj = {
+    taskId: taskId,
+    position: position,
+  };
+  return fetch(
+    "http://localhost:8081/project/position/" +
+      userId.toString() +
+      "/" +
+      projectId.toString(),
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(Obj),
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

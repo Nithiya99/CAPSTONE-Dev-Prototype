@@ -45,6 +45,10 @@ var projectSchema = new mongoose.Schema({
   ],
   tasks: [
     {
+      position: {
+        x: 0,
+        y: 0,
+      },
       taskName: {
         type: String,
       },
@@ -82,6 +86,13 @@ var projectSchema = new mongoose.Schema({
       optimisticTime: {
         type: Number,
       },
+      predecessors: [ObjectId], // taskIds
+    },
+  ],
+  connections: [
+    {
+      from: ObjectId, // taskIds
+      to: ObjectId, // taskIds
     },
   ],
 });

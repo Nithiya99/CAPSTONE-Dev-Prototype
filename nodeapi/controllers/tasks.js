@@ -1,4 +1,7 @@
+const e = require("express");
+const { connections } = require("mongoose");
 const Project = require("../models/project");
+const { allProjects } = require("./project");
 exports.addTasks = (req, res) => {
   if (req.profile._id.toString() === req.projectObject.leader.toString()) {
     const project = req.projectObject;
@@ -13,4 +16,128 @@ exports.addTasks = (req, res) => {
   } else {
     res.status(400).json({ message: "Not Leader" });
   }
+};
+
+exports.getTasks = (req, res) => {
+  // console.log(req);
+  let user = req.profile;
+  let project = req.projectObject;
+  // console.log(project.tasks);
+  if (project.tasks !== undefined && project.tasks.length !== 0)
+    return res.status(200).json({ tasks: project.tasks });
+  else {
+    if (project.tasks.length === 0) {
+      return res.status(401).json({ err: "No tasks found" });
+    }
+    if (project.tasks === undefined) {
+      return res.status(400).json({ err: "tasks not available" });
+    }
+  }
+};
+exports.getTask = (req, res) => {
+  // console.log(req);
+  let user = req.profile;
+  let project = req.projectObject;
+  let taskId = req.body.taskId;
+  let sent = false;
+  project.tasks.map((task) => {
+    if (task._id.toString() === taskId) {
+      sent = true;
+      return res.status(200).json({ task });
+    }
+  });
+  if (sent === false) {
+    // console.log("not sent");
+    return res.status(400).json({ err: "Task not found" });
+  }
+};
+
+exports.updatePredecessors = (req, res) => {
+  let user = req.profile;
+  let project = req.projectObject;
+  let taskId = req.body.taskId;
+  let connectId = req.body.connectId;
+  let sent = false;
+  // if (user._id === project.leader) {
+  project.tasks.map((task) => {
+    if (task._id.toString() === taskId) {
+      sent = true;
+      if (task.predecessors === undefined) {
+        task["predecessors"] = [];
+      }
+      console.log(task);
+      if (!task.predecessors.includes(connectId));
+      {
+        try {
+          task.predecessors.push(connectId);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      project.save((err) => {
+        if (err) {
+          return res.status(400).json({ err });
+        }
+      });
+      return res.status(200).json({ task });
+    }
+    console.log(task);
+  });
+  // }
+  if (sent === false) {
+    // console.log("not sent");
+    return res.status(400).json({ err: "Task not found" });
+  }
+};
+
+exports.addConnection = (req, res) => {
+  let user = req.profile;
+  let project = req.projectObject;
+  // let connections = project.connections;
+  if (project.connections === undefined) {
+    project.connections = [];
+    project.save();
+  }
+  let Obj = {
+    from: req.body.from,
+    to: req.body.to,
+  };
+  project.connections.push(Obj);
+  project.save((err) => {
+    if (err) return res.status(400).json({ err });
+  });
+  return res.status(200).json({ project });
+};
+
+exports.getAllConnections = (req, res) => {
+  let user = req.profile;
+  let project = req.projectObject;
+  // console.log(project.connections);
+  let connections = project.connections;
+  if (connections.length > 0) {
+    return res.status(200).json({ connections });
+  } else if (connections.length === 0) {
+    connections = [];
+    return res.status(200).json({ connections });
+  } else {
+    return res.status(400).json({ err: "No Connections established" });
+  }
+};
+
+exports.putPosition = (req, res) => {
+  let user = req.profile;
+  let project = req.projectObject;
+  let position = req.body.position;
+  let taskId = req.body.taskId;
+  project.tasks.map((task) => {
+    if (task._id.toString() === taskId.toString()) {
+      task.position = position;
+      // console.log(task);
+    }
+  });
+  project.save((err) => {
+    if (err)
+      return res.status(400).json({ err: "task not saved with position" });
+  });
+  return res.status(200).json({ project });
 };

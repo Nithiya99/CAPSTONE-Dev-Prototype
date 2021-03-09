@@ -9,6 +9,32 @@ exports.createProject = (req, res) => {
   req.profile.salt = undefined;
   project.leader = req.profile;
   project.team.push(req.profile._id);
+  project.tasks.push({
+    id: "1",
+    key: "start",
+    type: "input",
+    taskName: "Lets Start Working",
+    taskDescription: "Start working on tasks to complete project on time",
+    pessimisticTime: 0,
+    mostLikelyTime: 0,
+    optimisticTime: 0,
+    predecessors: [],
+    sourcePosition: "right",
+    position: { x: 0, y: 0 },
+  });
+  project.tasks.push({
+    id: "2",
+    key: "end",
+    type: "output",
+    taskName: "Completed!!",
+    taskDescription: "Yaaayy you gus have completed the project",
+    pessimisticTime: 0,
+    mostLikelyTime: 0,
+    optimisticTime: 0,
+    predecessors: [],
+    targetPosition: "left",
+    position: { x: 500, y: 0 },
+  });
   console.log(project);
   project.save((err, result) => {
     if (err) {

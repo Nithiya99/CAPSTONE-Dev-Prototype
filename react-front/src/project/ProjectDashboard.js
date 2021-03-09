@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Accordion, Card, Button } from "react-bootstrap";
 import AddTask from "./taskComponents/AddTask";
-
+import MyTasks from "./taskComponents/MyTask";
+import LayoutComponent from "./layout/LayoutComponent";
 class ProjectDashboard extends Component {
   render() {
     if (this.props.location.state.project === undefined) {
@@ -29,11 +30,25 @@ class ProjectDashboard extends Component {
           <Card>
             <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                Show and Connect Tasks
+                Show Tasks
               </Accordion.Toggle>
             </Card.Header>
             <Accordion.Collapse eventKey="1">
-              <Card.Body>Hello! I'm another body</Card.Body>
+              <Card.Body>
+                <MyTasks projectId={project._id} />
+              </Card.Body>
+            </Accordion.Collapse>
+          </Card>
+          <Card>
+            <Card.Header>
+              <Accordion.Toggle as={Button} variant="link" eventKey="2">
+                Connect Tasks with Graphic layout
+              </Accordion.Toggle>
+            </Card.Header>
+            <Accordion.Collapse eventKey="2">
+              <Card.Body>
+                <LayoutComponent project={project} />
+              </Card.Body>
             </Accordion.Collapse>
           </Card>
         </Accordion>
