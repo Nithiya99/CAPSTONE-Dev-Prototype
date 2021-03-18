@@ -1,7 +1,7 @@
 const { isBuffer } = require("lodash");
 const Project = require("../models/project");
 const User = require("../models/user");
-
+const similarity = require("string-cosine-similarity");
 exports.createProject = (req, res) => {
   // console.log(req);
   const project = new Project(req.body);
@@ -229,4 +229,71 @@ exports.getTeam = async (req, res) => {
   await User.find({ _id: { $in: project.team } }).then((team) => {
     return res.status(200).json({ team });
   });
+};
+
+exports.checkIfProjectExists = async (req, res) => {
+  final_out = [];
+  try {
+    var string1 = req.query["X"].toString();
+    var string2 = req.query["X1"].toString();
+    // console.log(string1, string2);
+    // var string1 = "A";
+    // var string2 = "A";
+    // console.log(req);
+    var f = 0,
+      sim = 0;
+    await Project.find(function (error, result) {
+      for (i = 0; i < result.length; i++) {
+        out = {};
+        var str1 = result[i].title;
+        var str2 = result[i].description;
+
+        var sim1 = similarity(string1, str1) * 100;
+        var sim2 = similarity(string2, str2) * 100;
+
+        if (isNaN(sim1)) sim1 = 0;
+        if (isNaN(sim2)) sim2 = 0;
+        sim1 = sim1 * 0.1;
+        sim2 = sim2 * 0.9;
+        sim = sim1 + sim2;
+        if (isNaN(sim)) sim = 0;
+        // console.log(
+        //   "Similar project found with similarity :",
+        //   sim,
+        //   " title : ",
+        //   str1,
+        //   " Description : ",
+        //   str2,
+        //   "Sim1:",
+        //   sim1 / 0.1,
+        //   "Sim2:",
+        //   sim2 / 0.9
+        // );
+        if (sim > 40) {
+          out["title"] = str1;
+          out["description"] = str2;
+          out["similarity"] = sim;
+          out["title_sim"] = sim1 / 0.1;
+          out["desc_sim"] = sim2 / 0.9;
+          f = 1;
+          final_out.push(out);
+        }
+      }
+    });
+    if (f !== 1) {
+      // console.log("New Project Can be Added");
+      // await Proj.create({ title: string1, description: string2 });
+      // console.log("can be added");
+      return res.status(200).json({ message: "Can be added!" });
+    }
+    // console.log("can be added");
+    return res
+      .status(200)
+      .json({ data: final_out, message: "Similar Values Exist" });
+  } catch (err) {
+    if (err !== undefined) {
+      console.log(err);
+      return res.status(400).json({ err: err.toString() });
+    }
+  }
 };

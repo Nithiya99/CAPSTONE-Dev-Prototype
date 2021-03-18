@@ -13,6 +13,7 @@ const {
   updateProject,
   deleteProject,
   getTeam,
+  checkIfProjectExists,
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -39,7 +40,7 @@ router.put(
   requireSignin,
   declineRequest
 );
-
+router.post("/project/check", requireSignin, checkIfProjectExists);
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 router.param("projectId", projectById);

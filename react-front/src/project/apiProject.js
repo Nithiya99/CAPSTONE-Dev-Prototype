@@ -7,20 +7,45 @@ export const newProject = (project) => {
     skills: project.skills,
     roles: project.roleDetails,
   };
-  let settings = {
+  let checkSettings = {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(obj),
   };
-  // console.log(settings.body);
-  return fetch(`http://localhost:8081/project/new/${userId}`, settings)
+  fetch(
+    `http://localhost:8081/project/check/?X=${obj.title}&X1=${obj.description}`,
+    checkSettings
+  )
     .then((response) => {
+      // let val = response.json();
+      // console.log(val);
       return response.json();
     })
-    .catch((err) => console.log(err));
+    .then((val) => {
+      console.log(val);
+      if (val.message === "Can be added!") {
+        let settings = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(obj),
+        };
+        // console.log(settings.body);
+        return fetch(`http://localhost:8081/project/new/${userId}`, settings)
+          .then((response) => {
+            return response.json();
+          })
+          .catch((err) => console.log(err));
+      } else {
+        return { error: val.message, similar: val.data };
+      }
+    });
+  // console.log(response.json());
+  // return response.json();
 };
 export const updateProject = (project, projectId) => {
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;

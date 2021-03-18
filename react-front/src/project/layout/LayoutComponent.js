@@ -14,6 +14,7 @@ import {
   putPredecessors,
   putPosition,
 } from "../apiProject";
+import jsPERT from "js-pert";
 const styles = (theme) => ({
   modal: {
     display: "flex",
@@ -29,55 +30,9 @@ const styles = (theme) => ({
 });
 class LayoutComponent extends Component {
   state = {
-    elements: [
-      // {
-      //   id: "1",
-      //   type: "input",
-      //   data: {
-      //     label: "Lets Start Working",
-      //     description: "Start working on tasks to complete project on time",
-      //     pessimistic: 0,
-      //     time: 0,
-      //     optimistic: 0,
-      //     predecessors: [],
-      //   },
-      //   sourcePosition: "right",
-      //   position: { x: 0, y: 0 },
-      // },
-      // {
-      //   id: "2",
-      //   type: "output",
-      //   data: {
-      //     label: "Completed!!",
-      //     description: "Yaaayy you gus have completed the project",
-      //     pessimistic: 0,
-      //     time: 0,
-      //     optimistic: 0,
-      //     predecessors: [],
-      //   },
-      //   targetPosition: "left",
-      //   position: { x: 500, y: 0 },
-      // },
-      // {
-      //   key: "test",
-      //   id: "3",
-      //   data: {
-      //     label: "Bleh",
-      //     description: "Bleh max",
-      //     time: 2,
-      //     pessimistic: 3,
-      //     optimistic: 1,
-      //     predecessors: ["1", "2"],
-      //   },
-      //   sourcePosition: "right",
-      //   targetPosition: "left",
-      //   position: {
-      //     x: (Math.random() * window.innerWidth) / 2,
-      //     y: (Math.random() * window.innerHeight) / 2,
-      //   },
-      // },
-    ],
+    elements: [],
     tasks: [],
+    nodes: [],
   };
   componentDidMount() {
     //get DB tasks
@@ -130,6 +85,9 @@ class LayoutComponent extends Component {
             };
             ele.push(newNode);
             this.setState({ elements: ele });
+            let newNodes = [...this.state.nodes];
+            newNodes.push(newNode);
+            this.setState({ nodes: newNodes });
             // console.log(this.state.elements);
           } else {
             if (task.taskName === "Lets Start Working") {
@@ -222,7 +180,9 @@ class LayoutComponent extends Component {
         return "done";
       });
     });
-    //add to elements
+
+    // Pert display
+    this.pertCalc();
   }
   onLoad = (reactFlowInstance) => {
     reactFlowInstance.fitView();
@@ -294,8 +254,47 @@ class LayoutComponent extends Component {
     this.setState({ elements: ele });
     console.log(this.state.elements);
   };
+  getIdOfObjectId = (elemId) => {
+    this.state.elements.map((elem) => {
+      if (elem.data !== undefined)
+        if (elem.data._id.toString() === elemId) {
+          console.log(elem.id);
+        }
+    });
+  };
+  pertCalc = () => {
+    let tasksObject = {};
+    tasksObject = this.state.nodes.map((elem) => {
+      // console.log(elem.data);
+      elem.data.predecessors.map((predecessor, index) => {
+        // elem.data.predecessors[index] = predecessor.toString();
+        console.log(predecessor);
+        // this.getIdOfObjectId(predecessor.toString());
+      });
+      tasksObject[elem.id.toString()] = {
+        id: elem.id.toString(),
+        optimisticTime: elem.data.optimistic,
+        mostLikelyTime: elem.data.time,
+        pessimisticTime: elem.data.pessimistic,
+        predecessors: elem.data.predecessors,
+      };
+      // console.log("Element:");
+      // console.log(elem);
+      // console.log(tasksObject);
+      // this.getIdOfObjectId(elem.data._id);
+      return tasksObject;
+    });
+    // console.log("Pert Object:");
+    // console.log(tasksObject[tasksObject.length - 1]);
+    // console.log("Pert:");
+    // let pert = jsPERT(tasksObject[tasksObject.length - 1]);
+    // console.log(pert);
+    // axios.put("http://localhost:3002/api/pertcalc", pert);
+    // return nodes;
+  };
   onElementClick = (event, element) => {
     // console.log(this.state.elements);
+    this.pertCalc();
     // setSelectedNode(element.data);
     // console.log(element.data);
   };

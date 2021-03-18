@@ -25,7 +25,7 @@ class MyTasks extends Component {
 
     const { mytasks } = this.state;
     // console.log(this.props.proj);
-    console.log(mytasks);
+    // console.log(mytasks);
 
     return (
       <div>

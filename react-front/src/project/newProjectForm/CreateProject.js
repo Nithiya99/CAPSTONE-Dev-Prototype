@@ -73,26 +73,35 @@ class CreateProject extends Component {
       skills,
       roleDetails,
     };
-
-    newProject(project).then((data) => {
-      if (data.error) {
-        this.setState({ error: data.error });
-      } else
-        this.setState({
-          title: "",
-          description: "",
-          skills: [],
-          roleDetails: [
-            {
-              index: Math.random(),
-              roleName: "",
-              roleSkills: [],
-            },
-          ],
-          error: "",
-          open: true,
-        });
-    });
+    // newProject(project);
+    try {
+      newProject(project).then((data) => {
+        if (data === undefined) return;
+        if (data.error) {
+          if (data.similar) {
+            this.setState({ similar: data.similar });
+            console.log(this.state.similar);
+          }
+          this.setState({ error: data.error });
+        } else
+          this.setState({
+            title: "",
+            description: "",
+            skills: [],
+            roleDetails: [
+              {
+                index: Math.random(),
+                roleName: "",
+                roleSkills: [],
+              },
+            ],
+            error: "",
+            open: true,
+          });
+      });
+    } catch (error) {
+      console.log(error);
+    }
     // console.log(project);
   };
 
