@@ -67,20 +67,23 @@ class MyProjects extends Component {
                         >
                           {role.roleSkills.join(", ")}
                         </td>
-                        {project.leader === getCurrentUser()._id &&
-                        role.assignedTo === undefined ? (
-                          <>
-                            <RoleReq
-                              requestBy={role.requestBy}
-                              projectId={project._id}
-                              roleId={role._id}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <AssignedTo id={role.assignedTo} />
-                          </>
-                        )}
+                        <td>
+                          {project.leader === getCurrentUser()._id &&
+                          role.assignedTo === undefined ? (
+                            <>
+                              <RoleReq
+                                requestBy={role.requestBy}
+                                projectId={project._id}
+                                roleId={role._id}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <AssignedTo id={role.assignedTo} />
+                            </>
+                          )}
+                        </td>
+                        <td></td>
                       </tr>
                     ))}
                   </thead>

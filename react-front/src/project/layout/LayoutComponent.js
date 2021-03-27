@@ -15,6 +15,7 @@ import {
   putPosition,
 } from "../apiProject";
 import jsPERT from "js-pert";
+import { Button } from "@material-ui/core";
 const styles = (theme) => ({
   modal: {
     display: "flex",
@@ -107,13 +108,14 @@ class LayoutComponent extends Component {
                   _id: task._id,
                 },
                 sourcePosition: "right",
-                position: { x: 0, y: 0 },
+                position:
+                  task.position !== undefined ? task.position : { x: 0, y: 0 },
               });
               this.setState({ elements: ele });
             }
             if (task.taskName === "Completed!!") {
               let ele = [...this.state.elements];
-              ele.push({
+              let newNode = {
                 key: task._id,
                 id: "2",
                 type: "output",
@@ -123,13 +125,20 @@ class LayoutComponent extends Component {
                   pessimistic: 0,
                   time: 0,
                   optimistic: 0,
-                  predecessors: [],
+                  predecessors: task.predecessors,
                   _id: task._id,
                 },
                 targetPosition: "left",
-                position: { x: 500, y: 0 },
-              });
+                position:
+                  task.position !== undefined
+                    ? task.position
+                    : { x: 500, y: 0 },
+              };
+              ele.push(newNode);
               this.setState({ elements: ele });
+              let newNodes = [...this.state.nodes];
+              newNodes.push(newNode);
+              this.setState({ nodes: newNodes });
             }
           }
         });
@@ -138,11 +147,11 @@ class LayoutComponent extends Component {
     //get DB connections
 
     getConnections(this.props.project._id).then((data) => {
-      data.connections.map((link) => {
+      data.connections.map(async (link) => {
         // console.log(link);
         let source = {};
         let target = {};
-        this.state.elements.map((elem) => {
+        await this.state.elements.map((elem) => {
           if (elem.key !== undefined) {
             if (link.from.toString() === elem.key.toString()) {
               // console.log("from:");
@@ -158,31 +167,33 @@ class LayoutComponent extends Component {
         });
         // console.log(source);
         // console.log(target);
-        let edge = {
-          id:
-            "reactflow__edge-" +
-            source.id.toString() +
-            "null-" +
-            target.id.toString() +
-            "null",
-          source: source.id.toString(),
-          sourceHandle: null,
-          target: target.id.toString(),
-          targetHandle: null,
-        };
-        let ele = [...this.state.elements];
-        if (!this.edgeInElements(ele, edge)) {
-          ele.push(edge);
-          // this.state.elements = ele;
+        if (source.id !== undefined && target.id !== undefined) {
+          let edge = {
+            id:
+              "reactflow__edge-" +
+              source.id.toString() +
+              "null-" +
+              target.id.toString() +
+              "null",
+            source: source.id.toString(),
+            sourceHandle: null,
+            target: target.id.toString(),
+            targetHandle: null,
+          };
+          let ele = [...this.state.elements];
+          if (!this.edgeInElements(ele, edge)) {
+            ele.push(edge);
+            // this.state.elements = ele;
+          }
+          this.setState({ elements: ele });
+          // console.log(this.state.elements);
+          return "done";
         }
-        this.setState({ elements: ele });
-        // console.log(this.state.elements);
-        return "done";
       });
     });
 
     // Pert display
-    this.pertCalc();
+    // this.pertCalc();
   }
   onLoad = (reactFlowInstance) => {
     reactFlowInstance.fitView();
@@ -216,61 +227,88 @@ class LayoutComponent extends Component {
     //   .catch((err) => console.log(err));
     let source = params.source;
     let target = params.target;
-
-    let edge = {
-      id:
-        "reactflow__edge-" +
-        source.toString() +
-        "null-" +
-        target.toString() +
-        "null",
-      source: source.toString(),
-      sourceHandle: null,
-      target: target.toString(),
-      targetHandle: null,
-    };
-    console.log(this.state.elements);
-    let sourceId = "";
-    let targetId = "";
-    this.state.elements.map((elem) => {
-      if (elem.id === source) {
-        sourceId = elem.key;
-      }
-      if (elem.id === target) {
-        targetId = elem.key;
-      }
-    });
-    putPredecessors(this.props.project._id, targetId, sourceId).then(() => {
-      console.log(sourceId + " has new Predecessor " + targetId);
-    });
-    let ele = [...this.state.elements];
-    if (!this.edgeInElements(ele, edge)) {
-      ele.push(edge);
-      putConnections(this.props.project._id, sourceId, targetId).then(() => {
-        console.log("connection " + sourceId + "to " + targetId + "added");
+    if (source !== undefined && target !== undefined) {
+      let edge = {
+        id:
+          "reactflow__edge-" +
+          source.toString() +
+          "null-" +
+          target.toString() +
+          "null",
+        source: source.toString(),
+        sourceHandle: null,
+        target: target.toString(),
+        targetHandle: null,
+      };
+      console.log(this.state.elements);
+      let sourceId = "";
+      let targetId = "";
+      this.state.elements.map((elem) => {
+        if (elem.id === source) {
+          sourceId = elem.key;
+        }
+        if (elem.id === target) {
+          targetId = elem.key;
+        }
       });
-      // this.state.elements = ele;
+      putPredecessors(this.props.project._id, targetId, sourceId).then(() => {
+        console.log(sourceId + " has new Predecessor " + targetId);
+      });
+      let ele = [...this.state.elements];
+      if (!this.edgeInElements(ele, edge)) {
+        ele.push(edge);
+        putConnections(this.props.project._id, sourceId, targetId).then(() => {
+          console.log("connection " + sourceId + "to " + targetId + "added");
+        });
+        // this.state.elements = ele;
+      }
+      this.setState({ elements: ele });
+      console.log(this.state.elements);
     }
-    this.setState({ elements: ele });
-    console.log(this.state.elements);
   };
   getIdOfObjectId = (elemId) => {
+    let id = {};
+    // console.log(Number.isInteger(elemId));
     this.state.elements.map((elem) => {
       if (elem.data !== undefined)
         if (elem.data._id.toString() === elemId) {
-          console.log(elem.id);
+          // console.log("element number:" + elem.id);
+          id = elem.id;
         }
+      return id;
     });
+    return id;
   };
   pertCalc = () => {
-    let tasksObject = {};
-    tasksObject = this.state.nodes.map((elem) => {
+    let tasksObject = {
+      1: {
+        id: "1",
+        mostLikelyTime: 0,
+        optimisticTime: 0,
+        pessimisticTime: 0,
+        predecessors: [],
+      },
+    };
+    let nodes = this.state.nodes;
+    // console.log();
+    tasksObject = nodes.map((elem) => {
       // console.log(elem.data);
-      elem.data.predecessors.map((predecessor, index) => {
-        // elem.data.predecessors[index] = predecessor.toString();
-        console.log(predecessor);
-        // this.getIdOfObjectId(predecessor.toString());
-      });
+      // if (elem.data.predecessors.length === 0 || elem.data.predecessors === undefined) return;
+      if (!this.state.checked) {
+        elem.data.predecessors.map((predecessor, index) => {
+          // console.log(predecessor);
+          // let id = this.getIdOfObjectId(predecessor.toString());
+          // console.log(id);
+          // console.log(elem.data);
+          let id = this.getIdOfObjectId(
+            elem.data.predecessors[index].toString()
+          );
+          // console.log(elem.data.predecessors[index] + " id:" + id);
+          elem.data.predecessors[index] = id;
+          this.setState({ checked: true });
+          // console.log(elem.data.predecessors[index] + " id:" + id);
+        });
+      }
       tasksObject[elem.id.toString()] = {
         id: elem.id.toString(),
         optimisticTime: elem.data.optimistic,
@@ -284,17 +322,17 @@ class LayoutComponent extends Component {
       // this.getIdOfObjectId(elem.data._id);
       return tasksObject;
     });
-    // console.log("Pert Object:");
-    // console.log(tasksObject[tasksObject.length - 1]);
-    // console.log("Pert:");
-    // let pert = jsPERT(tasksObject[tasksObject.length - 1]);
-    // console.log(pert);
+
+    console.log("Pert Object:");
+    console.log(tasksObject[tasksObject.length - 1]);
+    console.log("Pert:");
+    let pert = jsPERT(tasksObject[tasksObject.length - 1]);
+    console.log(pert);
     // axios.put("http://localhost:3002/api/pertcalc", pert);
     // return nodes;
   };
   onElementClick = (event, element) => {
     // console.log(this.state.elements);
-    this.pertCalc();
     // setSelectedNode(element.data);
     // console.log(element.data);
   };
@@ -331,6 +369,13 @@ class LayoutComponent extends Component {
             />
             <Controls />
           </ReactFlow>
+          <Button
+            onClick={() => {
+              this.pertCalc();
+            }}
+          >
+            Pert
+          </Button>
         </div>
       </div>
     );
