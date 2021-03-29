@@ -12,6 +12,7 @@ const {
   getAllConnections,
   putPosition,
   updateTasks,
+  deleteTasks,
 } = require("../controllers/tasks");
 const router = express.Router();
 
@@ -36,6 +37,7 @@ router.get(
 );
 
 router.put("/project/position/:userId/:projectId", requireSignin, putPosition);
+router.delete("/project/task/:userId/:projectId", requireSignin, deleteTasks);
 //params
 router.param("userId", userById);
 router.param("projectId", projectById);

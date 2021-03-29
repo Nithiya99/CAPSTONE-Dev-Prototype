@@ -4,6 +4,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Modal, Button } from "react-bootstrap";
 import EditModel from "./EditModel";
+import { deleteTask } from "../apiProject";
 class MyTasks extends Component {
   state = {
     mytasks: [],
@@ -86,7 +87,14 @@ class MyTasks extends Component {
                     <td key={"deletept"}>
                       <DeleteIcon
                         onClick={() => {
-                          console.log("THERE");
+                          let response = window.confirm("Are you Sure?");
+                          if (response) {
+                            deleteTask(task._id, this.props.projectId).then(
+                              (data) => {
+                                console.log(data);
+                              }
+                            );
+                          }
                         }}
                       />
                     </td>

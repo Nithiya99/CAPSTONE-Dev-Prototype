@@ -424,3 +424,29 @@ export const updateTask = (task, projectId) => {
     })
     .catch((err) => console.log(err));
 };
+export const deleteTask = (taskId, projectId) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let Obj = {
+    id: taskId,
+  };
+  // console.log(task);
+  return fetch(
+    "http://localhost:8081/project/task/" +
+      userId.toString() +
+      "/" +
+      projectId.toString(),
+    {
+      method: "DELETE",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(Obj),
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

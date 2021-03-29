@@ -165,3 +165,24 @@ exports.updateTasks = (request, res) => {
   // console.log(request.body);
   return res.status(200).json({ project });
 };
+
+function removeItemOnce(arr, index) {
+  if (index > -1) {
+    arr.splice(index, 1);
+  }
+  return arr;
+}
+
+exports.deleteTasks = (req, res) => {
+  let project = req.projectObject;
+  let id = req.body.id;
+  project.tasks.map((task, index) => {
+    if (task._id.toString() === id.toString()) {
+      project.tasks = removeItemOnce(project.tasks, index);
+    }
+  });
+  project.save((err) => {
+    if (err) return res.status(400).json({ err: "Task not found" });
+  });
+  return res.status(200).json({ project });
+};
