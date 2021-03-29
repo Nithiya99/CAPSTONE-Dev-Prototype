@@ -2,6 +2,7 @@ const express = require("express");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
 const { projectById } = require("../controllers/project");
+
 const {
   addTasks,
   getTasks,
@@ -10,9 +11,11 @@ const {
   addConnection,
   getAllConnections,
   putPosition,
+  updateTasks,
 } = require("../controllers/tasks");
 const router = express.Router();
 
+router.put("/project/task/:userId/:projectId", requireSignin, updateTasks);
 router.put("/project/tasks/:userId/:projectId", requireSignin, addTasks);
 router.get("/project/task/:userId/:projectId", requireSignin, getTask);
 router.get("/project/tasks/:userId/:projectId", requireSignin, getTasks);

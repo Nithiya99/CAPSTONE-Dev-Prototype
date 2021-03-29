@@ -141,3 +141,27 @@ exports.putPosition = (req, res) => {
   });
   return res.status(200).json({ project });
 };
+
+exports.updateTasks = (request, res) => {
+  let id = request.body.id;
+  let project = request.projectObject;
+  console.log(request.body);
+  project.tasks.map((task) => {
+    if (task._id.toString() === id.toString()) {
+      task.taskName = request.body.taskName;
+      task.taskDescription = request.body.taskDescription;
+      task.pessimisticTime = request.body.pessimisticTime;
+      task.optimisiticTime = request.body.optimisiticTime;
+      task.mostLikelyTime = request.body.mostLikelyTime;
+      // console.log(task);
+    }
+    // console.log(task._id.toString(), id.toString());
+  });
+  // console.log(project.tasks);
+  // console.log(request.body);
+  project.save((err) => {
+    if (err) return res.status(400).json({ err: "Task not found" });
+  });
+  // console.log(request.body);
+  return res.status(200).json({ project });
+};

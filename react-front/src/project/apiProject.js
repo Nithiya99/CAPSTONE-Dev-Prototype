@@ -390,3 +390,37 @@ export const putPosition = (projectId, taskId, position) => {
     })
     .catch((err) => console.log(err));
 };
+
+//new functions
+export const updateTask = (task, projectId) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  console.log(task.id);
+  let Obj = {
+    id: task.id,
+    taskName: task.title,
+    taskDescription: task.description,
+    pessimisticTime: parseInt(task.pessimisticTime),
+    optimisticTime: parseInt(task.optimisticTime),
+    mostLikelyTime: parseInt(task.mostLikelyTime),
+  };
+  // console.log(task);
+  return fetch(
+    "http://localhost:8081/project/task/" +
+      userId.toString() +
+      "/" +
+      projectId.toString(),
+    {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(Obj),
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
