@@ -34,11 +34,17 @@ const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
   
   if(projleader === getCurrentUser()._id && sourceLaneId === "Review" && targetLaneId === "COMPLETED")
     flag1 = true;
+
   if(projleader === getCurrentUser()._id && sourceLaneId === "COMPLETED")
     flag1 = true;
   // console.log(`cardId: ${cardId}`)
   // console.log(`sourceLaneId: ${sourceLaneId}`)
   // console.log(`targetLaneId: ${targetLaneId}`)
+  if(flag1 === false)
+  {
+    alert('Sry.. You are not allowed to do this operation.. Changes made will be resetted');
+    window.location.reload(false);
+  } 
 }
 
 class TrelloTask extends Component {
@@ -97,7 +103,6 @@ class TrelloTask extends Component {
       else if(task.status === "COMPLETED")
         cards_completed.push(card);
     });
-
     data = {
       "lanes" : [
         {
@@ -157,15 +162,11 @@ class TrelloTask extends Component {
 
   shouldReceiveNewData = (nextData) => {
     // console.log(nextData)
-    // console.log(flag1)
     let cards = []
     nextData.lanes.forEach(data => {
       data.cards.forEach(card => {
-        // console.log(card.laneId)
         if(flag1 === true)
-        {
           card.status = card.laneId
-        }
         else
           card.laneId = card.status
         cards.push(card)
@@ -184,6 +185,8 @@ class TrelloTask extends Component {
   render() {
     // console.log(this.props.proj);
     // console.log(mytasks);
+    flag=false;
+    flag1=false;
     return (
       <div>
         <div>
