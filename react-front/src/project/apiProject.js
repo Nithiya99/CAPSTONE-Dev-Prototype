@@ -403,6 +403,7 @@ export const updateTask = (task, projectId) => {
     pessimisticTime: parseInt(task.pessimisticTime),
     optimisticTime: parseInt(task.optimisticTime),
     mostLikelyTime: parseInt(task.mostLikelyTime),
+    status: task.laneId
   };
   // console.log(task);
   return fetch(
@@ -424,6 +425,7 @@ export const updateTask = (task, projectId) => {
     })
     .catch((err) => console.log(err));
 };
+
 export const deleteTask = (taskId, projectId) => {
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
   let token = JSON.parse(localStorage.getItem("jwt")).token;

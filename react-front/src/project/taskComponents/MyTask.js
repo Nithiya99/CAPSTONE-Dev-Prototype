@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { listmytasks } from "../apiProject";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Modal, Button } from "react-bootstrap";
 import EditModel from "./EditModel";
 import { deleteTask } from "../apiProject";
+
 class MyTasks extends Component {
   state = {
     mytasks: [],

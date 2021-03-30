@@ -5,6 +5,7 @@ class EditModel extends Component {
   state = {
     title: "",
     description: "",
+    laneId : "",
     pessimisticTime: 0,
     optimisticTime: 0,
     mostLikelyTime: 0,
@@ -17,6 +18,7 @@ class EditModel extends Component {
       optimisticTime: this.props.task.optimisticTime,
       mostLikelyTime: this.props.task.mostLikelyTime,
       id: this.props.task._id,
+      laneId : this.props.task.status
     });
   }
   render() {

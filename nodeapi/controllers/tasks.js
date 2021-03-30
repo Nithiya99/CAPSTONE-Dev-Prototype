@@ -145,7 +145,7 @@ exports.putPosition = (req, res) => {
 exports.updateTasks = (request, res) => {
   let id = request.body.id;
   let project = request.projectObject;
-  console.log(request.body);
+  console.log(id);
   project.tasks.map((task) => {
     if (task._id.toString() === id.toString()) {
       task.taskName = request.body.taskName;
@@ -153,6 +153,7 @@ exports.updateTasks = (request, res) => {
       task.pessimisticTime = request.body.pessimisticTime;
       task.optimisiticTime = request.body.optimisiticTime;
       task.mostLikelyTime = request.body.mostLikelyTime;
+      task.status = request.body.status;
       // console.log(task);
     }
     // console.log(task._id.toString(), id.toString());
