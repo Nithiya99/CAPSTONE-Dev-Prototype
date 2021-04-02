@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
+import { Modal } from "react-bootstrap";
+import { connect } from "react-redux";
+import Pert from "./Pert";
+import Task from "./Task";
 import ReactFlow, {
   addEdge,
   Background,
@@ -16,6 +20,8 @@ import {
 } from "../apiProject";
 import jsPERT from "js-pert";
 import { Button } from "@material-ui/core";
+import { nodeAdded, connectionAdded } from "../../store/cpm";
+import { taskAdded } from "../../store/dashboard";
 const styles = (theme) => ({
   modal: {
     display: "flex",
@@ -34,7 +40,17 @@ class LayoutComponent extends Component {
     elements: [],
     tasks: [],
     nodes: [],
+    pert: {},
+    task: {},
+    show: false,
+    checked: false,
   };
+
+  // getSource((link)=>{
+  //     this.state.elements.map((elem) => {
+  //       console.log(link.from, elem.key);
+  //     });
+  //   })
   componentDidMount() {
     //get DB tasks
 
@@ -89,11 +105,12 @@ class LayoutComponent extends Component {
             let newNodes = [...this.state.nodes];
             newNodes.push(newNode);
             this.setState({ nodes: newNodes });
+            this.props.nodeAdded({ node: newNode });
             // console.log(this.state.elements);
           } else {
             if (task.taskName === "Lets Start Working") {
               let ele = [...this.state.elements];
-              ele.push({
+              let newNode = {
                 key: task._id,
                 id: "1",
                 type: "input",
@@ -110,8 +127,10 @@ class LayoutComponent extends Component {
                 sourcePosition: "right",
                 position:
                   task.position !== undefined ? task.position : { x: 0, y: 0 },
-              });
+              };
+              ele.push(newNode);
               this.setState({ elements: ele });
+              this.props.nodeAdded({ node: newNode });
             }
             if (task.taskName === "Completed!!") {
               let ele = [...this.state.elements];
@@ -139,61 +158,70 @@ class LayoutComponent extends Component {
               let newNodes = [...this.state.nodes];
               newNodes.push(newNode);
               this.setState({ nodes: newNodes });
+              this.props.nodeAdded({ node: newNode });
             }
           }
         });
+      })
+      .then(() => {
+        getConnections(this.props.project._id).then((data) => {
+          // this.state.elements.map((elem) => console.log(elem));
+          // console.log(this.state.elements);
+
+          data.connections.map((link) => {
+            // console.log(link);
+            this.state.elements.map((elem) => {
+              if (elem.key !== undefined) {
+                if (link.from.toString() === elem.key.toString()) {
+                  // console.log("from:", elem);
+                  this.setState({ source: elem });
+                }
+                if (link.to.toString() === elem.key.toString()) {
+                  // console.log("to:", elem);
+                  this.setState({ target: elem });
+                }
+              }
+              // console.log(getSource(link));
+              // console.log(elem);
+              // this.getSource(link);
+            });
+            let source = this.state.source;
+            let target = this.state.target;
+            // console.log(source);
+            // console.log(target);
+            // console.log(source, target);
+            // if (source.id !== undefined && target.id !== undefined) {
+            let edge = {
+              id:
+                "reactflow__edge-" +
+                source.id.toString() +
+                "null-" +
+                target.id.toString() +
+                "null",
+              source: source.id.toString(),
+              sourceHandle: null,
+              target: target.id.toString(),
+              targetHandle: null,
+            };
+            let ele = [...this.state.elements];
+            if (!this.edgeInElements(ele, edge)) {
+              this.props.connectionAdded({ connection: edge });
+              ele.push(edge);
+              // this.state.elements = ele;
+              this.setState({ elements: ele });
+              console.log(this.state.elements);
+            }
+
+            return "done";
+            // }
+          });
+        });
+
+        // Pert display
+        // this.pertCalc();
       });
 
     //get DB connections
-
-    getConnections(this.props.project._id).then((data) => {
-      data.connections.map(async (link) => {
-        // console.log(link);
-        let source = {};
-        let target = {};
-        await this.state.elements.map((elem) => {
-          if (elem.key !== undefined) {
-            if (link.from.toString() === elem.key.toString()) {
-              // console.log("from:");
-              source = elem;
-            }
-            if (link.to.toString() === elem.key.toString()) {
-              // console.log("to:");
-              target = elem;
-            }
-          }
-          // console.log(elem);
-          return "done";
-        });
-        // console.log(source);
-        // console.log(target);
-        if (source.id !== undefined && target.id !== undefined) {
-          let edge = {
-            id:
-              "reactflow__edge-" +
-              source.id.toString() +
-              "null-" +
-              target.id.toString() +
-              "null",
-            source: source.id.toString(),
-            sourceHandle: null,
-            target: target.id.toString(),
-            targetHandle: null,
-          };
-          let ele = [...this.state.elements];
-          if (!this.edgeInElements(ele, edge)) {
-            ele.push(edge);
-            // this.state.elements = ele;
-          }
-          this.setState({ elements: ele });
-          // console.log(this.state.elements);
-          return "done";
-        }
-      });
-    });
-
-    // Pert display
-    // this.pertCalc();
   }
   onLoad = (reactFlowInstance) => {
     reactFlowInstance.fitView();
@@ -262,6 +290,7 @@ class LayoutComponent extends Component {
         });
         // this.state.elements = ele;
       }
+      this.props.connectionAdded(edge);
       this.setState({ elements: ele });
       console.log(this.state.elements);
     }
@@ -279,7 +308,11 @@ class LayoutComponent extends Component {
     });
     return id;
   };
+  handleClose = () => {
+    this.setState({ show: false });
+  };
   pertCalc = () => {
+    this.setState({ show: true });
     let tasksObject = {
       1: {
         id: "1",
@@ -304,8 +337,9 @@ class LayoutComponent extends Component {
             elem.data.predecessors[index].toString()
           );
           // console.log(elem.data.predecessors[index] + " id:" + id);
-          elem.data.predecessors[index] = id;
-          this.setState({ checked: true });
+          // elem.data.predecessors[index] = id;
+          // this.setState({ checked: true });
+          console.log(elem.data.predecessors, id);
           // console.log(elem.data.predecessors[index] + " id:" + id);
         });
       }
@@ -322,11 +356,11 @@ class LayoutComponent extends Component {
       // this.getIdOfObjectId(elem.data._id);
       return tasksObject;
     });
-
-    console.log("Pert Object:");
-    console.log(tasksObject[tasksObject.length - 1]);
+    let task = tasksObject[tasksObject.length - 1];
+    this.setState({ task });
     console.log("Pert:");
     let pert = jsPERT(tasksObject[tasksObject.length - 1]);
+    this.setState({ pert });
     console.log(pert);
     // axios.put("http://localhost:3002/api/pertcalc", pert);
     // return nodes;
@@ -340,6 +374,10 @@ class LayoutComponent extends Component {
   render() {
     if (this.state.tasks === undefined) return null;
     if (this.state.tasks.length === 0) return <div>No tasks</div>;
+    const { nodes, connections } = this.props;
+
+    let elements = [...nodes, ...connections];
+    console.log(elements);
     return (
       <div>
         <div className="container-fluid">
@@ -376,10 +414,52 @@ class LayoutComponent extends Component {
           >
             Pert
           </Button>
+          <Modal show={this.state.show} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Details</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <h5>
+                <center>
+                  <strong>
+                    <u>PERT OBJECTS</u>
+                  </strong>
+                </center>
+              </h5>
+              <Task tasks={this.state.task} />
+              <h5>
+                <center>
+                  <strong>
+                    <u>PERT</u>
+                  </strong>
+                </center>
+              </h5>
+              <Pert pert={this.state.pert} />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={this.handleClose}>Close</Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </div>
     );
   }
 }
 
-export default withStyles(styles)(LayoutComponent);
+const mapStateToProps = (state) => ({
+  nodes: state.cpm.nodes,
+  connections: state.cpm.connections,
+  state: state,
+  tasks: state.taskDashboard.tasks,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  nodeAdded: (params) => dispatch(nodeAdded(params)),
+  connectionAdded: (params) => dispatch(connectionAdded(params)),
+  taskAdded: (params) => dispatch(taskAdded(params)),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(LayoutComponent));

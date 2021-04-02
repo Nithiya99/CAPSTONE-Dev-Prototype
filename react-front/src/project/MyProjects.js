@@ -6,6 +6,7 @@ import { getCurrentUser } from "./../user/apiUser";
 import RoleReq from "./RoleReq";
 import AssignedTo from "./AssignedTo";
 import DeleteProject from "./DeleteProject";
+import LeaveProject from "./LeaveProject";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -102,7 +103,9 @@ class MyProjects extends Component {
                     <DeleteProject projectId={project._id} />
                   </>
                 ) : (
-                  <></>
+                  <>
+                    <LeaveProject project={project} />
+                  </>
                 )}
 
                 <Link

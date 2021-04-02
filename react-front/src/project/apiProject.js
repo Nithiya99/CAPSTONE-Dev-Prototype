@@ -335,6 +335,7 @@ export const putConnections = (projectId, source, target) => {
     }
   )
     .then((response) => {
+      // console.log(response.json());
       return response.json();
     })
     .catch((err) => console.log(err));
@@ -395,7 +396,7 @@ export const putPosition = (projectId, taskId, position) => {
 export const updateTask = (task, projectId) => {
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
   let token = JSON.parse(localStorage.getItem("jwt")).token;
-  console.log(task.id);
+  // console.log(task.id);
   let Obj = {
     id: task.id,
     taskName: task.title,
@@ -403,7 +404,7 @@ export const updateTask = (task, projectId) => {
     pessimisticTime: parseInt(task.pessimisticTime),
     optimisticTime: parseInt(task.optimisticTime),
     mostLikelyTime: parseInt(task.mostLikelyTime),
-    status: task.laneId
+    status: task.laneId,
   };
   // console.log(task);
   return fetch(
