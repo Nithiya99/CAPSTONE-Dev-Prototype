@@ -55,6 +55,8 @@ export const updateProject = (project, projectId) => {
     description: project.description,
     skills: project.skills,
     roles: project.roleDetails,
+    team : project.team,
+    tasks : project.tasks,
   };
   let settings = {
     method: "PUT",

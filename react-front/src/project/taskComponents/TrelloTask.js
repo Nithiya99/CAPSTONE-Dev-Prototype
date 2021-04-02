@@ -61,7 +61,7 @@ class TrelloTask extends Component {
     this.setState({ eventBus });
   };
 
-  async componentWillMount() {
+  async componentDidMount() {
     await listmytasks().then((data) => {
       let allproj = data.userProjects;
       allproj.forEach((proj) => {
