@@ -54,6 +54,8 @@ exports.updateProject = (req, res) => {
   project.skills = editedRoleProject.skills;
   project.description = editedRoleProject.description;
   project.roles = editedRoleProject.roles;
+  project.team = editedRoleProject.team;
+  project.tasks = editedRoleProject.tasks;
   project.save((err) => {
     if (err) res.status(400).json({ err });
     res.status(200).json({ message: "project updated" });
@@ -188,7 +190,7 @@ exports.getRequests = (req, res) => {
 };
 exports.getProjectsOfUser = (req, res) => {
   let user = req.profile;
-  // console.log(user);
+  console.log(user);
   Project.find((err, projects) => {
     if (err) {
       res.status(400).json({ err });

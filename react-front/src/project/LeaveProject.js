@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { isAuthenticated } from "./../auth/index";
 import { updateProject } from "./apiProject";
 import { Button } from "react-bootstrap";
 import { getCurrentUser } from "./../user/apiUser";
@@ -8,8 +7,6 @@ class LeaveProject extends Component {
   state = {};
 
   leaveproject = () => {
-    const token = isAuthenticated().token;
-
     const project = this.props.project;
     console.log(project);
     let final_team = [];
@@ -33,6 +30,7 @@ class LeaveProject extends Component {
     let membs = this.props.project.team;
     membs.forEach((user) => {
       if (user !== getCurrentUser()._id) final_team.push(user);
+      console.log(final_team);
     });
 
     let proj = {
