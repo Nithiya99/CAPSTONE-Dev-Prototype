@@ -16,12 +16,12 @@ import EditProject from "./project/EditProject";
 const MainRouter = () => {
   return (
     <>
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
-          <div className="col-md-3">
+          <div className="col">
             <Menu />
           </div>
-          <div className="col-md-9">
+          <div className="col-md-11">
             <Switch>
               <Route path="/home" component={Home}></Route>
               <Route path="/users" component={Users}></Route>
