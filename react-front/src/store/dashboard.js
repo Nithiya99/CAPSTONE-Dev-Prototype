@@ -16,10 +16,6 @@ const slice = createSlice({
     //   console.log(action);
     //   console.log(state, action.payload);
     // },
-
-    taskAdded: (state, action) => {
-      console.log(action.payload, state.tasks);
-    },
     //   console.log(action);
     //   console.log(state, action.payload);
   },

@@ -185,10 +185,13 @@ exports.deleteTasks = (req, res) => {
   let cons = project.connections;
   let newcons = [];
   console.log(cons);
-  cons.forEach(con => {
-    if( (con.from.toString() !== id.toString()) && (con.to.toString() !== id.toString()) )
+  cons.forEach((con) => {
+    if (
+      con.from.toString() !== id.toString() &&
+      con.to.toString() !== id.toString()
+    )
       newcons.push(con);
-  }); 
+  });
   console.log(newcons);
   project.connections = newcons;
   project.save((err) => {

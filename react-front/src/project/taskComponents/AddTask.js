@@ -66,7 +66,6 @@ class AddTask extends Component {
       task_mostLikely: this.state.task_mostLikely,
       task_completed: this.state.task_completed,
     };
-    addTask(this.props.projectId, newTask);
     this.setState({
       task_title: "",
       task_description: "",
@@ -76,6 +75,9 @@ class AddTask extends Component {
       task_optimistic: "",
       task_pessimistic: "",
       task_mostLikely: "",
+    });
+    addTask(this.props.projectId, newTask).then(() => {
+      window.location.reload();
     });
   };
   render() {

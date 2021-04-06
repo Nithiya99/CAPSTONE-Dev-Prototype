@@ -21,7 +21,6 @@ import {
 import jsPERT from "js-pert";
 import { Button } from "@material-ui/core";
 import { nodeAdded, connectionAdded } from "../../store/cpm";
-import { taskAdded } from "../../store/dashboard";
 const styles = (theme) => ({
   modal: {
     display: "flex",
@@ -377,7 +376,7 @@ class LayoutComponent extends Component {
     const { nodes, connections } = this.props;
 
     let elements = [...nodes, ...connections];
-    console.log(elements);
+    console.log(elements, this.state.elements);
     return (
       <div>
         <div className="container-fluid">
@@ -450,13 +449,12 @@ const mapStateToProps = (state) => ({
   nodes: state.cpm.nodes,
   connections: state.cpm.connections,
   state: state,
-  tasks: state.taskDashboard.tasks,
+  notifications: state.notifications.notifications,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   nodeAdded: (params) => dispatch(nodeAdded(params)),
   connectionAdded: (params) => dispatch(connectionAdded(params)),
-  taskAdded: (params) => dispatch(taskAdded(params)),
 });
 
 export default connect(

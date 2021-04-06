@@ -3,6 +3,8 @@ import { getUserById } from "../user/apiUser";
 import { Button } from "react-bootstrap";
 import { acceptRequest, declineRequest } from "./apiProject";
 import { getCurrentUser } from "./../user/apiUser";
+import { connect } from "react-redux";
+import { notificationAdded } from "../store/notifications";
 class Requests extends Component {
   state = {};
   componentDidMount() {
@@ -42,6 +44,18 @@ class Requests extends Component {
                   roleId
                 ).then((res) => {
                   console.log(res);
+                  this.props.notificationAdded({
+                    userId: user._id,
+                    message: `New Role Accepted by ${
+                      getCurrentUser().name
+                    }, Time to show off my skills B)`,
+                    type: "RoleAccepted",
+                  });
+                  this.props.notificationAdded({
+                    userId: getCurrentUser()._id,
+                    message: `@${user.username} added to project! Welcome the new Member`,
+                    type: "NewMember",
+                  });
                 });
               }}
             >
@@ -58,6 +72,11 @@ class Requests extends Component {
                   roleId
                 ).then((res) => {
                   console.log(res);
+                  this.props.notificationAdded({
+                    userId: user._id,
+                    message: `Role Declined by ${getCurrentUser().name} :(`,
+                    type: "RoleDeclined",
+                  });
                 });
               }}
             >
@@ -69,5 +88,11 @@ class Requests extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  notifications: state.notifications.notifications,
+});
 
-export default Requests;
+const mapDispatchToProps = (dispatch) => ({
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Requests);

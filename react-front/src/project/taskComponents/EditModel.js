@@ -5,7 +5,7 @@ class EditModel extends Component {
   state = {
     title: "",
     description: "",
-    laneId : "",
+    laneId: "",
     pessimisticTime: 0,
     optimisticTime: 0,
     mostLikelyTime: 0,
@@ -18,7 +18,7 @@ class EditModel extends Component {
       optimisticTime: this.props.task.optimisticTime,
       mostLikelyTime: this.props.task.mostLikelyTime,
       id: this.props.task._id,
-      laneId : this.props.task.status
+      laneId: this.props.task.status,
     });
   }
   render() {
@@ -59,13 +59,6 @@ class EditModel extends Component {
             onChange={(e) => this.setState({ optimisticTime: e.target.value })}
           ></input>
           <br></br>
-          <label>Pessimistic Time:</label>
-          <input
-            type={"number"}
-            defaultValue={task.pessimisticTime}
-            onChange={(e) => this.setState({ pessimisticTime: e.target.value })}
-          ></input>
-          <br></br>
           <label>Most Likely Time:</label>
           <input
             type={"number"}
@@ -73,13 +66,21 @@ class EditModel extends Component {
             onChange={(e) => this.setState({ mostLikelyTime: e.target.value })}
           ></input>
           <br></br>
+
+          <label>Pessimistic Time:</label>
+          <input
+            type={"number"}
+            defaultValue={task.pessimisticTime}
+            onChange={(e) => this.setState({ pessimisticTime: e.target.value })}
+          ></input>
+          <br></br>
         </Modal.Body>
         <Modal.Footer>
           <Button
             onClick={() =>
-              updateTask(this.state, this.props.projectId).then((data) =>
-                console.log(data)
-              )
+              updateTask(this.state, this.props.projectId)
+                .then((data) => console.log(data))
+                .then(() => window.location.reload())
             }
           >
             Submit

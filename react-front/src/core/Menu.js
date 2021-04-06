@@ -1,9 +1,11 @@
 import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import { signout, isAuthenticated } from "../auth";
+import { clearNotifications } from "../store/notifications";
 import "../styles.css";
 import { Nav } from "react-bootstrap";
 
+import { useDispatch } from "react-redux";
 const isActive = (history, path) => {
   if (history.location.pathname === path)
     return { backgroundColor: "rgb(0 123 255)", color: "#fff" };
@@ -11,6 +13,7 @@ const isActive = (history, path) => {
 };
 
 const Menu = ({ history }) => {
+  const dispatch = useDispatch();
   return (
     <>
       {isAuthenticated() && (
@@ -77,7 +80,10 @@ const Menu = ({ history }) => {
                   (isActive(history, "/signup"),
                   { cursor: "pointer", color: "#000" })
                 }
-                onClick={() => signout(() => history.push("/"))}
+                onClick={() => {
+                  dispatch(clearNotifications());
+                  signout(() => history.push("/"));
+                }}
               >
                 Sign Out
               </span>
