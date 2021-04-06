@@ -15,39 +15,27 @@ class ProjectDashboard extends Component {
     // console.log(this.props.location);
     return (
       <div className="mt-5">
-        <h1>{project.title}'s Dasboard</h1>
-        <Accordion defaultActiveKey="0">
+        <h1>{project.title}'s Dashboard</h1>
+        <Accordion>
           <Card>
             <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                Add Task
+                Trello
               </Accordion.Toggle>
             </Card.Header>
             <Accordion.Collapse eventKey="0">
               <Card.Body>
-                <AddTask projectId={project._id} />
+                <TrelloTask projectId={project._id} />
               </Card.Body>
             </Accordion.Collapse>
           </Card>
           <Card>
             <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                Show Tasks
+                Graphic layout / Connect / Pert
               </Accordion.Toggle>
             </Card.Header>
             <Accordion.Collapse eventKey="1">
-              <Card.Body>
-                <MyTasks projectId={project._id} />
-              </Card.Body>
-            </Accordion.Collapse>
-          </Card>
-          <Card>
-            <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey="2">
-                Connect Tasks with Graphic layout
-              </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey="2">
               <Card.Body>
                 <LayoutComponent project={project} />
               </Card.Body>
@@ -55,13 +43,25 @@ class ProjectDashboard extends Component {
           </Card>
           <Card>
             <Card.Header>
+              <Accordion.Toggle as={Button} variant="link" eventKey="2">
+                Add Task
+              </Accordion.Toggle>
+            </Card.Header>
+            <Accordion.Collapse eventKey="2">
+              <Card.Body>
+                <AddTask projectId={project._id} />
+              </Card.Body>
+            </Accordion.Collapse>
+          </Card>
+          <Card>
+            <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="3">
-                Trello
+                Show Tasks
               </Accordion.Toggle>
             </Card.Header>
             <Accordion.Collapse eventKey="3">
               <Card.Body>
-                <TrelloTask projectId={project._id} />
+                <MyTasks projectId={project._id} />
               </Card.Body>
             </Accordion.Collapse>
           </Card>

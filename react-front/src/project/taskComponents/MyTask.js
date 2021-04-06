@@ -89,11 +89,11 @@ class MyTasks extends Component {
                         onClick={() => {
                           let response = window.confirm("Are you Sure?");
                           if (response) {
-                            deleteTask(task._id, this.props.projectId).then(
-                              (data) => {
+                            deleteTask(task._id, this.props.projectId)
+                              .then((data) => {
                                 console.log(data);
-                              }
-                            );
+                              })
+                              .then(() => window.location.reload());
                           }
                         }}
                       />

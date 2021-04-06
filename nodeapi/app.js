@@ -32,6 +32,7 @@ const userRoutes = require("./routes/user");
 const projectRoutes = require("./routes/project");
 const utilRoutes = require("./routes/utils");
 const tasksRoutes = require("./routes/tasks");
+const notifRoutes = require("./routes/notifications");
 // api docs
 app.get("/", (req, res) => {
   fs.readFile("docs/apiDocs.json", (err, data) => {
@@ -57,6 +58,7 @@ app.use("/", authRoutes);
 app.use("/", userRoutes);
 app.use("/", tasksRoutes);
 app.use("/", utilRoutes);
+app.use("/", notifRoutes);
 app.use(function (err, req, res, next) {
   if (err.name === "UnauthorizedError") {
     res.status(401).json({ error: "Unauthrized!" });

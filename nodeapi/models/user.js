@@ -41,6 +41,23 @@ var userSchema = new mongoose.Schema({
   bio: {
     type: String,
   },
+  newNotification: {
+    type: Boolean,
+    default: false,
+  },
+  notifications: [
+    {
+      message: {
+        type: String,
+      },
+      read: {
+        type: Boolean,
+      },
+      notifType: {
+        type: String,
+      },
+    },
+  ],
   social: {
     website: {
       type: String,

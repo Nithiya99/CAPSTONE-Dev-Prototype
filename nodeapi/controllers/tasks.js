@@ -182,6 +182,18 @@ exports.deleteTasks = (req, res) => {
       project.tasks = removeItemOnce(project.tasks, index);
     }
   });
+  let cons = project.connections;
+  let newcons = [];
+  console.log(cons);
+  cons.forEach((con) => {
+    if (
+      con.from.toString() !== id.toString() &&
+      con.to.toString() !== id.toString()
+    )
+      newcons.push(con);
+  });
+  console.log(newcons);
+  project.connections = newcons;
   project.save((err) => {
     if (err) return res.status(400).json({ err: "Task not found" });
   });

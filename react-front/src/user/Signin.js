@@ -4,6 +4,7 @@ import { signin, authenticate } from "../auth/index";
 import "../styles.css";
 import ModalButton from "./../utils/signupbutton/ModalButton";
 import { GoogleLogin } from "react-google-login";
+
 class Signin extends Component {
   constructor() {
     super();

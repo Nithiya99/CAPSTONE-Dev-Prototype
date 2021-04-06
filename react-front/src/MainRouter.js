@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 import Home from "./core/Home";
 import Menu from "./core/Menu";
@@ -12,8 +12,11 @@ import JoinProject from "./project/JoinProject";
 import MyProjects from "./project/MyProjects";
 import ProjectDashboard from "./project/ProjectDashboard";
 import EditProject from "./project/EditProject";
+import { useDispatch } from "react-redux";
 
 const MainRouter = () => {
+  const dispatch = useDispatch();
+
   return (
     <>
       <div className="container">

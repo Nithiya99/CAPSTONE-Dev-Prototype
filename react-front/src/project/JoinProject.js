@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { listprojects, request } from "./apiProject";
 import { getCurrentUser } from "../user/apiUser";
 import Badge from "react-bootstrap/Badge";
+import { connect } from "react-redux";
+import { notificationAdded } from "../store/notifications";
 class JoinProject extends Component {
   constructor() {
     super();
@@ -74,7 +76,19 @@ class JoinProject extends Component {
                                     getCurrentUser()._id,
                                     project._id,
                                     role._id
-                                  );
+                                  ).then((val) => {
+                                    if (!val.err) {
+                                      this.props.notificationAdded({
+                                        userId: project.leader,
+                                        message: `${
+                                          role.roleName
+                                        } requested by ${
+                                          getCurrentUser().name
+                                        }!`,
+                                        type: "RequestForRole",
+                                      });
+                                    }
+                                  });
                             }}
                           >
                             Request
@@ -93,4 +107,12 @@ class JoinProject extends Component {
   }
 }
 
-export default JoinProject;
+const mapStateToProps = (state) => ({
+  notifications: state.notifications.notifications,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(JoinProject);
