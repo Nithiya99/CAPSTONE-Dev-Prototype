@@ -267,6 +267,7 @@ class Profile extends Component {
                               value: 2,
                             },
                           ]}
+                          innerRadius="0.6"
                         />
                       </table>
                     </div>
