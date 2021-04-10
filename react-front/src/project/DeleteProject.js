@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { isAuthenticated } from "./../auth/index";
 import { Redirect } from "react-router-dom";
 import { abandon } from "./apiProject";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import DeleteForeverTwoToneIcon from "@material-ui/icons/DeleteForeverTwoTone";
 
 class DeleteProject extends Component {
   state = {};
@@ -37,9 +38,15 @@ class DeleteProject extends Component {
     }
     return (
       <div>
-        <Button onClick={this.deleteConfirmed} variant="outline-danger">
-          Abandon Project
-        </Button>
+        <OverlayTrigger
+          key="top"
+          placement="top"
+          overlay={<Tooltip id="top">Delete Project</Tooltip>}
+        >
+          <Button onClick={this.deleteConfirmed} variant="danger">
+            <DeleteForeverTwoToneIcon />
+          </Button>
+        </OverlayTrigger>
       </div>
     );
   }

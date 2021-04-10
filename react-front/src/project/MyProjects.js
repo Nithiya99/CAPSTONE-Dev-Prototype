@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { listmyprojects } from "./apiProject";
-import { Tab, Tabs, TabContent, Button } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { getCurrentUser } from "./../user/apiUser";
 import RoleReq from "./RoleReq";
 import AssignedTo from "./AssignedTo";
 import DeleteProject from "./DeleteProject";
 import LeaveProject from "./LeaveProject";
+import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
+import DashboardTwoToneIcon from "@material-ui/icons/DashboardTwoTone";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -31,96 +33,140 @@ class MyProjects extends Component {
     return (
       <div className="mt-5">
         <h2>My Projects</h2>
-        <Tabs fill defaultActiveKey="home" id="uncontrolled-tab-example">
-          {myProjects.userProjects.map((project) => (
-            <Tab
-              eventKey={project.title}
-              title={project.title}
-              mountOnEnter
-              unmountOnExit={false}
-            >
-              <TabContent className="mt-3">
-                <h3>{project.title}</h3>
-                <p>
-                  <strong>Description: </strong> {project.description}
-                </p>
-                <p>
-                  <strong>Skills: </strong>
-                  {project.skills.join(", ")}
-                </p>
-                <table className="table">
-                  <thead>
-                    <tr key={"title"}>
-                      <th key={"rolename"}>Role Name</th>
-                      <th key={"skills"}>Skills Required</th>
+        <div className="card border-primary mb-3">
+          <div className="card-header">Ongoing Projects</div>
+          <div className="card-body">
+            <div className="row card-deck">
+              {myProjects.userProjects.map((project) => (
+                <div className="card text-white bg-primary col-md-6">
+                  <div className="card-header">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <h5 className="card-label  text-darker">
+                        {project.title}
+                      </h5>
 
-                      <th key={"assigned"}>Assigned To</th>
-                    </tr>
-                    {project.roles.map((role) => (
-                      <tr key={role._id.toString()}>
-                        <td
-                          key={role._id.toString() + role.roleName.toString()}
-                        >
-                          {role.roleName}
-                        </td>
-                        <td
-                          key={role._id.toString() + role.roleSkills.toString()}
-                        >
-                          {role.roleSkills.join(", ")}
-                        </td>
-                        <td>
-                          {project.leader === getCurrentUser()._id &&
-                          role.assignedTo === undefined ? (
-                            <>
-                              <RoleReq
-                                requestBy={role.requestBy}
-                                projectId={project._id}
-                                roleId={role._id}
-                              />
-                            </>
+                      <div className="card-toolbar">
+                        <div className="d-flex align-items-center justify-content-between">
+                          <OverlayTrigger
+                            key="top"
+                            placement="top"
+                            overlay={
+                              <Tooltip id="top2">Project Dashboard</Tooltip>
+                            }
+                          >
+                            <Link
+                              className="btn btn-info mr-2"
+                              to={{
+                                pathname: `/myprojects/dashboard/${project._id}`,
+                                state: { project: project },
+                              }}
+                            >
+                              <DashboardTwoToneIcon />
+                            </Link>
+                          </OverlayTrigger>
+                          {getCurrentUser()._id === project.leader ? (
+                            <div className="d-flex align-items-center justify-content-between">
+                              <OverlayTrigger
+                                key="top"
+                                placement="top"
+                                overlay={
+                                  <Tooltip id="tooltip-top">
+                                    Edit Project
+                                  </Tooltip>
+                                }
+                              >
+                                <Link
+                                  className="btn btn-warning mr-2"
+                                  to={{
+                                    pathname: `/myprojects/edit/${project._id}`,
+                                    state: { project: project },
+                                  }}
+                                >
+                                  <EditTwoToneIcon />
+                                </Link>
+                              </OverlayTrigger>
+
+                              <DeleteProject projectId={project._id} />
+                            </div>
                           ) : (
-                            <>
-                              <AssignedTo id={role.assignedTo} />
-                            </>
+                            <div>
+                              <LeaveProject project={project} />
+                            </div>
                           )}
-                        </td>
-                        <td></td>
-                      </tr>
-                    ))}
-                  </thead>
-                </table>
-                {getCurrentUser()._id === project.leader ? (
-                  <>
-                    <Link
-                      className="btn btn-warning"
-                      to={{
-                        pathname: `/myprojects/edit/${project._id}`,
-                        state: { project: project },
-                      }}
-                    >
-                      Edit Project
-                    </Link>
-                    <DeleteProject projectId={project._id} />
-                  </>
-                ) : (
-                  <>
-                    <LeaveProject project={project} />
-                  </>
-                )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card-body">
+                    <div className="d-flex align-items-center justify-content-between mb-2">
+                      <span className="font-weight-bold mr-2">
+                        Description:{" "}
+                      </span>
+                      <span>{project.description}</span>
+                    </div>
+                    <div className="d-flex align-items-center justify-content-between mb-2">
+                      <span className="font-weight-bold mr-2">Skills: </span>
+                      <span>{project.skills.join(", ")}</span>
+                    </div>
+                    <table className="table table-dark">
+                      <thead>
+                        <tr>
+                          <th key={"rolename"}>Role Name</th>
+                          <th key={"skills"}>Skills Required</th>
 
-                <Link
-                  className="btn btn-info"
-                  to={{
-                    pathname: `/myprojects/dashboard/${project._id}`,
-                    state: { project: project },
-                  }}
-                >
-                  Project Dashboard
-                </Link>
-              </TabContent>
-            </Tab>
-          ))}
-        </Tabs>
+                          <th key={"assigned"}>Assigned To</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {project.roles.map((role) => (
+                          <tr key={role._id.toString()}>
+                            <td
+                              key={
+                                role._id.toString() + role.roleName.toString()
+                              }
+                            >
+                              {role.roleName}
+                            </td>
+                            <td
+                              key={
+                                role._id.toString() + role.roleSkills.toString()
+                              }
+                            >
+                              {role.roleSkills.join(", ")}
+                            </td>
+                            <td>
+                              {project.leader === getCurrentUser()._id &&
+                              role.assignedTo === undefined ? (
+                                <div>
+                                  <RoleReq
+                                    requestBy={role.requestBy}
+                                    projectId={project._id}
+                                    roleId={role._id}
+                                  />
+                                </div>
+                              ) : (
+                                <div>
+                                  <AssignedTo id={role.assignedTo} />
+                                </div>
+                              )}
+                            </td>
+                            <td></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="card border-danger mb-3">
+          <div className="card-header">Overdue Projects</div>
+        </div>
+        <div className="card border-success mb-3">
+          <div className="card-header">Completed Projects</div>
+        </div>
       </div>
     );
   }
