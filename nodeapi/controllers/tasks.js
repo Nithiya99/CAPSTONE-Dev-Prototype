@@ -2,6 +2,8 @@ const e = require("express");
 const { connections } = require("mongoose");
 const Project = require("../models/project");
 const { allProjects } = require("./project");
+const User = require("../models/user");
+const { use } = require("../routes/post");
 exports.addTasks = (req, res) => {
   if (req.profile._id.toString() === req.projectObject.leader.toString()) {
     const project = req.projectObject;
@@ -9,10 +11,7 @@ exports.addTasks = (req, res) => {
     project.tasks.push(tasks);
     // console.log(project);
     // project.tasks = tasks;
-    project.save((err) => {
-      if (err) res.status(400).json({ err });
-      else res.status(200).json({ project });
-    });
+    proj_completion(project);
   } else {
     res.status(400).json({ message: "Not Leader" });
   }
@@ -141,12 +140,70 @@ exports.putPosition = (req, res) => {
   });
   return res.status(200).json({ project });
 };
+// const sumItUp = async (project, sum) => {
+//   console.log(project);
+//   await Project.findById(project, (err, result) => {
+//     console.log(result.completion_percentage);
+//     sum += result.completion_percentage;
+//     console.log(result.title + " " + sum);
+//   });
+//   return sum;
+// };
+const sumItUp = async (project, sum) => {
+  // console.log(project);
+  const { completion_percentage } = await Project.findById(project).exec();
+  sum += completion_percentage;
+  console.log(
+    `completion_percentage is ${completion_percentage}, updated sum is ${sum}`
+  );
+  return sum;
+};
+const updateUserCompletion = async (user) => {
+  console.log(user);
+  let sum = 0;
+  for (var i = 0; i < user.projects.length; i++) {
+    sum = await sumItUp(user.projects[i], sum);
+    // console.log(user.name + " " + user.project[i].title + " " + sum);
+  }
+  // console.log(sum);
+  user.completion_percentage_of_all_projects = 0;
+  if (user.projects.length !== 0)
+    user.completion_percentage_of_all_projects = sum / user.projects.length;
+  user.save();
+};
 
-exports.updateTasks = (request, res) => {
+async function proj_completion(project) {
+  let planned = 0,
+    wip = 0,
+    review = 0,
+    completed = 0;
+  // console.log(project);
+  await project.tasks.map((task) => {
+    if (task.status === "PLANNED") planned++;
+    else if (task.status === "WIP") wip++;
+    else if (task.status === "Review") review++;
+    else if (task.status === "COMPLETED") completed++;
+  });
+
+  // console.log(planned, wip, review , completed )
+  let total_task = planned + wip + review + completed;
+  // console.log(total_task);
+  let comp_percentage = 0;
+  if (total_task !== 0)
+    comp_percentage =
+      (planned * 0 + wip * 0.33 + review * 0.66 + completed) / total_task;
+  // console.log(comp_percentage*100);
+  // console.log(request.body);
+
+  project.completion_percentage = comp_percentage * 100;
+  console.log("completion percentage:", project.completion_percentage);
+  project.save();
+}
+
+exports.updateTasks = async (request, res) => {
   let id = request.body.id;
   let project = request.projectObject;
-  console.log(id);
-  project.tasks.map((task) => {
+  project.tasks.map(async (task) => {
     if (task._id.toString() === id.toString()) {
       task.taskName = request.body.taskName;
       task.taskDescription = request.body.taskDescription;
@@ -154,15 +211,20 @@ exports.updateTasks = (request, res) => {
       task.optimisiticTime = request.body.optimisiticTime;
       task.mostLikelyTime = request.body.mostLikelyTime;
       task.status = request.body.status;
-      // console.log(task);
     }
-    // console.log(task._id.toString(), id.toString());
   });
-  // console.log(project.tasks);
-  // console.log(request.body);
-  project.save((err) => {
-    if (err) return res.status(400).json({ err: "Task not found" });
+  proj_completion(project);
+
+  await project.team.forEach((user) => {
+    User.findById(user, (err, res) => {
+      if (err) {
+        res.status(400).json({ err: err });
+      } else {
+        updateUserCompletion(res);
+      }
+    });
   });
+  // console.log(users);
   // console.log(request.body);
   return res.status(200).json({ project });
 };
@@ -194,8 +256,7 @@ exports.deleteTasks = (req, res) => {
   });
   console.log(newcons);
   project.connections = newcons;
-  project.save((err) => {
-    if (err) return res.status(400).json({ err: "Task not found" });
-  });
+  // project.save();
+  proj_completion(project);
   return res.status(200).json({ project });
 };

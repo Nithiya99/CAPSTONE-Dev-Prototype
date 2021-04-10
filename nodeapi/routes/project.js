@@ -12,7 +12,9 @@ const {
   getProjectsOfUser,
   updateProject,
   deleteProject,
+  leaveProject,
   getTeam,
+  submitProject,
   checkIfProjectExists,
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
@@ -23,6 +25,7 @@ const router = express.Router();
 router.get("/projects", allProjects);
 router.get("/projects/user/:userId", requireSignin, getProjectsOfUser);
 router.delete("/project/delete/:projectId", requireSignin, deleteProject);
+router.put("/project/finish/:projectId", requireSignin, submitProject);
 router.post(
   "/project/new/:userId",
   requireSignin,
@@ -30,6 +33,7 @@ router.post(
   createProject
 );
 router.put("/project/edit/:userId/:projectId", requireSignin, updateProject);
+router.put("/project/leave/:userId/:projectId", requireSignin, leaveProject);
 router.put("/project/request/:userId/:projectId", requireSignin, requestRole);
 router.get("/roles/:projectId", requireSignin, getRoles);
 router.get("/project/team/:projectId", requireSignin, getTeam);

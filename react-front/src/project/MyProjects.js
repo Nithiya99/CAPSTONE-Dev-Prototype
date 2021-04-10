@@ -9,6 +9,9 @@ import DeleteProject from "./DeleteProject";
 import LeaveProject from "./LeaveProject";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import DashboardTwoToneIcon from "@material-ui/icons/DashboardTwoTone";
+import SubmitProject from "./SubmitProject";
+import UserRecommendation from "./UserRecommendation";
+
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -30,6 +33,7 @@ class MyProjects extends Component {
       return <h1>No Projects</h1>;
     const { myProjects } = this.state;
     console.log(myProjects);
+
     return (
       <div className="mt-5">
         <h2>My Projects</h2>
@@ -87,6 +91,11 @@ class MyProjects extends Component {
                               </OverlayTrigger>
 
                               <DeleteProject projectId={project._id} />
+                              {project.completion_percentage === 100 ? (
+                                <SubmitProject projectId={project._id} />
+                              ) : (
+                                <></>
+                              )}
                             </div>
                           ) : (
                             <div>
@@ -155,6 +164,11 @@ class MyProjects extends Component {
                         ))}
                       </tbody>
                     </table>
+                    {getCurrentUser()._id === project.leader ? (
+                      <UserRecommendation project={project} />
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 </div>
               ))}

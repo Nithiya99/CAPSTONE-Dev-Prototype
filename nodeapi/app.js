@@ -8,6 +8,7 @@ const expressValidator = require("express-validator");
 const fs = require("fs");
 const cors = require("cors");
 const dotenv = require("dotenv");
+var socket = require("socket.io");
 dotenv.config();
 
 // "mongodb://localhost/nodeapi"
@@ -66,6 +67,20 @@ app.use(function (err, req, res, next) {
 });
 
 const port = process.env.PORT || 8081;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`A Node JS API is listening on port: ${port}`);
+});
+const sio = require("socket.io")(server, {
+  handlePreflightRequest: (req, res) => {
+    const headers = {
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
+      "Access-Control-Allow-Credentials": true,
+    };
+    res.writeHead(200, headers);
+    res.end();
+  },
+});
+sio.on("connection", (socket) => {
+  console.log("Connected!");
 });

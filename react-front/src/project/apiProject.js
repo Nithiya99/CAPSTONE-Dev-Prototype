@@ -55,8 +55,8 @@ export const updateProject = (project, projectId) => {
     description: project.description,
     skills: project.skills,
     roles: project.roleDetails,
-    team : project.team,
-    tasks : project.tasks,
+    team: project.team,
+    tasks: project.tasks,
   };
   let settings = {
     method: "PUT",
@@ -72,6 +72,22 @@ export const updateProject = (project, projectId) => {
     settings
   )
     .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const leaveProject = (userId, projectId, token) => {
+  return fetch(`http://localhost:8081/project/leave/${userId}/${projectId}`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      console.log("Done");
       return response.json();
     })
     .catch((err) => console.log(err));
@@ -193,6 +209,22 @@ export const abandon = (projectId, token) => {
     })
     .catch((err) => console.log(err));
 };
+export const finish = (projectId, token) => {
+  return fetch("http://localhost:8081/project/finish/" + `${projectId}`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      console.log("Project has been marked as completed");
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
 export const getTeam = (projectId) => {
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   return fetch("http://localhost:8081/project/team/" + projectId.toString(), {

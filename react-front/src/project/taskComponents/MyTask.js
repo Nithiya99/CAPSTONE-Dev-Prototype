@@ -38,7 +38,6 @@ class MyTasks extends Component {
     const { mytasks } = this.state;
     // console.log(this.props.proj);
     // console.log(mytasks);
-
     return (
       <div>
         <table className="table">
@@ -49,8 +48,14 @@ class MyTasks extends Component {
               <th key={"op_time"}>Optimistic Time</th>
               <th key={"ml_time"}>Most Likely Time</th>
               <th key={"pess_time"}>Pessimistic Time</th>
-              <th key={"edit"}>Edit</th>
-              <th key={"delete"}>Delete</th>
+              {this.props.status === "Completed" ? (
+                <> </>
+              ) : (
+                <>
+                  <th key={"edit"}>Edit</th>
+                  <th key={"delete"}>Delete</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -64,40 +69,46 @@ class MyTasks extends Component {
                     <td key={"taskopt"}>{task.optimisticTime}</td>
                     <td key={"taskml"}>{task.mostLikelyTime}</td>
                     <td key={"taskpt"}>{task.pessimisticTime}</td>
-                    <td key={"editpt" + task._id}>
-                      <EditIcon
-                        onClick={() => {
-                          this.showMe();
-                          this.setState({ currentTask: task });
-                        }}
-                      />
-                      {this.state.show ? (
-                        <EditModel
-                          projectId={this.props.projectId}
-                          task={this.state.currentTask}
-                          id={task._id}
-                          show={this.state.show}
-                          showMe={this.showMe}
-                          hideMe={this.hideMe}
-                        />
-                      ) : (
-                        <div></div>
-                      )}
-                    </td>
-                    <td key={"deletept"}>
-                      <DeleteIcon
-                        onClick={() => {
-                          let response = window.confirm("Are you Sure?");
-                          if (response) {
-                            deleteTask(task._id, this.props.projectId)
-                              .then((data) => {
-                                console.log(data);
-                              })
-                              .then(() => window.location.reload());
-                          }
-                        }}
-                      />
-                    </td>
+                    {this.props.status === "Completed" ? (
+                      <> </>
+                    ) : (
+                      <tr>
+                        <td key={"editpt" + task._id}>
+                          <EditIcon
+                            onClick={() => {
+                              this.showMe();
+                              this.setState({ currentTask: task });
+                            }}
+                          />
+                          {this.state.show ? (
+                            <EditModel
+                              projectId={this.props.projectId}
+                              task={this.state.currentTask}
+                              id={task._id}
+                              show={this.state.show}
+                              showMe={this.showMe}
+                              hideMe={this.hideMe}
+                            />
+                          ) : (
+                            <div></div>
+                          )}
+                        </td>
+                        <td key={"deletept"}>
+                          <DeleteIcon
+                            onClick={() => {
+                              let response = window.confirm("Are you Sure?");
+                              if (response) {
+                                deleteTask(task._id, this.props.projectId).then(
+                                  (data) => {
+                                    console.log(data);
+                                  }
+                                );
+                              }
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    )}
                   </tr>
                 )
             )}

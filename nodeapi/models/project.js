@@ -21,6 +21,14 @@ var projectSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  status: {
+    type: String,
+    default: "Not Completed",
+  },
+  completion_percentage: {
+    type: Number,
+    required: true,
+  },
   roles: [
     {
       roleName: {

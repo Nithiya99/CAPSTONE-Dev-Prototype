@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { v1: uuidv1 } = require("uuid");
 const crypto = require("crypto");
+const { ObjectId } = mongoose.Schema;
 
 var userSchema = new mongoose.Schema({
   name: {
@@ -26,6 +27,26 @@ var userSchema = new mongoose.Schema({
   created: {
     type: Date,
     default: Date.now,
+  },
+  projects: [
+    {
+      type: ObjectId,
+      ref: "Project",
+    },
+  ],
+  completed_projects: [
+    {
+      type: ObjectId,
+      ref: "Project",
+    },
+  ],
+  completion_percentage_of_all_projects: {
+    type: Number,
+    default: 0,
+  },
+  rating: {
+    type: Number,
+    default: Math.random() * 10,
   },
   updated: Date,
   dob: {

@@ -208,7 +208,7 @@ class LayoutComponent extends Component {
               ele.push(edge);
               // this.state.elements = ele;
               this.setState({ elements: ele });
-              console.log(this.state.elements);
+              // console.log(this.state.elements);
             }
 
             return "done";
@@ -374,9 +374,11 @@ class LayoutComponent extends Component {
     if (this.state.tasks === undefined) return null;
     if (this.state.tasks.length === 0) return <div>No tasks</div>;
     const { nodes, connections } = this.props;
+    const { status } = this.props.project;
+    let connect = status === "Completed" ? false : true;
 
     let elements = [...nodes, ...connections];
-    console.log(elements, this.state.elements);
+    // console.log(elements, this.state.elements);
     return (
       <div>
         <div className="container-fluid">
@@ -395,6 +397,8 @@ class LayoutComponent extends Component {
             connectionLineType="bezier"
             snapToGrid={true}
             snapGrid={[16, 16]}
+            nodesConnectable={connect}
+            nodesDraggable={connect}
           >
             <Background color="#888" gap={16} />
             <MiniMap
