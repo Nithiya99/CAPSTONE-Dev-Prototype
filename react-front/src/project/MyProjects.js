@@ -7,6 +7,9 @@ import RoleReq from "./RoleReq";
 import AssignedTo from "./AssignedTo";
 import DeleteProject from "./DeleteProject";
 import LeaveProject from "./LeaveProject";
+import SubmitProject from "./SubmitProject";
+import UserRecommendation from "./UserRecommendation";
+
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -28,6 +31,7 @@ class MyProjects extends Component {
       return <h1>No Projects</h1>;
     const { myProjects } = this.state;
     console.log(myProjects);
+
     return (
       <div className="mt-5">
         <h2>My Projects</h2>
@@ -91,20 +95,35 @@ class MyProjects extends Component {
                 </table>
                 {getCurrentUser()._id === project.leader ? (
                   <>
-                    <Link
-                      className="btn btn-warning"
-                      to={{
-                        pathname: `/myprojects/edit/${project._id}`,
-                        state: { project: project },
-                      }}
-                    >
-                      Edit Project
-                    </Link>
-                    <DeleteProject projectId={project._id} />
+                    {project.status === "Completed" ? (
+                      <></>
+                    ) : (
+                      <>
+                        <Link
+                          className="btn btn-warning"
+                          to={{
+                            pathname: `/myprojects/edit/${project._id}`,
+                            state: { project: project },
+                          }}
+                        >
+                          Edit Project
+                        </Link>
+                        <DeleteProject projectId={project._id} />
+                        {project.completion_percentage === 100 ? (
+                          <SubmitProject projectId={project._id} />
+                        ) : (
+                          <></>
+                        )}
+                      </>
+                    )}
                   </>
                 ) : (
                   <>
-                    <LeaveProject project={project} />
+                    {project.status === "Completed" ? (
+                      <></>
+                    ) : (
+                      <LeaveProject project={project} />
+                    )}
                   </>
                 )}
 
@@ -117,6 +136,11 @@ class MyProjects extends Component {
                 >
                   Project Dashboard
                 </Link>
+                {getCurrentUser()._id === project.leader ? (
+                  <UserRecommendation project={project} />
+                ) : (
+                  <></>
+                )}
               </TabContent>
             </Tab>
           ))}

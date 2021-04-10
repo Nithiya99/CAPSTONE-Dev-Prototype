@@ -4,6 +4,7 @@ import AddTask from "./taskComponents/AddTask";
 import MyTasks from "./taskComponents/MyTask";
 import LayoutComponent from "./layout/LayoutComponent";
 import TrelloTask from "./taskComponents/TrelloTask";
+import { getCurrentUser } from "../user/apiUser";
 
 class ProjectDashboard extends Component {
   render() {
@@ -15,27 +16,49 @@ class ProjectDashboard extends Component {
     // console.log(this.props.location);
     return (
       <div className="mt-5">
-        <h1>{project.title}'s Dashboard</h1>
-        <Accordion>
+        <h1>{project.title}'s Dasboard</h1>
+        <Accordion defaultActiveKey="0">
+          {project.status === "Completed" ? (
+            <> </>
+          ) : (
+            <>
+              {getCurrentUser()._id === project.leader ? (
+                <Card>
+                  <Card.Header>
+                    <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                      Add Task
+                    </Accordion.Toggle>
+                  </Card.Header>
+                  <Accordion.Collapse eventKey="0">
+                    <Card.Body>
+                      <AddTask projectId={project._id} />
+                    </Card.Body>
+                  </Accordion.Collapse>
+                </Card>
+              ) : (
+                <> </>
+              )}
+            </>
+          )}
           <Card>
             <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                Trello
+              <Accordion.Toggle as={Button} variant="link" eventKey="1">
+                Show Tasks
               </Accordion.Toggle>
             </Card.Header>
-            <Accordion.Collapse eventKey="0">
+            <Accordion.Collapse eventKey="1">
               <Card.Body>
-                <TrelloTask projectId={project._id} />
+                <MyTasks projectId={project._id} status={project.status} />
               </Card.Body>
             </Accordion.Collapse>
           </Card>
           <Card>
             <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                Graphic layout / Connect / Pert
+              <Accordion.Toggle as={Button} variant="link" eventKey="2">
+                Connect Tasks with Graphic layout
               </Accordion.Toggle>
             </Card.Header>
-            <Accordion.Collapse eventKey="1">
+            <Accordion.Collapse eventKey="2">
               <Card.Body>
                 <LayoutComponent project={project} />
               </Card.Body>
@@ -43,25 +66,13 @@ class ProjectDashboard extends Component {
           </Card>
           <Card>
             <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey="2">
-                Add Task
-              </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey="2">
-              <Card.Body>
-                <AddTask projectId={project._id} />
-              </Card.Body>
-            </Accordion.Collapse>
-          </Card>
-          <Card>
-            <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="3">
-                Show Tasks
+                Trello
               </Accordion.Toggle>
             </Card.Header>
             <Accordion.Collapse eventKey="3">
               <Card.Body>
-                <MyTasks projectId={project._id} />
+                <TrelloTask projectId={project._id} status={project.status} />
               </Card.Body>
             </Accordion.Collapse>
           </Card>

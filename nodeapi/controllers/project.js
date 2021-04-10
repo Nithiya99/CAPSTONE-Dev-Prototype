@@ -2,12 +2,37 @@ const { isBuffer } = require("lodash");
 const Project = require("../models/project");
 const User = require("../models/user");
 const similarity = require("string-cosine-similarity");
+
+const sumItUp = async (project, sum) => {
+  // console.log(project);
+  const { completion_percentage } = await Project.findById(project).exec();
+  sum += completion_percentage;
+  console.log(
+    `completion_percentage is ${completion_percentage}, updated sum is ${sum}`
+  );
+  return sum;
+};
+const updateUserCompletion = async (user) => {
+  console.log(user);
+  let sum = 0;
+  for (var i = 0; i < user.projects.length; i++) {
+    sum = await sumItUp(user.projects[i], sum);
+    // console.log(user.name + " " + user.project[i].title + " " + sum);
+  }
+  console.log("sum : ", sum);
+  console.log("project length : ", user.projects.length);
+  user.completion_percentage_of_all_projects = 0;
+  if (user.projects.length !== 0)
+    user.completion_percentage_of_all_projects = sum / user.projects.length;
+  user.save();
+};
 exports.createProject = (req, res) => {
   // console.log(req);
   const project = new Project(req.body);
   req.profile.hashed_password = undefined;
   req.profile.salt = undefined;
   project.leader = req.profile;
+  project.completion_percentage = 0;
   project.team.push(req.profile._id);
   project.tasks.push({
     id: "1",
@@ -35,11 +60,15 @@ exports.createProject = (req, res) => {
     targetPosition: "left",
     position: { x: 500, y: 0 },
   });
-  console.log(project);
+  console.log(project.leader._id);
   project.save((err, result) => {
-    if (err) {
-      return res.status(400).json({ error: err });
-    }
+    if (err) return res.status(400).json({ error: err });
+    User.findById(project.leader._id).exec(async (err, user) => {
+      if (err || !user) return;
+      user.projects.push(project._id);
+      user.save();
+      await updateUserCompletion(user);
+    });
     res.json(result);
   });
 };
@@ -62,9 +91,44 @@ exports.updateProject = (req, res) => {
   });
 };
 
+exports.leaveProject = (req, res) => {
+  project_id = req.projectObject._id;
+  user_id = req.profile._id;
+  User.findById(user_id).exec((err, user) => {
+    if (err || !user) {
+      return;
+    }
+    let index = user.projects.indexOf(project_id);
+    if (index > -1) {
+      user.projects.splice(index, 1);
+    }
+    // user.save();
+    updateUserCompletion(user);
+    res.status(200).json({ message: "leaved the project" });
+  });
+};
+
 exports.deleteProject = (req, res) => {
   let project = req.projectObject;
   try {
+    let team = project.team;
+    team.forEach((memb) => {
+      User.findById(memb.toString()).exec((err, user) => {
+        if (err || !user) {
+          return;
+        }
+        let index = user.projects.indexOf(project._id);
+        if (index > -1) {
+          user.projects.splice(index, 1);
+        }
+        user.save((err) => {
+          if (err) {
+            return res.status(400).json({ error: err });
+          }
+          updateUserCompletion(user);
+        });
+      });
+    });
     project.remove();
     res.status(200).json({ message: "Deleted project" });
   } catch (err) {
@@ -122,6 +186,14 @@ exports.acceptRequest = (req, res) => {
           project.team.push(acceptId);
           project.save((err) => {
             if (err) res.status(400).json({ err });
+            User.findById(acceptId).exec((err, user) => {
+              if (err || !user) {
+                return;
+              }
+              user.projects.push(project._id);
+              // user.save();
+              updateUserCompletion(user);
+            });
           });
           res.status(200).json({ role });
         }
@@ -298,4 +370,26 @@ exports.checkIfProjectExists = async (req, res) => {
       return res.status(400).json({ err: err.toString() });
     }
   }
+};
+
+exports.submitProject = (req, res) => {
+  let project = req.projectObject;
+  console.log(project);
+  let team = project.team;
+  project.status = "Completed";
+  project.save();
+  team.map((user_id) => {
+    User.findById(user_id).exec((err, user) => {
+      if (err || !user) return;
+      else {
+        user.completed_projects.push(project._id);
+        let index = user.projects.indexOf(project._id);
+        if (index > -1) {
+          user.projects.splice(index, 1);
+        }
+        updateUserCompletion(user);
+      }
+    });
+  });
+  return res.status(200).json({ message: "Project Completed!" });
 };

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { notificationAdded, getNotified } from "../store/notifications";
 import { getNotifications } from "../apiNotifications";
 import { getCurrentUser } from "../user/apiUser";
+import ProjectRecommendation from "./ProjectRecommendation";
 class Home extends Component {
   state = {};
   componentDidMount() {
@@ -33,6 +34,7 @@ class Home extends Component {
           <h2>Home</h2>
           <p className="lead">News Feed (Posts) will be here</p>
         </div>
+        <ProjectRecommendation />
       </>
     );
   }

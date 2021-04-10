@@ -27,6 +27,7 @@
     "mongoose": "^5.11.8",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.6",
+    "socket.io": "^4.0.1",
     "string-cosine-similarity": "^2.0.1",
     "uuid": "^8.3.2"
   }

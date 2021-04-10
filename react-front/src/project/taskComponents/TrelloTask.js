@@ -4,12 +4,13 @@ import { getCurrentUser } from "./../../user/apiUser";
 import { updateTask } from "./../apiProject";
 import Board from "react-trello";
 
-var data = {};
-var projleader = "";
-var tasks = [];
+let data = {};
+let projleader = "";
+let tasks = [];
 let flag = false,
   flag1 = false;
 const handleDragStart = (cardId, laneId) => {
+  // console.log(status);
   console.log("drag started");
   // console.log(`cardId: ${cardId}`)
   // console.log(tasks)
@@ -56,12 +57,18 @@ class TrelloTask extends Component {
   state = {
     mytasks: [],
     boardData: { lanes: [] },
+    editable: true,
   };
   setEventBus = (eventBus) => {
     this.setState({ eventBus });
   };
 
   async componentDidMount() {
+    if (this.props.status === "Completed") {
+      this.setState({
+        editable: false,
+      });
+    }
     await listmytasks().then((data) => {
       let allproj = data.userProjects;
       allproj.forEach((proj) => {
@@ -108,6 +115,7 @@ class TrelloTask extends Component {
           id: "PLANNED",
           title: "Todo Tasks",
           label: "1/4",
+          droppable: this.state.editable,
           cards: cards_planned,
           style: {
             backgroundColor: "#3179ba",
@@ -120,6 +128,7 @@ class TrelloTask extends Component {
           id: "WIP",
           title: "Work In Progress",
           label: "2/4",
+          droppable: this.state.editable,
           cards: cards_wip,
           style: {
             backgroundColor: "#FFCC33",
@@ -132,6 +141,7 @@ class TrelloTask extends Component {
           id: "Review",
           title: "Review",
           label: "3/4",
+          droppable: this.state.editable,
           cards: cards_review,
           style: {
             backgroundColor: "#FF9900",
@@ -144,7 +154,7 @@ class TrelloTask extends Component {
           id: "COMPLETED",
           title: "Completed",
           label: "4/4",
-          droppable: flag,
+          droppable: this.state.editable && flag,
           cards: cards_completed,
           style: {
             backgroundColor: "#00CC00",
@@ -173,7 +183,6 @@ class TrelloTask extends Component {
     cards.forEach((card) => {
       updateTask(card, this.props.projectId).then((data) => console.log(data));
     });
-
     this.setState({ mytasks: cards });
   };
 

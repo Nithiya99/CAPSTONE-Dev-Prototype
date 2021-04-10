@@ -46,7 +46,7 @@ exports.allUsers = (req, res) => {
     }
     res.json(users);
   }).select(
-    "name email updated created username bio social location skills dob"
+    "name email updated created username bio social location skills dob projects completed_projects rating completion_percentage_of_all_projects"
   );
 };
 
