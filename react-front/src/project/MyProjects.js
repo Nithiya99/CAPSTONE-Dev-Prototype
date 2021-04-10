@@ -33,7 +33,12 @@ class MyProjects extends Component {
       return <h1>No Projects</h1>;
     const { myProjects } = this.state;
     console.log(myProjects);
-
+    let onGoingProjects = myProjects.userProjects.filter((x) =>
+      x.status.includes("In Progress")
+    );
+    let CompletedProjects = myProjects.userProjects.filter((x) =>
+      x.status.includes("Completed")
+    );
     return (
       <div className="mt-5">
         <h2>My Projects</h2>
@@ -41,7 +46,7 @@ class MyProjects extends Component {
           <div className="card-header">Ongoing Projects</div>
           <div className="card-body">
             <div className="row row-cols-1 row-cols-md-2">
-              {myProjects.userProjects.map((project) => (
+              {onGoingProjects.map((project) => (
                 <div className="col mb-4">
                   <div className="card text-white bg-primary ">
                     <div className="card-header">
@@ -183,6 +188,57 @@ class MyProjects extends Component {
         </div>
         <div className="card border-success mb-3">
           <div className="card-header">Completed Projects</div>
+          <div className="card-body">
+            <div className="row row-cols-1 row-cols-md-2">
+              {CompletedProjects.map((project) => (
+                <div className="col mb-4">
+                  <div className="card text-white bg-primary col-md-6">
+                    <div className="card-header">
+                      <div className="d-flex align-items-center justify-content-between">
+                        <h5 className="card-label  text-darker">
+                          {project.title}
+                        </h5>
+
+                        <div className="card-toolbar">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <OverlayTrigger
+                              key="top"
+                              placement="top"
+                              overlay={
+                                <Tooltip id="top2">Project Dashboard</Tooltip>
+                              }
+                            >
+                              <Link
+                                className="btn btn-info mr-2"
+                                to={{
+                                  pathname: `/myprojects/dashboard/${project._id}`,
+                                  state: { project: project },
+                                }}
+                              >
+                                <DashboardTwoToneIcon />
+                              </Link>
+                            </OverlayTrigger>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card-body">
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span className="font-weight-bold mr-2">
+                          Description:{" "}
+                        </span>
+                        <span>{project.description}</span>
+                      </div>
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span className="font-weight-bold mr-2">Skills: </span>
+                        <span>{project.skills.join(", ")}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );

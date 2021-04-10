@@ -9,6 +9,7 @@ import PersonTwoToneIcon from "@material-ui/icons/PersonTwoTone";
 import ChatTwoToneIcon from "@material-ui/icons/ChatTwoTone";
 import AccountTreeTwoToneIcon from "@material-ui/icons/AccountTreeTwoTone";
 import DonutChart from "react-donut-chart";
+import { listmyprojects } from "./../project/apiProject";
 
 class Profile extends Component {
   constructor() {
@@ -33,7 +34,11 @@ class Profile extends Component {
   componentDidMount() {
     const userId = this.props.match.params.userId;
     this.init(userId);
+    listmyprojects().then((projects) => {
+      this.setState({ projects: projects.userProjects });
+    });
   }
+  // this.setState({ projects });
 
   componentWillReceiveProps(props) {
     const userId = props.match.params.userId;
@@ -43,6 +48,16 @@ class Profile extends Component {
     const { redirectToSignin, user } = this.state;
     if (user.skills === undefined) return null;
     if (redirectToSignin) return <Redirect to="/signin" />;
+    let projects = this.state.projects;
+    let ongoing = 0;
+    let completed = 0;
+    let overdue = 0;
+    if (projects !== undefined) {
+      projects.map((project) => {
+        if (project.status === "Completed") completed++;
+        if (project.status === "In Progress") ongoing++;
+      });
+    }
     return (
       <div className="container mt-5">
         <Tab.Container id="left-tabs-example" defaultActiveKey="personalInfo">
@@ -256,7 +271,7 @@ class Profile extends Component {
                           data={[
                             {
                               label: "Ongoing Projects",
-                              value: 2,
+                              value: ongoing,
                             },
                             {
                               label: "Overdue Projects",
@@ -264,7 +279,7 @@ class Profile extends Component {
                             },
                             {
                               label: "Completed Projects",
-                              value: 2,
+                              value: completed,
                             },
                           ]}
                           innerRadius="0.6"

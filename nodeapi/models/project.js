@@ -23,7 +23,7 @@ var projectSchema = new mongoose.Schema({
   ],
   status: {
     type: String,
-    default: "Not Completed",
+    default: "In Progress",
   },
   completion_percentage: {
     type: Number,
