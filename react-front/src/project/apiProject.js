@@ -14,7 +14,7 @@ export const newProject = (project) => {
       Authorization: `Bearer ${token}`,
     },
   };
-  fetch(
+  return fetch(
     `http://localhost:8081/project/check/?X=${obj.title}&X1=${obj.description}`,
     checkSettings
   )
@@ -24,7 +24,7 @@ export const newProject = (project) => {
       return response.json();
     })
     .then((val) => {
-      console.log(val);
+      // console.log(val);
       if (val.message === "Can be added!") {
         let settings = {
           method: "POST",
@@ -37,7 +37,12 @@ export const newProject = (project) => {
         // console.log(settings.body);
         return fetch(`http://localhost:8081/project/new/${userId}`, settings)
           .then((response) => {
+            // console.log(Promise.resolve(response));
             return response.json();
+          })
+          .then((val) => {
+            console.log(val);
+            return val;
           })
           .catch((err) => console.log(err));
       } else {

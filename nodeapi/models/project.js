@@ -28,6 +28,7 @@ var projectSchema = new mongoose.Schema({
   completion_percentage: {
     type: Number,
     required: true,
+    default: 0,
   },
   roles: [
     {

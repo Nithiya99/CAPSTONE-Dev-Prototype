@@ -5,7 +5,11 @@ const similarity = require("string-cosine-similarity");
 
 const sumItUp = async (project, sum) => {
   // console.log(project);
-  const { completion_percentage } = await Project.findById(project).exec();
+  try {
+    const { completion_percentage } = await Project.findById(project).exec();
+  } catch (err) {
+    console.log(err);
+  }
   sum += completion_percentage;
   console.log(
     `completion_percentage is ${completion_percentage}, updated sum is ${sum}`
@@ -16,7 +20,11 @@ const updateUserCompletion = async (user) => {
   console.log(user);
   let sum = 0;
   for (var i = 0; i < user.projects.length; i++) {
-    sum = await sumItUp(user.projects[i], sum);
+    try {
+      sum = await sumItUp(user.projects[i], sum);
+    } catch (err) {
+      console.log(err);
+    }
     // console.log(user.name + " " + user.project[i].title + " " + sum);
   }
   console.log("sum : ", sum);
@@ -69,8 +77,8 @@ exports.createProject = (req, res) => {
       user.save();
       await updateUserCompletion(user);
     });
-    res.json(result);
   });
+  return res.status(200).json({ project });
 };
 
 exports.updateProject = (req, res) => {
