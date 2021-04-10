@@ -95,7 +95,7 @@ class UserRecommendation extends Component {
           <></>
         ) : (
           <>
-            <h4 className="mt-5 mb-5"> Recommended Users</h4>
+            <h5 className="mt-3 mb-3"> Recommended Users</h5>
             {this.renderUsers(final_out)}
           </>
         )}
