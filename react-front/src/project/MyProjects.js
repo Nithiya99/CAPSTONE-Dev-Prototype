@@ -40,135 +40,138 @@ class MyProjects extends Component {
         <div className="card border-primary mb-3">
           <div className="card-header">Ongoing Projects</div>
           <div className="card-body">
-            <div className="row card-deck">
+            <div className="row row-cols-1 row-cols-md-2">
               {myProjects.userProjects.map((project) => (
-                <div className="card text-white bg-primary col-md-6">
-                  <div className="card-header">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <h5 className="card-label  text-darker">
-                        {project.title}
-                      </h5>
+                <div className="col mb-4">
+                  <div className="card text-white bg-primary ">
+                    <div className="card-header">
+                      <div className="d-flex align-items-center justify-content-between">
+                        <h5 className="card-label  text-darker">
+                          {project.title}
+                        </h5>
 
-                      <div className="card-toolbar">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <OverlayTrigger
-                            key="top"
-                            placement="top"
-                            overlay={
-                              <Tooltip id="top2">Project Dashboard</Tooltip>
-                            }
-                          >
-                            <Link
-                              className="btn btn-info mr-2"
-                              to={{
-                                pathname: `/myprojects/dashboard/${project._id}`,
-                                state: { project: project },
-                              }}
+                        <div className="card-toolbar">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <OverlayTrigger
+                              key="top"
+                              placement="top"
+                              overlay={
+                                <Tooltip id="top2">Project Dashboard</Tooltip>
+                              }
                             >
-                              <DashboardTwoToneIcon />
-                            </Link>
-                          </OverlayTrigger>
-                          {getCurrentUser()._id === project.leader ? (
-                            <div className="d-flex align-items-center justify-content-between">
-                              <OverlayTrigger
-                                key="top"
-                                placement="top"
-                                overlay={
-                                  <Tooltip id="tooltip-top">
-                                    Edit Project
-                                  </Tooltip>
-                                }
+                              <Link
+                                className="btn btn-info mr-2"
+                                to={{
+                                  pathname: `/myprojects/dashboard/${project._id}`,
+                                  state: { project: project },
+                                }}
                               >
-                                <Link
-                                  className="btn btn-warning mr-2"
-                                  to={{
-                                    pathname: `/myprojects/edit/${project._id}`,
-                                    state: { project: project },
-                                  }}
+                                <DashboardTwoToneIcon />
+                              </Link>
+                            </OverlayTrigger>
+                            {getCurrentUser()._id === project.leader ? (
+                              <div className="d-flex align-items-center justify-content-between">
+                                <OverlayTrigger
+                                  key="top"
+                                  placement="top"
+                                  overlay={
+                                    <Tooltip id="tooltip-top">
+                                      Edit Project
+                                    </Tooltip>
+                                  }
                                 >
-                                  <EditTwoToneIcon />
-                                </Link>
-                              </OverlayTrigger>
+                                  <Link
+                                    className="btn btn-warning mr-2"
+                                    to={{
+                                      pathname: `/myprojects/edit/${project._id}`,
+                                      state: { project: project },
+                                    }}
+                                  >
+                                    <EditTwoToneIcon />
+                                  </Link>
+                                </OverlayTrigger>
 
-                              <DeleteProject projectId={project._id} />
-                              {project.completion_percentage === 100 ? (
-                                <SubmitProject projectId={project._id} />
-                              ) : (
-                                <></>
-                              )}
-                            </div>
-                          ) : (
-                            <div>
-                              <LeaveProject project={project} />
-                            </div>
-                          )}
+                                <DeleteProject projectId={project._id} />
+                                {project.completion_percentage === 100 ? (
+                                  <SubmitProject projectId={project._id} />
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                            ) : (
+                              <div>
+                                <LeaveProject project={project} />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="card-body">
-                    <div className="d-flex align-items-center justify-content-between mb-2">
-                      <span className="font-weight-bold mr-2">
-                        Description:{" "}
-                      </span>
-                      <span>{project.description}</span>
-                    </div>
-                    <div className="d-flex align-items-center justify-content-between mb-2">
-                      <span className="font-weight-bold mr-2">Skills: </span>
-                      <span>{project.skills.join(", ")}</span>
-                    </div>
-                    <table className="table table-dark">
-                      <thead>
-                        <tr>
-                          <th key={"rolename"}>Role Name</th>
-                          <th key={"skills"}>Skills Required</th>
+                    <div className="card-body">
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span className="font-weight-bold mr-2">
+                          Description:{" "}
+                        </span>
+                        <span>{project.description}</span>
+                      </div>
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span className="font-weight-bold mr-2">Skills: </span>
+                        <span>{project.skills.join(", ")}</span>
+                      </div>
+                      <table className="table table-dark">
+                        <thead>
+                          <tr>
+                            <th key={"rolename"}>Role Name</th>
+                            <th key={"skills"}>Skills Required</th>
 
-                          <th key={"assigned"}>Assigned To</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {project.roles.map((role) => (
-                          <tr key={role._id.toString()}>
-                            <td
-                              key={
-                                role._id.toString() + role.roleName.toString()
-                              }
-                            >
-                              {role.roleName}
-                            </td>
-                            <td
-                              key={
-                                role._id.toString() + role.roleSkills.toString()
-                              }
-                            >
-                              {role.roleSkills.join(", ")}
-                            </td>
-                            <td>
-                              {project.leader === getCurrentUser()._id &&
-                              role.assignedTo === undefined ? (
-                                <div>
-                                  <RoleReq
-                                    requestBy={role.requestBy}
-                                    projectId={project._id}
-                                    roleId={role._id}
-                                  />
-                                </div>
-                              ) : (
-                                <div>
-                                  <AssignedTo id={role.assignedTo} />
-                                </div>
-                              )}
-                            </td>
-                            <td></td>
+                            <th key={"assigned"}>Assigned To</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {getCurrentUser()._id === project.leader ? (
-                      <UserRecommendation project={project} />
-                    ) : (
-                      <></>
-                    )}
+                        </thead>
+                        <tbody>
+                          {project.roles.map((role) => (
+                            <tr key={role._id.toString()}>
+                              <td
+                                key={
+                                  role._id.toString() + role.roleName.toString()
+                                }
+                              >
+                                {role.roleName}
+                              </td>
+                              <td
+                                key={
+                                  role._id.toString() +
+                                  role.roleSkills.toString()
+                                }
+                              >
+                                {role.roleSkills.join(", ")}
+                              </td>
+                              <td>
+                                {project.leader === getCurrentUser()._id &&
+                                role.assignedTo === undefined ? (
+                                  <div>
+                                    <RoleReq
+                                      requestBy={role.requestBy}
+                                      projectId={project._id}
+                                      roleId={role._id}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <AssignedTo id={role.assignedTo} />
+                                  </div>
+                                )}
+                              </td>
+                              <td></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {getCurrentUser()._id === project.leader ? (
+                        <UserRecommendation project={project} />
+                      ) : (
+                        <></>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

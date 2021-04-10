@@ -23,19 +23,21 @@ class UserRecommendation extends Component {
   }
 
   renderUsers = (final_out) => (
-    <div className="row row-cols-1 row-cols-md-3">
+    <div className="row row-cols-1 row-cols-md-2">
       {final_out.map((user, i) => (
-        <div className="card bg-info mb-4" key={i}>
-          <div className="card-body">
-            <h5 className="card-title">{user.name}</h5>
-            <p className="card-text">{user.email}</p>
-            <p className="card-text">{user.bio}</p>
-            <Link
-              to={`/user/${user._id}`}
-              className="btn btn-raised btn-small btn-primary"
-            >
-              View Profile
-            </Link>
+        <div className="col mb-4">
+          <div className="card bg-info mb-4" key={i}>
+            <div className="card-body">
+              <h5 className="card-title">{user.name}</h5>
+              <p className="card-text">{user.email}</p>
+              <p className="card-text">{user.bio}</p>
+              <Link
+                to={`/user/${user._id}`}
+                className="btn btn-raised btn-small btn-primary"
+              >
+                View Profile
+              </Link>
+            </div>
           </div>
         </div>
       ))}
