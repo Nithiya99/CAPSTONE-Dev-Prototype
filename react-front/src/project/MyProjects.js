@@ -100,7 +100,7 @@ class MyProjects extends Component {
                                 {project.completion_percentage === 100 ? (
                                   <SubmitProject projectId={project._id} />
                                 ) : (
-                                  <></>
+                                  <div> </div>
                                 )}
                               </div>
                             ) : (
@@ -174,7 +174,7 @@ class MyProjects extends Component {
                       {getCurrentUser()._id === project.leader ? (
                         <UserRecommendation project={project} />
                       ) : (
-                        <></>
+                        <div></div>
                       )}
                     </div>
                   </div>
