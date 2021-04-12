@@ -91,7 +91,7 @@ class Profile extends Component {
                   <div className=" pt-3">
                     <div className="d-flex align-items-center justify-content-between mb-2">
                       <span className="font-weight-bold mr-2">Email: </span>
-                      <span className="text-muted email-wrap text-hover-primary">
+                      <span className="text-muted text-hover-primary">
                         {user.email}
                       </span>
                     </div>
@@ -157,7 +157,7 @@ class Profile extends Component {
                         </span>
                       </div>
                     </div>
-                    <div className="card-body">
+                    <div className="card-header">
                       <table className="table table-borderless">
                         <tbody>
                           <tr>
@@ -197,7 +197,7 @@ class Profile extends Component {
                         </span>
                       </div>
                     </div>
-                    <div className="card-body">
+                    <div className="card-header">
                       <table className="table table-borderless">
                         <tbody>
                           <tr>
@@ -265,7 +265,7 @@ class Profile extends Component {
                         </span>
                       </div>
                     </div>
-                    <div className="card-body">
+                    <div className="card-header">
                       <table className="table table-borderless">
                         <DonutChart
                           data={[
