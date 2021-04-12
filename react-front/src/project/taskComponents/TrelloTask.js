@@ -7,27 +7,21 @@ import Board from "react-trello";
 let data = {};
 let projleader = "";
 let tasks = [];
-let flag = false,
-  flag1 = false;
+let flag = false;
+
 const handleDragStart = (cardId, laneId) => {
-  // console.log(status);
   console.log("drag started");
-  // console.log(`cardId: ${cardId}`)
-  // console.log(tasks)
-  flag1 = false;
+  flag = false;
   if (tasks === {}) return;
   tasks.forEach((task) => {
-    // console.log(task.id , cardId);
-    // console.log(task);
     if (task.id === cardId) {
       // console.log(getCurrentUser()._id)
       task.assigned.forEach((user) => {
         // console.log(user)
-        if (user === getCurrentUser()._id) flag1 = true;
+        if (user === getCurrentUser()._id) flag = true;
       });
     }
   });
-  // console.log(`laneId: ${laneId}`)
 };
 
 const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
@@ -38,14 +32,12 @@ const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
     sourceLaneId === "Review" &&
     targetLaneId === "COMPLETED"
   )
-    flag1 = true;
+    flag = true;
 
   if (projleader === getCurrentUser()._id && sourceLaneId === "COMPLETED")
-    flag1 = true;
-  // console.log(`cardId: ${cardId}`)
-  // console.log(`sourceLaneId: ${sourceLaneId}`)
-  // console.log(`targetLaneId: ${targetLaneId}`)
-  if (flag1 === false) {
+    flag = true;
+
+  if (flag === false) {
     alert(
       "Sry.. You are not allowed to do this operation.. Changes made will be resetted"
     );
@@ -58,6 +50,7 @@ class TrelloTask extends Component {
     mytasks: [],
     boardData: { lanes: [] },
     editable: true,
+    isleader : false,
   };
   setEventBus = (eventBus) => {
     this.setState({ eventBus });
@@ -69,6 +62,7 @@ class TrelloTask extends Component {
         editable: false,
       });
     }
+
     await listmytasks().then((data) => {
       let allproj = data.userProjects;
       allproj.forEach((proj) => {
@@ -82,8 +76,13 @@ class TrelloTask extends Component {
       });
     });
 
+    if (getCurrentUser()._id === projleader) 
+      this.setState({
+        isleader : true,
+      });
+
     const mytasks = this.state.mytasks;
-    if (getCurrentUser()._id === projleader) flag = true;
+    
 
     let cards_planned = [];
     let cards_wip = [];
@@ -102,8 +101,6 @@ class TrelloTask extends Component {
         mostLikelyTime: task.mostLikelyTime,
         status: task.status,
       };
-      // console.log(task.assignedTo);
-      // console.log(getCurrentUser()._id);
       if (task.status === "PLANNED") cards_planned.push(card);
       else if (task.status === "WIP") cards_wip.push(card);
       else if (task.status === "Review") cards_review.push(card);
@@ -121,7 +118,7 @@ class TrelloTask extends Component {
             backgroundColor: "#3179ba",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 180,
+            width: 260,
           },
         },
         {
@@ -134,7 +131,7 @@ class TrelloTask extends Component {
             backgroundColor: "#FFCC33",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 190,
+            width: 260,
           },
         },
         {
@@ -147,34 +144,32 @@ class TrelloTask extends Component {
             backgroundColor: "#FF9900",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 180,
+            width: 260,
           },
         },
         {
           id: "COMPLETED",
           title: "Completed",
           label: "4/4",
-          droppable: this.state.editable && flag,
+          droppable: this.state.editable && this.state.isleader,
           cards: cards_completed,
           style: {
             backgroundColor: "#00CC00",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 180,
+            width: 260,
           },
         },
       ],
     };
-    // console.log(data)
     this.setState({ boardData: data });
   }
 
   shouldReceiveNewData = (nextData) => {
-    // console.log(nextData)
     let cards = [];
     nextData.lanes.forEach((data) => {
       data.cards.forEach((card) => {
-        if (flag1 === true) card.status = card.laneId;
+        if (flag === true) card.status = card.laneId;
         else card.laneId = card.status;
         cards.push(card);
       });
@@ -187,10 +182,8 @@ class TrelloTask extends Component {
   };
 
   render() {
-    // console.log(this.props.proj);
-    // console.log(mytasks);
+    console.log(this.state.editable , this.state.isleader,)
     flag = false;
-    flag1 = false;
     return (
       <div>
         <div>
@@ -201,7 +194,6 @@ class TrelloTask extends Component {
             // editable
             // editLaneTitle
             data={this.state.boardData}
-            // draggable
             onDataChange={this.shouldReceiveNewData}
             eventBusHandle={this.setEventBus}
             handleDragStart={handleDragStart}
@@ -210,10 +202,9 @@ class TrelloTask extends Component {
               backgroundColor: "#eee",
             }}
             cardStyle={{
-              minWidth: 140,
-              width: 140,
-              maxWidth: 140,
-              marginLeft: 55,
+              minWidth: 250,
+              width: 250,
+              maxWidth: 250,
               overflow: "hidden",
             }}
           />

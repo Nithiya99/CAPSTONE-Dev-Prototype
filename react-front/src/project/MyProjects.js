@@ -107,7 +107,7 @@ class MyProjects extends Component {
                                     projectLeader={project.leader}
                                   />
                                 ) : (
-                                  <></>
+                                  <div> </div>
                                 )}
                               </div>
                             ) : (
@@ -181,7 +181,7 @@ class MyProjects extends Component {
                       {getCurrentUser()._id === project.leader ? (
                         <UserRecommendation project={project} />
                       ) : (
-                        <></>
+                        <div></div>
                       )}
                     </div>
                   </div>
