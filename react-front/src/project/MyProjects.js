@@ -11,7 +11,7 @@ import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import DashboardTwoToneIcon from "@material-ui/icons/DashboardTwoTone";
 import SubmitProject from "./SubmitProject";
 import UserRecommendation from "./UserRecommendation";
-
+import socket from "./../utils/Socket";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -26,6 +26,9 @@ class MyProjects extends Component {
     console.log(project.title);
   }
   render() {
+    socket.emit("getOnlineUsers");
+    socket.on("onlineUsers", (data) => console.log(data));
+    // console.log(this.state.onlineUsers);
     if (
       this.state.myProjects === undefined ||
       this.state.myProjects.length === 0
@@ -98,7 +101,11 @@ class MyProjects extends Component {
 
                                 <DeleteProject projectId={project._id} />
                                 {project.completion_percentage === 100 ? (
-                                  <SubmitProject projectId={project._id} />
+                                  <SubmitProject
+                                    projectId={project._id}
+                                    projectTeam={project.team}
+                                    projectLeader={project.leader}
+                                  />
                                 ) : (
                                   <></>
                                 )}

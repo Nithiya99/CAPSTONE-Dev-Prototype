@@ -4,7 +4,7 @@ import { signin, authenticate } from "../auth/index";
 import "../styles.css";
 import ModalButton from "./../utils/signupbutton/ModalButton";
 import { GoogleLogin } from "react-google-login";
-
+import socket from "./../utils/Socket";
 class Signin extends Component {
   constructor() {
     super();
@@ -48,18 +48,31 @@ class Signin extends Component {
       password,
     };
     // console.log(user);
-    signin(user).then((data) => {
-      if (data.error) {
-        this.setState({ error: data.error, loading: false });
-      } else {
-        // authenticate
-        authenticate(data, () => {
-          this.setState({ redirectToReferer: true });
-        });
-      }
-    });
+    signin(user)
+      .then((data) => {
+        if (data.error) {
+          this.setState({ error: data.error, loading: false });
+        } else {
+          // authenticate
+          authenticate(data, () => {
+            this.setState({ redirectToReferer: true });
+          });
+        }
+      })
+      .then(() => {
+        const userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+        if (userId) {
+          socket.emit("login", {
+            userId,
+          });
+        }
+        // const socket = this.state.socket;
+        // console.log(socket);
+      });
   };
-
+  componentDidMount() {
+    // const socketio = this.props.socket;
+  }
   render() {
     const { email, password, error, redirectToReferer, loading } = this.state;
 
@@ -149,5 +162,4 @@ class Signin extends Component {
     );
   }
 }
-
 export default Signin;

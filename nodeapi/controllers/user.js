@@ -83,3 +83,19 @@ exports.deleteUser = (req, res, next) => {
     res.json({ message: "User deleted successfully!" });
   });
 };
+
+exports.setRating = (req, res) => {
+  let user = req.profile;
+  let rating = req.body.rating;
+  user.ratings.push(rating);
+  let sum = 0;
+  user.ratings.map((rat) => {
+    sum += rat;
+  });
+  sum = sum / (10 * user.ratings.length);
+  user.rating = sum;
+  user.save((err) => {
+    if (err) return res.status(400).json({ err });
+  });
+  return res.status(200).json({ user });
+};

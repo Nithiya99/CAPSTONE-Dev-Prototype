@@ -44,7 +44,9 @@ export const newProject = (project) => {
             console.log(val);
             return val;
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            return { error: err };
+          });
       } else {
         return { error: val.message, similar: val.data };
       }

@@ -70,7 +70,7 @@ exports.createProject = (req, res) => {
   });
   console.log(project.leader._id);
   project.save((err, result) => {
-    if (err) return res.status(400).json({ error: err });
+    if (err) res.status(400).json({ error: err });
     User.findById(project.leader._id).exec(async (err, user) => {
       if (err || !user) return;
       user.projects.push(project._id);

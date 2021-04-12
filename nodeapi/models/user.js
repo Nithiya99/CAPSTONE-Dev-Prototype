@@ -44,9 +44,13 @@ var userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  ratings: [
+    {
+      type: Number,
+    },
+  ],
   rating: {
     type: Number,
-    default: Math.random() * 10,
   },
   updated: Date,
   dob: {

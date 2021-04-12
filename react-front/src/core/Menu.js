@@ -4,8 +4,10 @@ import { signout, isAuthenticated } from "../auth";
 import { clearNotifications } from "../store/notifications";
 import "../styles.css";
 import { Nav } from "react-bootstrap";
-
 import { useDispatch } from "react-redux";
+import { io } from "socket.io-client";
+import { getCurrentUser } from "../user/apiUser";
+import socket from "./../utils/Socket";
 const isActive = (history, path) => {
   if (history.location.pathname === path)
     return { backgroundColor: "rgb(0 123 255)", color: "#fff" };
@@ -82,6 +84,9 @@ const Menu = ({ history }) => {
                 }
                 onClick={() => {
                   dispatch(clearNotifications());
+                  socket.emit("signout", {
+                    userId: getCurrentUser()._id,
+                  });
                   signout(() => history.push("/"));
                 }}
               >

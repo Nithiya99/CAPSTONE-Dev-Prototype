@@ -48,7 +48,7 @@ class UserRecommendation extends Component {
     let users = [];
     const project = this.props.project;
     users = this.state.users;
-    console.log(project);
+    // console.log(project);
     let final_out = [];
     let proj_skills = project.skills;
     users.sort(function (a, b) {

@@ -6,6 +6,7 @@ const {
   getUserInfo,
   updateUser,
   deleteUser,
+  setRating,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const bodyParser = require("body-parser");
@@ -18,7 +19,7 @@ router.get("/user/:userId", requireSignin, getUser);
 router.put("/user/:userId", requireSignin, updateUser);
 router.delete("/user/:userId", requireSignin, deleteUser);
 router.get("/userInfo/:userId", getUserInfo);
-
+router.put("/user/rating/:userId", requireSignin, setRating);
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 
