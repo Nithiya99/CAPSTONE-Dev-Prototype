@@ -11,6 +11,7 @@ import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import DashboardTwoToneIcon from "@material-ui/icons/DashboardTwoTone";
 import SubmitProject from "./SubmitProject";
 import UserRecommendation from "./UserRecommendation";
+import socket from "./../utils/Socket";
 
 class MyProjects extends Component {
   state = {
@@ -39,6 +40,8 @@ class MyProjects extends Component {
     let CompletedProjects = myProjects.userProjects.filter((x) =>
       x.status.includes("Completed")
     );
+    socket.emit("getOnlineUsers");
+    socket.on("onlineUsers", (data) => console.log(data));
     return (
       <div className="mt-5">
         <h2>My Projects</h2>
@@ -98,7 +101,11 @@ class MyProjects extends Component {
 
                                 <DeleteProject projectId={project._id} />
                                 {project.completion_percentage === 100 ? (
-                                  <SubmitProject projectId={project._id} />
+                                  <SubmitProject
+                                    projectId={project._id}
+                                    projectTeam={project.team}
+                                    projectLeader={project.leader}
+                                  />
                                 ) : (
                                   <div> </div>
                                 )}

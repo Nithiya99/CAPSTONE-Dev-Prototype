@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-import { signin, authenticate } from "../auth/index";
+import { signin, authenticate, isAuthenticated } from "../auth/index";
 import "../styles.css";
 import ModalButton from "./../utils/signupbutton/ModalButton";
 import { GoogleLogin } from "react-google-login";
-
+import socket from "./../utils/Socket";
 class Signin extends Component {
   constructor() {
     super();
@@ -16,20 +16,34 @@ class Signin extends Component {
       loading: false,
     };
   }
+  componentDidMount() {
+    localStorage.removeItem("jwt");
+    // browser.cookies.remove({
+    //   name: "t",
+    // });
+    // window.location.reload();
+  }
   loginGoogle = (e) => {
     const user = {
       email: e.profileObj.email.toString(),
       password: e.profileObj.googleId.toString(),
     };
-    signin(user).then((data) => {
-      if (data.error) {
-        this.setState({ error: data.error, loading: false });
-      } else {
-        authenticate(data, () => {
-          this.setState({ redirectToReferer: true });
+    signin(user)
+      .then((data) => {
+        if (data.error) {
+          this.setState({ error: data.error, loading: false });
+        } else {
+          authenticate(data, () => {
+            this.setState({ redirectToReferer: true });
+          });
+        }
+      })
+      .then(() => {
+        const userId = isAuthenticated().user._id;
+        socket.emit("login", {
+          userId,
         });
-      }
-    });
+      });
   };
   loginGoogleFailed = (e) => {
     console.log("Failed event");
@@ -48,16 +62,23 @@ class Signin extends Component {
       password,
     };
     // console.log(user);
-    signin(user).then((data) => {
-      if (data.error) {
-        this.setState({ error: data.error, loading: false });
-      } else {
-        // authenticate
-        authenticate(data, () => {
-          this.setState({ redirectToReferer: true });
+    signin(user)
+      .then((data) => {
+        if (data.error) {
+          this.setState({ error: data.error, loading: false });
+        } else {
+          // authenticate
+          authenticate(data, () => {
+            this.setState({ redirectToReferer: true });
+          });
+        }
+      })
+      .then(() => {
+        const userId = isAuthenticated().user._id;
+        socket.emit("login", {
+          userId,
         });
-      }
-    });
+      });
   };
 
   render() {

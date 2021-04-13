@@ -84,14 +84,37 @@ const sio = require("socket.io")(server, {
   },
 });
 
+let users = {};
 sio.on("connection", (socket) => {
+  console.log("Connected!");
+
   socket.on("getChat", async({project_id,client_chat_length})=>{
     const chats = await getChat(project_id);
     if(client_chat_length !== chats.length)
       sio.emit("chat"+project_id,chats);
   })
+  
   socket.on('message', ({ name, message, project_id }) => {
     console.log("message");
     sio.emit('message'+project_id, { name, message });
   })
+
+  socket.on("login", function (data) {
+    console.log("a user " + data.userId + " connected", socket.id);
+    // saving userId to array with socket ID
+    users[socket.id] = data.userId;
+    console.log(users);
+  });
+
+  socket.on("signout", function (data) {
+    // remove saved socket from users object
+    delete users[socket.id];
+    console.log("onlineUsers:", users);
+  });
+
+  socket.on("getOnlineUsers", () => {
+    sio.sockets.emit("onlineUsers", {
+      users,
+    });
+  });
 });

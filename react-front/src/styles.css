@@ -41,3 +41,7 @@ body {
   min-width: 0;
   width: 100%;
 }
+
+.email-wrap {
+  overflow: auto;
+}
