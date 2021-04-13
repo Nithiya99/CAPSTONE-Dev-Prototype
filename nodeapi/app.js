@@ -81,6 +81,23 @@ const sio = require("socket.io")(server, {
     res.end();
   },
 });
+let users = {};
 sio.on("connection", (socket) => {
   console.log("Connected!");
+  socket.on("login", function (data) {
+    console.log("a user " + data.userId + " connected", socket.id);
+    // saving userId to array with socket ID
+    users[socket.id] = data.userId;
+    console.log(users);
+  });
+  socket.on("signout", function (data) {
+    // remove saved socket from users object
+    delete users[socket.id];
+    console.log("onlineUsers:", users);
+  });
+  socket.on("getOnlineUsers", () => {
+    sio.sockets.emit("onlineUsers", {
+      users,
+    });
+  });
 });
