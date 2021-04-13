@@ -15,6 +15,7 @@ const {
   leaveProject,
   getTeam,
   submitProject,
+  updateChat,
   checkIfProjectExists,
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
@@ -33,6 +34,7 @@ router.post(
   createProject
 );
 router.put("/project/edit/:userId/:projectId", requireSignin, updateProject);
+router.put("/project/chat/:projectId",requireSignin, updateChat);
 router.put("/project/leave/:userId/:projectId", requireSignin, leaveProject);
 router.put("/project/request/:userId/:projectId", requireSignin, requestRole);
 router.get("/roles/:projectId", requireSignin, getRoles);

@@ -9,7 +9,9 @@ import AccountTreeTwoToneIcon from "@material-ui/icons/AccountTreeTwoTone";
 import TuneTwoToneIcon from "@material-ui/icons/TuneTwoTone";
 import PlaylistAddTwoToneIcon from "@material-ui/icons/PlaylistAddTwoTone";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
+import ChatIcon from '@material-ui/icons/Chat';
 import { getCurrentUser } from "../user/apiUser";
+import Chat from "./Chat";
 
 class ProjectDashboard extends Component {
   render() {
@@ -17,7 +19,6 @@ class ProjectDashboard extends Component {
       return null;
     }
     const { project } = this.props.location.state;
-    // console.log(project);
     // console.log(this.props.location);
     return (
       <div>
@@ -148,6 +149,16 @@ class ProjectDashboard extends Component {
                         </div>
                       </Nav.Link>
                     </Nav.Item>
+                    <Nav.Item>
+                      <Nav.Link eventKey="Chat">
+                        <div className="d-flex align-items-center">
+                          <div className="mr-3">
+                            <ChatIcon />
+                          </div>
+                          <div>Group Chat</div>
+                        </div>
+                      </Nav.Link>
+                    </Nav.Item>
                   </Nav>
                 </div>
               </div>
@@ -218,6 +229,23 @@ class ProjectDashboard extends Component {
                     </div>
                     <div className="card-body">
                       <AddTask projectId={project._id} />
+                    </div>
+                  </div>
+                </Tab.Pane>
+                <Tab.Pane eventKey="Chat">
+                  <div className="card card-stretch">
+                    <div className="card-header">
+                      <div className="card-title align-items-start flex-column">
+                        <h4 className="card-label font-weight-bolder text-dark">
+                          Group Chat
+                        </h4>
+                        <span className="text-muted font-weight-bold font-size-sm mt-1">
+                          Interact with your Project-mates.
+                        </span>
+                      </div>
+                    </div>
+                    <div className="card-body">
+                      <Chat projectId={project._id} status = {project.status}/>
                     </div>
                   </div>
                 </Tab.Pane>

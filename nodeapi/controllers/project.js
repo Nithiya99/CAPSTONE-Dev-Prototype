@@ -386,18 +386,42 @@ exports.submitProject = (req, res) => {
   let team = project.team;
   project.status = "Completed";
   project.save();
-  team.map((user_id) => {
-    User.findById(user_id).exec((err, user) => {
-      if (err || !user) return;
-      else {
-        user.completed_projects.push(project._id);
-        let index = user.projects.indexOf(project._id);
-        if (index > -1) {
-          user.projects.splice(index, 1);
+  try{
+    team.map((user_id) => {
+      User.findById(user_id).exec((err, user) => {
+        if (err || !user) return;
+        else {
+          user.completed_projects.push(project._id);
+          let index = user.projects.indexOf(project._id);
+          if (index > -1) {
+            user.projects.splice(index, 1);
+          }
+          updateUserCompletion(user);
         }
-        updateUserCompletion(user);
-      }
+      });
     });
-  });
-  return res.status(200).json({ message: "Project Completed!" });
+    return res.status(200).json({ message: "Project Completed!" });
+  }catch(err){
+    if(err !== undefined)
+      return res.status(400).json({ err: err.toString() });
+  }
 };
+
+exports.getChat = async(id) => {
+  const { chat } = await Project.findById(id).exec();
+  return chat;
+}
+
+exports.updateChat = (req,res) => {
+  let project = req.projectObject;
+  let chat_msg = req.body;
+  project.chat.push(chat_msg.chat);
+  // console.log(project);
+  try {
+    project.save();
+    res.status(200).json({ message: "Chat Updated" });
+  } catch (err) {
+    if(err!== undefined)
+      return res.status(400).json({ err: err.toString() });
+  }
+}

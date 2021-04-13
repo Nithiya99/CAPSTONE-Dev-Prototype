@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { updateProject } from "./apiProject";
+import { updateProject, leaveProject } from "./apiProject";
 import { Button } from "react-bootstrap";
+import { isAuthenticated } from "./../auth/index";
 import { getCurrentUser } from "./../user/apiUser";
 
 class LeaveProject extends Component {
@@ -45,6 +46,12 @@ class LeaveProject extends Component {
       if (data.error) {
         console.log(data.error);
       } else {
+        const token = isAuthenticated().token;
+        leaveProject(getCurrentUser()._id,project._id,token).then((data) => {
+          if (data.error) {
+            console.log(data.error);
+          }
+        });
         alert("You left this project");
         window.location.reload(false);
       }
