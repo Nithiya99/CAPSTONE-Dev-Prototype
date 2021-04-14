@@ -5,7 +5,7 @@ import { getCurrentUser } from "./../user/apiUser";
 import { updateChat } from "./apiProject";
 import { Row,Col} from "react-bootstrap";
 import SendIcon from '@material-ui/icons/Send';
-import "./Chat.css";
+// import "./Chat.css";
 
 var options = {
     rememberUpgrade: true,
