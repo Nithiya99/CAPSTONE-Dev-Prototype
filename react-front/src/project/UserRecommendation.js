@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { list } from "./../user/apiUser";
+import { Accordion, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 const similarity = require("sentence-similarity");
 const similarityScore = require("similarity-score");
@@ -23,25 +24,38 @@ class UserRecommendation extends Component {
   }
 
   renderUsers = (final_out) => (
-    <div className="row row-cols-1 row-cols-md-2">
-      {final_out.map((user, i) => (
-        <div className="col mb-4">
-          <div className="card bg-info mb-4" key={i}>
-            <div className="card-body">
-              <h5 className="card-title">{user.name}</h5>
-              <p className="card-text">{user.email}</p>
-              <p className="card-text">{user.bio}</p>
-              <Link
-                to={`/user/${user._id}`}
-                className="btn btn-raised btn-small btn-primary"
-              >
-                View Profile
-              </Link>
+    <Accordion>
+      <Card>
+        <Card.Header>
+          <Accordion.Toggle as={Button} variant="link" eventKey="0">
+            Recommended Users
+          </Accordion.Toggle>
+        </Card.Header>
+        <Accordion.Collapse eventKey="0">
+          <Card.Body>
+            <div className="row row-cols-1 row-cols-md-2">
+              {final_out.map((user, i) => (
+                <div className="col">
+                  <div className="card bg-info mb-3" key={i}>
+                    <div className="card-body">
+                      <h5 className="card-title">{user.name}</h5>
+                      <p className="card-text">{user.email}</p>
+                      <p className="card-text">{user.bio}</p>
+                      <Link
+                        to={`/user/${user._id}`}
+                        className="btn btn-raised btn-small btn-primary"
+                      >
+                        View Profile
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      ))}
-    </div>
+          </Card.Body>
+        </Accordion.Collapse>
+      </Card>
+    </Accordion>
   );
 
   render() {
@@ -91,14 +105,7 @@ class UserRecommendation extends Component {
     final_out = final_out.slice(0, 5);
     return (
       <div className="container">
-        {final_out.length === 0 ? (
-          <></>
-        ) : (
-          <>
-            <h5 className="mt-3 mb-3"> Recommended Users</h5>
-            {this.renderUsers(final_out)}
-          </>
-        )}
+        {final_out.length === 0 ? <></> : <>{this.renderUsers(final_out)}</>}
       </div>
     );
   }

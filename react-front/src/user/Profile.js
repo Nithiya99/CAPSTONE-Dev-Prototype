@@ -77,15 +77,18 @@ class Profile extends Component {
                         {user.name}
                       </h5>
                       <div className="text-muted">@{user.username}</div>
-                      <div className="mt-2">
-                        <Link
-                          className="btn btn-sm btn-primary mr-2 py-2 px-3 px-xxl-5 my-1"
-                          to={`/user/edit/${user._id}`}
-                        >
-                          Edit Profile
-                        </Link>
-                        <DeleteUser userId={user._id} />
-                      </div>
+                      {isAuthenticated().user &&
+                        isAuthenticated().user._id === user._id && (
+                          <div className="mt-2">
+                            <Link
+                              className="btn btn-sm btn-primary mr-2 py-2 px-3 px-xxl-5 my-1"
+                              to={`/user/edit/${user._id}`}
+                            >
+                              Edit Profile
+                            </Link>
+                            <DeleteUser userId={user._id} />
+                          </div>
+                        )}
                     </div>
                   </div>
                   <div className=" pt-3">

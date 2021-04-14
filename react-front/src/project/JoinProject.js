@@ -28,80 +28,84 @@ class JoinProject extends Component {
     return (
       <div className="mt-5">
         <h2>Join Projects</h2>
-        {projects.map((project, i) => (
-          <div className="card mt-4 mb-4">
-            <div className="card-header">
-              <h5>
-                <strong>{project.title}</strong>
-              </h5>
-            </div>
-            <div className="card-body">
-              <h6 className="card-title">
-                <strong>Project Description: </strong>
-                {project.description}
-              </h6>
-              <p className="card-text">
-                <strong>Skills required: </strong>
-                {project.skills}
-              </p>
-              <table className="table">
-                <thead>
-                  <tr key={"title"}>
-                    <th key={"rolename"}>Role Name</th>
-                    <th key={"skills"}>Skills Required</th>
-                    <th key={"status"}>Status</th>
-                  </tr>
-                  {project.roles.map((role) => (
-                    <tr key={role._id.toString()}>
-                      <td key={role._id.toString() + role.roleName.toString()}>
-                        {role.roleName}
-                      </td>
-                      <td
-                        key={role._id.toString() + role.roleSkills.toString()}
-                      >
-                        {role.roleSkills + ","}
-                      </td>
-                      <td>
-                        {role.assignedTo !== undefined ? (
-                          <Badge pill variant="warning">
-                            Position Full
-                          </Badge>
-                        ) : (
-                          <button
-                            className="btn btn-outline-primary"
-                            onClick={() => {
-                              getCurrentUser()._id === project.leader
-                                ? alert("Leaders cant request bruh!")
-                                : request(
-                                    getCurrentUser()._id,
-                                    project._id,
-                                    role._id
-                                  ).then((val) => {
-                                    if (!val.err) {
-                                      this.props.notificationAdded({
-                                        userId: project.leader,
-                                        message: `${
-                                          role.roleName
-                                        } requested by ${
-                                          getCurrentUser().name
-                                        }!`,
-                                        type: "RequestForRole",
-                                      });
-                                    }
-                                  });
-                            }}
-                          >
-                            Request
-                          </button>
-                        )}
-                      </td>
+        <div className="container">
+          {projects.map((project, i) => (
+            <div className="card mt-4 mb-4">
+              <div className="card-header">
+                <h5>
+                  <strong>{project.title}</strong>
+                </h5>
+              </div>
+              <div className="card-body">
+                <h6 className="card-title">
+                  <strong>Project Description: </strong>
+                  {project.description}
+                </h6>
+                <p className="card-text">
+                  <strong>Skills required: </strong>
+                  {project.skills}
+                </p>
+                <table className="table">
+                  <thead>
+                    <tr key={"title"}>
+                      <th key={"rolename"}>Role Name</th>
+                      <th key={"skills"}>Skills Required</th>
+                      <th key={"status"}>Status</th>
                     </tr>
-                  ))}
-                </thead>
-              </table>
+                    {project.roles.map((role) => (
+                      <tr key={role._id.toString()}>
+                        <td
+                          key={role._id.toString() + role.roleName.toString()}
+                        >
+                          {role.roleName}
+                        </td>
+                        <td
+                          key={role._id.toString() + role.roleSkills.toString()}
+                        >
+                          {role.roleSkills + ","}
+                        </td>
+                        <td>
+                          {role.assignedTo !== undefined ? (
+                            <Badge pill variant="warning">
+                              Position Full
+                            </Badge>
+                          ) : (
+                            <button
+                              className="btn btn-outline-primary"
+                              onClick={() => {
+                                getCurrentUser()._id === project.leader
+                                  ? alert("Leaders cant request bruh!")
+                                  : request(
+                                      getCurrentUser()._id,
+                                      project._id,
+                                      role._id
+                                    ).then((val) => {
+                                      if (!val.err) {
+                                        this.props.notificationAdded({
+                                          userId: project.leader,
+                                          message: `${
+                                            role.roleName
+                                          } requested by ${
+                                            getCurrentUser().name
+                                          }!`,
+                                          type: "RequestForRole",
+                                        });
+                                      }
+                                    });
+                              }}
+                            >
+                              Request
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </thead>
+                </table>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
   }

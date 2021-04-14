@@ -22,32 +22,42 @@ class Users extends Component {
   }
 
   renderUsers = (users) => (
-    <div className="row row-cols-1 row-cols-md-3">
+    <div className="row row-cols-1 row-cols-md-4">
       {users.map((user, i) => (
-        <div className="card mb-4" key={i}>
-          <img
-            className="card-img-top mx-auto"
-            src={DefaultProfile}
-            alt={user.name}
-            style={{ width: "15vh" }}
-          />
-          <div className="card-body">
-            <h5 className="card-title">{user.name}</h5>
-            <p className="card-text">{user.email}</p>
-            <p className="card-text">{user.username}</p>
-            <p className="card-text">{user.bio}</p>
-            <Link
-              to={`/user/${user._id}`}
-              className="btn btn-raised btn-small btn-primary"
-            >
-              View Profile
-            </Link>
-            <Link to="#" className="btn btn-outline-primary">
-              Message
-            </Link>
-            <Link to="#" className="btn btn-outline-success">
-              Follow
-            </Link>
+        <div className="col mb-4" key={i}>
+          <div className="card card-custom card-stretch">
+            <div className="card-body pt-4">
+              <div className="d-flex align-items-center">
+                <img
+                  src={DefaultProfile}
+                  alt={user.name}
+                  className="symbol symbol-60 symbol-xxl-100 mr-3 align-self-start align-self-xxl-center"
+                  style={{ width: "55px" }}
+                />
+                <div>
+                  <h5 className="font-weight-bolder text-dark-75 text-hover-primary">
+                    {user.name}
+                  </h5>
+                  <div className="text-muted pb-3">@{user.username}</div>
+                  <Link
+                    to={`/user/${user._id}`}
+                    className="btn btn-raised btn-small btn-primary"
+                  >
+                    View Profile
+                  </Link>
+                </div>
+              </div>
+              <div className="pt-3">
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <Link to="#" className="btn btn-outline-primary">
+                    Message
+                  </Link>
+                  <Link to="#" className="btn btn-outline-success">
+                    Follow
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ))}
