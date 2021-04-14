@@ -492,3 +492,26 @@ export const deleteTask = (taskId, projectId) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const updateChat = (chat, projectId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let Obj = {
+    chat: chat,
+  };
+  return fetch(
+    "http://localhost:8081/project/chat/" +
+      projectId.toString(),
+    {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(Obj),
+    }
+  )
+  .then((response) => {
+    return response.json();
+  })
+  .catch((err) => console.log(err));
+};

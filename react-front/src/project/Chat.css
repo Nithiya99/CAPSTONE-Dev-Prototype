@@ -1,0 +1,33 @@
+.card {
+  box-sizing: border-box;
+}
+
+form {
+  max-width: 500px;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0px 3px 24px -8px rgba(0, 0, 0, 0.75);
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px;
+  background: transparent;
+  border-radius: 5px;
+}
+
+.render-chat {
+  /* max-width: 200 px; */
+  width: 75%;
+  border-radius: 5px;
+  padding: 50px;
+  box-shadow: 0px 3px 24px -8px rgba(0, 0, 0, 0.75);
+}
+
+h4 {
+  color: #2f72da;
+}
+
+span {
+  color: black;
+}

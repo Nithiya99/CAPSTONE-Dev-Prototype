@@ -64,7 +64,7 @@ exports.updatePredecessors = (req, res) => {
       if (task.predecessors === undefined) {
         task["predecessors"] = [];
       }
-      console.log(task);
+      // console.log(task);
       if (!task.predecessors.includes(connectId));
       {
         try {
@@ -80,7 +80,7 @@ exports.updatePredecessors = (req, res) => {
       });
       return res.status(200).json({ task });
     }
-    console.log(task);
+    // console.log(task);
   });
   // }
   if (sent === false) {
@@ -153,13 +153,11 @@ const sumItUp = async (project, sum) => {
   // console.log(project);
   const { completion_percentage } = await Project.findById(project).exec();
   sum += completion_percentage;
-  console.log(
-    `completion_percentage is ${completion_percentage}, updated sum is ${sum}`
-  );
+  // console.log(`completion_percentage is ${completion_percentage}, updated sum is ${sum}`);
   return sum;
 };
 const updateUserCompletion = async (user) => {
-  console.log(user);
+  // console.log(user);
   let sum = 0;
   for (var i = 0; i < user.projects.length; i++) {
     sum = await sumItUp(user.projects[i], sum);
@@ -196,7 +194,7 @@ async function proj_completion(project) {
   // console.log(request.body);
 
   project.completion_percentage = comp_percentage * 100;
-  console.log("completion percentage:", project.completion_percentage);
+  // console.log("completion percentage:", project.completion_percentage);
   project.save();
 }
 
@@ -246,7 +244,7 @@ exports.deleteTasks = (req, res) => {
   });
   let cons = project.connections;
   let newcons = [];
-  console.log(cons);
+  // console.log(cons);
   cons.forEach((con) => {
     if (
       con.from.toString() !== id.toString() &&
@@ -254,7 +252,7 @@ exports.deleteTasks = (req, res) => {
     )
       newcons.push(con);
   });
-  console.log(newcons);
+  // console.log(newcons);
   project.connections = newcons;
   // project.save();
   proj_completion(project);

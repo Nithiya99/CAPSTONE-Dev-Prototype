@@ -83,3 +83,27 @@ exports.deleteUser = (req, res, next) => {
     res.json({ message: "User deleted successfully!" });
   });
 };
+exports.setRating = (req, res) => {
+  let user = req.profile;
+  let rating = req.body.rating;
+  console.log("Before:");
+  console.log(user.ratings, user.rating, rating);
+  console.log("On Process:");
+  Object.keys(rating).map((key) => {
+    User.findById(key, (err, userObj) => {
+      // console.log(userObj.ratings, userObj.rating);
+      userObj.ratings.push(rating[key]);
+      let sum = 0;
+      userObj.ratings.map((rat) => {
+        sum += rat;
+      });
+      userObj.rating = sum / userObj.ratings.length;
+      console.log(`after(${userObj.name}):`);
+      console.log(userObj.ratings, userObj.rating);
+      userObj.save((err) => {
+        if (err) res.status(400).json({ err });
+      });
+    });
+  });
+  return res.status(200).json({ message: "Updated Ratings" });
+};

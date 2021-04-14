@@ -3,11 +3,13 @@ import { listmytasks } from "../apiProject";
 import { getCurrentUser } from "./../../user/apiUser";
 import { updateTask } from "./../apiProject";
 import Board from "react-trello";
+import { deleteTask } from "../apiProject";
 
 let data = {};
 let projleader = "";
 let tasks = [];
 let flag = false;
+let projectId = "";
 
 const handleDragStart = (cardId, laneId) => {
   console.log("drag started");
@@ -45,6 +47,20 @@ const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
   }
 };
 
+const onCardDelete = (cardId, laneId) =>{
+  if(projleader === getCurrentUser()._id)
+  {
+    let response = window.confirm("Are you Sure?");
+    if (response) {
+      deleteTask(cardId, projectId).then((data) => {
+        console.log(data);
+      });
+    }
+  }
+  else
+    alert("You are not allowed to delete tasks.. Your action will be reverted..");
+}
+
 class TrelloTask extends Component {
   state = {
     mytasks: [],
@@ -57,6 +73,8 @@ class TrelloTask extends Component {
   };
 
   async componentDidMount() {
+
+    projectId = this.props.projectId;
     if (this.props.status === "Completed") {
       this.setState({
         editable: false,
@@ -176,13 +194,12 @@ class TrelloTask extends Component {
     });
     tasks = cards;
     cards.forEach((card) => {
-      updateTask(card, this.props.projectId).then((data) => console.log(data));
+      updateTask(card, this.props.projectId);
     });
     this.setState({ mytasks: cards });
   };
 
   render() {
-    console.log(this.state.editable , this.state.isleader,)
     flag = false;
     return (
       <div>
@@ -198,6 +215,7 @@ class TrelloTask extends Component {
             eventBusHandle={this.setEventBus}
             handleDragStart={handleDragStart}
             handleDragEnd={handleDragEnd}
+            onCardDelete={onCardDelete}
             style={{
               backgroundColor: "#eee",
             }}
