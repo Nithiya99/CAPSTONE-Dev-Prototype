@@ -30,21 +30,32 @@ var projectSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
-  chat:[
+  feedback: [
+    {
+      projectId: { type: ObjectId, ref: "Project" },
+      team: [
+        {
+          type: ObjectId,
+          ref: "User",
+        },
+      ],
+    },
+  ],
+  chat: [
     {
       name: {
-        type:String,
+        type: String,
         required: true,
       },
-      message:{
-        type:String,
+      message: {
+        type: String,
         required: true,
       },
       created: {
         type: Date,
         default: Date.now,
       },
-    }
+    },
   ],
   roles: [
     {

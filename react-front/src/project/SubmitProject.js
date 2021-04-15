@@ -35,30 +35,25 @@ class SubmitProject extends Component {
     const userId = isAuthenticated().user._id;
     const { rating } = this.state;
     const { projectId, projectTeam } = this.props;
+    socket.emit("addFeedbackForm", { rating, projectId });
     // socket.emit("getOnlineUsers");
-    // socket.on("onlineUsers", (data) => {
-    //   console.log("Online Users:", Object.values(data.users));
-    //   const arrUsers = Object.values(data.users);
-    //   console.log("team:", projectTeam);
-
-    //   projectTeam.map((member) => {
-    //     if (arrUsers.includes(member)) {
-    //       console.log("Member " + member + " Is ONLINE!");
-    //     }
+    // socket.on("onlineUsers", (users) => {
+    //   Object.values(users.users).map((user) => {
+    //     console.log(user);
     //   });
-    // });=
-    setRating(userId, rating).then((data) => {
-      if (data.message === "Updated Ratings") {
-        finish(projectId, token).then((data) => {
-          if (data.error) {
-            console.log(data.error);
-          } else {
-            alert("Project marked as completed :) ");
-            window.location.reload();
-          }
-        });
-      }
-    });
+    // });
+    // setRating(userId, rating).then((data) => {
+    //   if (data.message === "Updated Ratings") {
+    //     // finish(projectId, token).then((data) => {
+    //     //   if (data.error) {
+    //     //     console.log(data.error);
+    //     //   } else {
+    //     //     alert("Project marked as completed :) ");
+    //     //     window.location.reload();
+    //     //   }
+    //     // });
+    //   }
+    // });
   };
   setRatingObject = (rating) => {
     this.setState({ rating });
@@ -83,13 +78,7 @@ class SubmitProject extends Component {
     const { show, team } = this.state;
     // console.log(team);
     if (team === undefined) return null;
-    if (team.length === 1) {
-      return (
-        <>
-          <h1>YOU'VE ONE MAN ARMIED THIS. RESPECT! :O </h1>
-        </>
-      );
-    }
+
     return (
       <>
         {show ? (
@@ -105,21 +94,36 @@ class SubmitProject extends Component {
               </Modal.Title>
             </Modal.Header>
             <Modal.Body scrollable="true">
-              <RatingComponent
-                team={team}
-                rating={this.state.rating}
-                // handleValueChange={this.handleValueChange}
-              />
-              <Button
-                onClick={() => {
-                  const { rating } = this.state;
-                  // console.log(rating);
-                  this.submitproject();
-                  this.setState({ show: false });
-                }}
-              >
-                Submit
-              </Button>
+              {team.length === 1 ? (
+                <>
+                  <h1>Oh wait. You've one man armied this? RESPECT! :O </h1>
+                  <Button
+                    onClick={() => {
+                      this.submitproject();
+                    }}
+                  >
+                    Continue...
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <RatingComponent
+                    team={team}
+                    rating={this.state.rating}
+                    // handleValueChange={this.handleValueChange}
+                  />
+                  <Button
+                    onClick={() => {
+                      const { rating } = this.state;
+                      // console.log(rating);
+                      this.submitproject();
+                      this.setState({ show: false });
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </>
+              )}
             </Modal.Body>
           </Modal>
         ) : (

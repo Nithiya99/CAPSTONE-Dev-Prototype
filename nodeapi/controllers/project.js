@@ -2,6 +2,7 @@ const { isBuffer } = require("lodash");
 const Project = require("../models/project");
 const User = require("../models/user");
 const similarity = require("string-cosine-similarity");
+const { addNotification } = require("./notifications");
 
 const sumItUp = async (project, sum) => {
   // console.log(project);
@@ -386,7 +387,7 @@ exports.submitProject = (req, res) => {
   let team = project.team;
   project.status = "Completed";
   project.save();
-  try{
+  try {
     team.map((user_id) => {
       User.findById(user_id).exec((err, user) => {
         if (err || !user) return;
@@ -401,18 +402,17 @@ exports.submitProject = (req, res) => {
       });
     });
     return res.status(200).json({ message: "Project Completed!" });
-  }catch(err){
-    if(err !== undefined)
-      return res.status(400).json({ err: err.toString() });
+  } catch (err) {
+    if (err !== undefined) return res.status(400).json({ err: err.toString() });
   }
 };
 
-exports.getChat = async(id) => {
+exports.getChat = async (id) => {
   const { chat } = await Project.findById(id).exec();
   return chat;
-}
+};
 
-exports.updateChat = (req,res) => {
+exports.updateChat = (req, res) => {
   let project = req.projectObject;
   let chat_msg = req.body;
   project.chat.push(chat_msg.chat);
@@ -421,7 +421,25 @@ exports.updateChat = (req,res) => {
     project.save();
     res.status(200).json({ message: "Chat Updated" });
   } catch (err) {
-    if(err!== undefined)
-      return res.status(400).json({ err: err.toString() });
+    if (err !== undefined) return res.status(400).json({ err: err.toString() });
   }
-}
+};
+
+exports.addFeedbackNotification = async (rating, projectId) => {
+  let projectName = await Project.findById(projectId).select("title").exec();
+  console.log(projectName);
+  Object.keys(rating).map((userId) => {
+    User.findById(userId, (err, result) => {
+      let req = {
+        profile: result,
+        body: {
+          notification: `Congooo! ${projectName.title} is DONE! send some feedback to your team !`,
+          type: "FeedbackForm",
+          projectId,
+        },
+      };
+      console.log(req);
+      addNotification(req, {});
+    });
+  });
+};

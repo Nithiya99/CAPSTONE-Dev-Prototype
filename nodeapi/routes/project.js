@@ -34,7 +34,7 @@ router.post(
   createProject
 );
 router.put("/project/edit/:userId/:projectId", requireSignin, updateProject);
-router.put("/project/chat/:projectId",requireSignin, updateChat);
+router.put("/project/chat/:projectId", requireSignin, updateChat);
 router.put("/project/leave/:userId/:projectId", requireSignin, leaveProject);
 router.put("/project/request/:userId/:projectId", requireSignin, requestRole);
 router.get("/roles/:projectId", requireSignin, getRoles);
@@ -47,6 +47,7 @@ router.put(
   declineRequest
 );
 router.post("/project/check", requireSignin, checkIfProjectExists);
+// router.put("/project/addFeedbackNotification/:userId",requireSignin,)
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 router.param("projectId", projectById);

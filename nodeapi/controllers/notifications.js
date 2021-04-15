@@ -4,13 +4,18 @@ exports.addNotification = (req, res) => {
     message: req.body.notification,
     read: false,
     notifType: req.body.type ? req.body.type : "request",
+    projectId: req.body.projectId ? req.body.projectId : "none",
   });
   user.newNotification = true;
   user.save((err) => {
     if (err)
-      return res.status(400).json({ error: "Notification cannot be added" });
+      return res.status !== undefined
+        ? res.status(400).json({ error: "Notification cannot be added" })
+        : console.log("Notification not added");
   });
-  return res.status(200).json({ user });
+  return res.status !== undefined
+    ? res.status(200).json({ user })
+    : console.log("Notification added");
 };
 
 exports.getNotifications = (req, res) => {

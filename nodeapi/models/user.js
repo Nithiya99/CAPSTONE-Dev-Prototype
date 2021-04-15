@@ -82,6 +82,10 @@ var userSchema = new mongoose.Schema({
       notifType: {
         type: String,
       },
+      projectId: {
+        type: ObjectId,
+        ref: "Project",
+      },
     },
   ],
   social: {
