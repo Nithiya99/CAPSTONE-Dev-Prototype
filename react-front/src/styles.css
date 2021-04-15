@@ -45,3 +45,44 @@ body {
 .email-wrap {
   overflow: auto;
 }
+
+.render-chat {
+  height: 60vh;
+  overflow: auto;
+}
+
+.bubble {
+  box-sizing: border-box;
+  float: left;
+  width: auto;
+  max-width: 80%;
+  min-width: 10%;
+  position: relative;
+  clear: both;
+  background: #ff8383;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  color: rgb(29, 26, 26);
+  word-wrap: break-word;
+}
+
+.bubble-alt {
+  box-sizing: border-box;
+  float: left;
+  width: auto;
+  max-width: 80%;
+  min-width: 10%;
+  position: relative;
+  clear: both;
+  background: #a1ff67;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  color: rgb(29, 26, 26);
+  word-wrap: break-word;
+}

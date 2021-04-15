@@ -9,7 +9,7 @@ import AccountTreeTwoToneIcon from "@material-ui/icons/AccountTreeTwoTone";
 import TuneTwoToneIcon from "@material-ui/icons/TuneTwoTone";
 import PlaylistAddTwoToneIcon from "@material-ui/icons/PlaylistAddTwoTone";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
-import ChatIcon from '@material-ui/icons/Chat';
+import ChatIcon from "@material-ui/icons/Chat";
 import { getCurrentUser } from "../user/apiUser";
 import Chat from "./Chat";
 
@@ -250,7 +250,7 @@ class ProjectDashboard extends Component {
                       </div>
                     </div>
                     <div className="card-body">
-                      <Chat projectId={project._id} status = {project.status}/>
+                      <Chat projectId={project._id} status={project.status} />
                     </div>
                   </div>
                 </Tab.Pane>
