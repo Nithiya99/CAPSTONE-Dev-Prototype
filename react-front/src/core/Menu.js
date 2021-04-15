@@ -79,6 +79,22 @@ const Menu = ({ history }) => {
             </div>
           </Nav.Item>
           <Nav.Item>
+            <div
+              style={isActive(history, `/notifs/${isAuthenticated().user._id}`)}
+              className="p-3"
+            >
+              <Link
+                style={isActive(
+                  history,
+                  `/notifs/${isAuthenticated().user._id}`
+                )}
+                to={`/notifs/${isAuthenticated().user._id}`}
+              >
+                Notifications
+              </Link>
+            </div>
+          </Nav.Item>
+          <Nav.Item>
             <div className="p-3">
               <span
                 style={

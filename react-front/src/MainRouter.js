@@ -13,6 +13,7 @@ import MyProjects from "./project/MyProjects";
 import ProjectDashboard from "./project/ProjectDashboard";
 import EditProject from "./project/EditProject";
 import { useDispatch } from "react-redux";
+import Notifications from "./core/Notifications";
 
 const MainRouter = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const MainRouter = () => {
                 path="/myprojects/edit/:projectId"
                 component={EditProject}
               ></Route>
+              <Route path="/notifs/:userId" component={Notifications}></Route>
               <Route path="/user/edit/:userId" component={EditProfile}></Route>
               <Route path="/user/:userId" component={Profile}></Route>
             </Switch>
