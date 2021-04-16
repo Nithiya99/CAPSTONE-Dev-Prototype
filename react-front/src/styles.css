@@ -56,10 +56,9 @@ body {
   float: left;
   width: auto;
   max-width: 80%;
-  min-width: 10%;
   position: relative;
   clear: both;
-  background: #ff8383;
+  background: #82cff4;
   -webkit-border-radius: 20px;
   -moz-border-radius: 20px;
   border-radius: 20px;
@@ -74,10 +73,9 @@ body {
   float: left;
   width: auto;
   max-width: 80%;
-  min-width: 10%;
   position: relative;
   clear: both;
-  background: #a1ff67;
+  background: #a4ffe8;
   -webkit-border-radius: 20px;
   -moz-border-radius: 20px;
   border-radius: 20px;
