@@ -498,20 +498,29 @@ export const updateChat = (chat, projectId) => {
   let Obj = {
     chat: chat,
   };
-  return fetch(
-    "http://localhost:8081/project/chat/" +
-      projectId.toString(),
-    {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(Obj),
-    }
-  )
-  .then((response) => {
-    return response.json();
+  return fetch("http://localhost:8081/project/chat/" + projectId.toString(), {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(Obj),
   })
-  .catch((err) => console.log(err));
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const getProject = (id) => {
+  return fetch(`http://localhost:8081/project/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
 };

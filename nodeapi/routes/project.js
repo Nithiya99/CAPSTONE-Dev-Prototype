@@ -17,6 +17,7 @@ const {
   submitProject,
   updateChat,
   checkIfProjectExists,
+  getProject,
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -24,6 +25,7 @@ const { createProjectValidator } = require("../validator");
 const router = express.Router();
 
 router.get("/projects", allProjects);
+router.get("/project/:projectId", getProject);
 router.get("/projects/user/:userId", requireSignin, getProjectsOfUser);
 router.delete("/project/delete/:projectId", requireSignin, deleteProject);
 router.put("/project/finish/:projectId", requireSignin, submitProject);

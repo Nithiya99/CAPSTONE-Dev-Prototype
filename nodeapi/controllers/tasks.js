@@ -152,7 +152,7 @@ exports.putPosition = (req, res) => {
 const sumItUp = async (project, sum) => {
   // console.log(project);
   const { completion_percentage } = await Project.findById(project).exec();
-  sum += completion_percentage;
+  if (typeof completion_percentage === Number) sum += completion_percentage;
   // console.log(`completion_percentage is ${completion_percentage}, updated sum is ${sum}`);
   return sum;
 };

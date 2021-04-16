@@ -30,6 +30,7 @@ class Signin extends Component {
     };
     signin(user)
       .then((data) => {
+        console.log("HI FROM MAIN ROUTE");
         if (data.error) {
           this.setState({ error: data.error, loading: false });
         } else {
@@ -64,6 +65,7 @@ class Signin extends Component {
     // console.log(user);
     signin(user)
       .then((data) => {
+        console.log("HI FROM MAIN ROUTE");
         if (data.error) {
           this.setState({ error: data.error, loading: false });
         } else {

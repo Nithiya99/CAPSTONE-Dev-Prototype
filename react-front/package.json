@@ -13,6 +13,7 @@
     "bootstrap": "^4.6.0",
     "emoji-slider": "^0.2.0",
     "js-pert": "^2.0.1",
+    "lodash": "^4.17.21",
     "material-ui": "^0.20.2",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",

@@ -96,7 +96,7 @@ class ProjectRecommendation extends Component {
     });
     // final_out = final_out.filter(x => x.exact !=0);
     final_out = final_out.slice(0, 5);
-    console.log(final_out);
+    // console.log(final_out);
 
     return (
       <div className="container">

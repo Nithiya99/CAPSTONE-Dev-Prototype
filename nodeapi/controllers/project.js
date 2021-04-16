@@ -166,7 +166,14 @@ exports.projectById = (req, res, next, id) => {
     next();
   });
 };
-
+exports.getProject = (req, res) => {
+  console.log(req.projectObject);
+  if (req.projectObject !== undefined) {
+    return res.status(200).json({ project: req.projectObject });
+  } else {
+    return res.status(400).json({ error: "Project not found" });
+  }
+};
 function userIsPresent(requestBy, userId) {
   for (let i = 0; i < requestBy.length; i++) {
     if (userId.toString() === requestBy[i].toString()) {
