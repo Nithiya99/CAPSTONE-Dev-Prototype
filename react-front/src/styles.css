@@ -57,8 +57,8 @@ body {
   width: auto;
   max-width: 80%;
   position: relative;
-  clear: both;
   background: #82cff4;
+  clear: both;
   -webkit-border-radius: 20px;
   -moz-border-radius: 20px;
   border-radius: 20px;
