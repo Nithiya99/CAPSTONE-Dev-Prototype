@@ -387,7 +387,7 @@ class LayoutComponent extends Component {
             onLoad={this.onLoad}
             style={{
               width: "100%",
-              height: "95vh",
+              height: "65vh",
               backgroundColor: "#1A192B",
             }}
             onNodeDragStop={this.onNodeDragStop}
@@ -417,7 +417,7 @@ class LayoutComponent extends Component {
           >
             Pert
           </Button>
-          <Modal show={this.state.show} onHide={this.handleClose}>
+          {/*<Modal show={this.state.show} onHide={this.handleClose}>
             <Modal.Header closeButton>
               <Modal.Title>Details</Modal.Title>
             </Modal.Header>
@@ -438,12 +438,13 @@ class LayoutComponent extends Component {
                 </center>
               </h5>
               {/* <Pert pert={this.state.pert} /> */}
-              {/* {console.log(this.state.pert)} */}
-            </Modal.Body>
+          {/* {console.log(this.state.pert)} */}
+          {/* </Modal.Body>
             <Modal.Footer>
               <Button onClick={this.handleClose}>Close</Button>
             </Modal.Footer>
-          </Modal>
+          </Modal>*/}{" "}
+          */}
         </div>
       </div>
     );

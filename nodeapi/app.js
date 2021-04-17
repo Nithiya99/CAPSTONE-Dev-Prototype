@@ -98,9 +98,9 @@ sio.on("connection", (socket) => {
       sio.emit("chat" + project_id, chats);
   });
 
-  socket.on("message", ({ name, message, project_id }) => {
+  socket.on("message", ({ name, message, created, project_id }) => {
     console.log("message");
-    sio.emit("message" + project_id, { name, message });
+    sio.emit("message" + project_id, { name, message, created });
   });
 
   socket.on("login", function (data) {

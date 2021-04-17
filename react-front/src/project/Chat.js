@@ -25,6 +25,7 @@ function Chat(props) {
   const [state, setState] = useState({
     message: "",
     name: getCurrentUser().name,
+    created: Date(),
   });
   const [chat, setChat] = useState([]);
   const socketRef = useRef();
@@ -68,10 +69,13 @@ function Chat(props) {
     socketRef.current.on("chat" + project_id, (data) => {
       setChat(data);
     });
-    socketRef.current.on("message" + project_id, ({ name, message }) => {
-      console.log(chat);
-      setChat([...chat, { name, message }]);
-    });
+    socketRef.current.on(
+      "message" + project_id,
+      ({ name, message, created }) => {
+        console.log(chat);
+        setChat([...chat, { name, message, created }]);
+      }
+    );
     return () => socketRef.current.disconnect();
   }, [chat]);
 
@@ -80,10 +84,10 @@ function Chat(props) {
   };
 
   const onMessageSubmit = (e) => {
-    const { name, message } = state;
+    const { name, message, created } = state;
     if (message.trim() !== "") {
-      socketRef.current.emit("message", { name, message, project_id });
-      let chat_msg = { name, message };
+      socketRef.current.emit("message", { name, message, created, project_id });
+      let chat_msg = { name, message, created };
       updateChat(chat_msg, project_id).then((data) => {
         if (data.error) {
           console.log(data.error);
@@ -97,7 +101,7 @@ function Chat(props) {
   };
 
   const renderChat = () => {
-    return chat.map(({ name, message }, index) => (
+    return chat.map(({ name, message, created }, index) => (
       <div>
         {isAuthenticated().user.name === name && (
           <div className="d-flex flex-column m-3 align-items-end " key={index}>
@@ -113,7 +117,7 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">Print time here</span>
+                <span className="text-muted font-size-sm">{created}</span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left bubble-alt">
@@ -138,7 +142,7 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">Print time here</span>
+                <span className="text-muted font-size-sm">{created}</span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left  bubble">
