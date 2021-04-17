@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { addNotification, getNotifications } from "./../apiNotifications";
-
+import { toast } from "react-toastify";
+import { isAuthenticated } from "../auth";
 const slice = createSlice({
   name: "notifications",
   initialState: {
@@ -18,6 +19,17 @@ const slice = createSlice({
         })
         .then((user) => {
           let notifications = user.user.notifications;
+          if (action.payload.userId === isAuthenticated().user._id) {
+            toast.dark(action.payload.message, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          }
           console.log(notifications);
         });
     },

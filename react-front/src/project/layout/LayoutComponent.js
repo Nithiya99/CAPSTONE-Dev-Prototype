@@ -43,16 +43,14 @@ class LayoutComponent extends Component {
     task: {},
     show: false,
     checked: false,
+    bleh: 1,
   };
-
-  // getSource((link)=>{
-  //     this.state.elements.map((elem) => {
-  //       console.log(link.from, elem.key);
-  //     });
-  //   })
   componentDidMount() {
+    // this.setState(({ bleh }) => {
+    //   if (bleh !== 2) return { bleh: bleh + 1 };
+    // });
+    // console.log(this.state.bleh);
     //get DB tasks
-
     getTasks(this.props.project._id)
       .then((data) => {
         if (data.err !== undefined) {
@@ -297,7 +295,7 @@ class LayoutComponent extends Component {
   getIdOfObjectId = (elemId) => {
     let id = {};
     // console.log(Number.isInteger(elemId));
-    this.state.elements.map((elem) => {
+    id = this.state.elements.map((elem) => {
       if (elem.data !== undefined)
         if (elem.data._id.toString() === elemId) {
           // console.log("element number:" + elem.id);
@@ -305,7 +303,7 @@ class LayoutComponent extends Component {
         }
       return id;
     });
-    return id;
+    return id[id.length - 1];
   };
   handleClose = () => {
     this.setState({ show: false });
@@ -321,27 +319,33 @@ class LayoutComponent extends Component {
         predecessors: [],
       },
     };
-    let nodes = this.state.nodes;
+    let nodes = this.state.nodes.map((elem) => ({
+      ...elem,
+    }));
     // console.log();
+    nodes.map((elem) => {
+      if (
+        elem.data.predecessors.length === 0 ||
+        elem.data.predecessors === undefined
+      )
+        return;
+      elem.data.predecessors.map((pre, index) => {
+        let id = this.getIdOfObjectId(pre.toString());
+        let predecessors = [...elem.data.predecessors];
+        predecessors[index] = id.toString();
+        elem.data = { ...elem.data, predecessors };
+        // console.log(elem.data);
+        // console.log(elem.data);
+      });
+    });
+    // console.log(nodes);
     tasksObject = nodes.map((elem) => {
-      // console.log(elem.data);
-      // if (elem.data.predecessors.length === 0 || elem.data.predecessors === undefined) return;
-      if (!this.state.checked) {
-        elem.data.predecessors.map((predecessor, index) => {
-          // console.log(predecessor);
-          // let id = this.getIdOfObjectId(predecessor.toString());
-          // console.log(id);
-          // console.log(elem.data);
-          let id = this.getIdOfObjectId(
-            elem.data.predecessors[index].toString()
-          );
-          // console.log(elem.data.predecessors[index] + " id:" + id);
-          // elem.data.predecessors[index] = id;
-          // this.setState({ checked: true });
-          console.log(elem.data.predecessors, id);
-          // console.log(elem.data.predecessors[index] + " id:" + id);
-        });
-      }
+      if (
+        elem.data.predecessors.length === 0 ||
+        elem.data.predecessors === undefined
+      )
+        return;
+
       tasksObject[elem.id.toString()] = {
         id: elem.id.toString(),
         optimisticTime: elem.data.optimistic,
@@ -349,25 +353,21 @@ class LayoutComponent extends Component {
         pessimisticTime: elem.data.pessimistic,
         predecessors: elem.data.predecessors,
       };
-      // console.log("Element:");
-      // console.log(elem);
-      // console.log(tasksObject);
-      // this.getIdOfObjectId(elem.data._id);
       return tasksObject;
     });
-    let task = tasksObject[tasksObject.length - 1];
-    this.setState({ task });
+    let tasksObjectFinal = tasksObject[tasksObject.length - 1];
+    console.log("TasksObject:");
+    console.log(tasksObjectFinal);
     console.log("Pert:");
-    let pert = jsPERT(tasksObject[tasksObject.length - 1]);
+    let pert = jsPERT(tasksObjectFinal);
     this.setState({ pert });
     console.log(pert);
-    // axios.put("http://localhost:3002/api/pertcalc", pert);
-    // return nodes;
   };
   onElementClick = (event, element) => {
     // console.log(this.state.elements);
     // setSelectedNode(element.data);
     // console.log(element.data);
+    console.log(element);
   };
 
   render() {
@@ -437,7 +437,8 @@ class LayoutComponent extends Component {
                   </strong>
                 </center>
               </h5>
-              <Pert pert={this.state.pert} />
+              {/* <Pert pert={this.state.pert} /> */}
+              {/* {console.log(this.state.pert)} */}
             </Modal.Body>
             <Modal.Footer>
               <Button onClick={this.handleClose}>Close</Button>

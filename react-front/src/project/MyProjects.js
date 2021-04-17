@@ -18,7 +18,8 @@ import DashboardTwoToneIcon from "@material-ui/icons/DashboardTwoTone";
 import SubmitProject from "./SubmitProject";
 import UserRecommendation from "./UserRecommendation";
 import socket from "./../utils/Socket";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -27,6 +28,7 @@ class MyProjects extends Component {
   };
   componentDidMount() {
     listmyprojects().then((data) => this.setState({ myProjects: data }));
+    toast.dark("Loaded");
   }
   renderProject(project) {
     // return <h5>{project.title}</h5>;
@@ -50,6 +52,7 @@ class MyProjects extends Component {
     socket.on("onlineUsers", (data) => console.log(data));
     return (
       <div className="mt-5">
+        <ToastContainer />
         <h2>My Projects</h2>
         <Accordion defaultActiveKey="0">
           <Card>

@@ -69,7 +69,8 @@ class Home extends Component {
     // console.log(projects);
     if (
       Object.keys(notificationGroupedObject).length !== 0 &&
-      projects !== undefined
+      projects !== undefined &&
+      notificationGroupedObject.FeedbackForm !== undefined
     ) {
       if (notificationGroupedObject["FeedbackForm"].length > 0) {
         console.log("Feedback Forms:");

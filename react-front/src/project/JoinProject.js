@@ -4,6 +4,7 @@ import { getCurrentUser } from "../user/apiUser";
 import Badge from "react-bootstrap/Badge";
 import { connect } from "react-redux";
 import { notificationAdded } from "../store/notifications";
+import { toast } from "react-toastify";
 class JoinProject extends Component {
   constructor() {
     super();
@@ -74,7 +75,7 @@ class JoinProject extends Component {
                               className="btn btn-outline-primary"
                               onClick={() => {
                                 getCurrentUser()._id === project.leader
-                                  ? alert("Leaders cant request bruh!")
+                                  ? toast("Leaders cant Request, right???")
                                   : request(
                                       getCurrentUser()._id,
                                       project._id,
