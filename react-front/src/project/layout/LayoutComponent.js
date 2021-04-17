@@ -357,10 +357,10 @@ class LayoutComponent extends Component {
     });
     let task = tasksObject[tasksObject.length - 1];
     this.setState({ task });
-    console.log("Pert:");
-    let pert = jsPERT(tasksObject[tasksObject.length - 1]);
-    this.setState({ pert });
-    console.log(pert);
+    // console.log("Pert:");
+    // let pert = jsPERT(tasksObject[tasksObject.length - 1]);
+    // this.setState({ pert });
+    // console.log(pert);
     // axios.put("http://localhost:3002/api/pertcalc", pert);
     // return nodes;
   };
@@ -387,7 +387,7 @@ class LayoutComponent extends Component {
             onLoad={this.onLoad}
             style={{
               width: "100%",
-              height: "95vh",
+              height: "65vh",
               backgroundColor: "#1A192B",
             }}
             onNodeDragStop={this.onNodeDragStop}
@@ -417,7 +417,7 @@ class LayoutComponent extends Component {
           >
             Pert
           </Button>
-          <Modal show={this.state.show} onHide={this.handleClose}>
+          {/*<Modal show={this.state.show} onHide={this.handleClose}>
             <Modal.Header closeButton>
               <Modal.Title>Details</Modal.Title>
             </Modal.Header>
@@ -442,7 +442,7 @@ class LayoutComponent extends Component {
             <Modal.Footer>
               <Button onClick={this.handleClose}>Close</Button>
             </Modal.Footer>
-          </Modal>
+          </Modal>*/}
         </div>
       </div>
     );
