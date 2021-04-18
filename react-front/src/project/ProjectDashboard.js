@@ -12,8 +12,18 @@ import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
 import ChatIcon from "@material-ui/icons/Chat";
 import { getCurrentUser } from "../user/apiUser";
 import Chat from "./Chat";
-
+import { getTasks } from "./apiProject";
+import { connect } from "react-redux";
+import { updateTasks } from "../store/tasks";
 class ProjectDashboard extends Component {
+  componentDidMount() {
+    const { project } = this.props.location.state;
+    getTasks(project._id).then((val) => {
+      this.props.updateTasks({
+        tasks: val.tasks,
+      });
+    });
+  }
   render() {
     if (this.props.location.state.project === undefined) {
       return null;
@@ -262,5 +272,12 @@ class ProjectDashboard extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  tasks: state.tasks.tasks,
+});
 
-export default ProjectDashboard;
+const mapDispatchToProps = (dispatch) => ({
+  updateTasks: (params) => dispatch(updateTasks(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectDashboard);

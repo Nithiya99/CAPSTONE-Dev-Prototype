@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import AssignPerson from "../../utils/signupbutton/Tagify/AssignPerson";
-import { addTask } from "../apiProject";
+import { addTask, getTasks } from "../apiProject";
+import { connect } from "react-redux";
+import { updateTasks } from "./../../store/tasks";
 class AddTask extends Component {
   constructor() {
     super();
@@ -76,11 +78,20 @@ class AddTask extends Component {
       task_pessimistic: "",
       task_mostLikely: "",
     });
-    addTask(this.props.projectId, newTask).then(() => {
-      window.location.reload();
+    addTask(this.props.projectId, newTask).then((data) => {
+      this.props.updateTasks({
+        tasks: data.tasks,
+      });
     });
+    // getTasks(this.props.projectId).then((val) =>
+    //   this.props.updateTasks({
+    //     tasks: val.tasks,
+    //   })
+    // );
+    // this.props.updateTasks({ projectId: this.props.projectId });
   };
   render() {
+    // console.log(this.props.tasks);
     return (
       <form onSubmit={this.onSubmit}>
         <div className="form-group">
@@ -150,4 +161,12 @@ class AddTask extends Component {
   }
 }
 
-export default AddTask;
+const mapStateToProps = (state) => ({
+  tasks: state.tasks.tasks,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  updateTasks: (params) => dispatch(updateTasks(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddTask);

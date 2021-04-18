@@ -12,8 +12,9 @@ exports.addTasks = (req, res) => {
     // console.log(project);
     // project.tasks = tasks;
     proj_completion(project);
+    return res.status(200).json({ tasks: project.tasks });
   } else {
-    res.status(400).json({ message: "Not Leader" });
+    return res.status(400).json({ message: "Not Leader" });
   }
 };
 
@@ -202,7 +203,11 @@ exports.updateTasks = async (request, res) => {
   let id = request.body.id;
   let project = request.projectObject;
   project.tasks.map(async (task) => {
-    if (task._id.toString() === id.toString()) {
+    if (
+      task._id.toString() === id.toString() &&
+      id !== undefined &&
+      task._id !== undefined
+    ) {
       task.taskName = request.body.taskName;
       task.taskDescription = request.body.taskDescription;
       task.pessimisticTime = request.body.pessimisticTime;

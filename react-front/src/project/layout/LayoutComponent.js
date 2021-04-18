@@ -20,7 +20,14 @@ import {
 } from "../apiProject";
 import jsPERT from "js-pert";
 import { Button } from "@material-ui/core";
-import { nodeAdded, connectionAdded } from "../../store/cpm";
+import {
+  nodeAdded,
+  connectionAdded,
+  replaceNodes,
+  replaceConnections,
+  replaceElements,
+} from "../../store/cpm";
+import { updateTasks } from "../../store/tasks";
 const styles = (theme) => ({
   modal: {
     display: "flex",
@@ -45,181 +52,6 @@ class LayoutComponent extends Component {
     checked: false,
     bleh: 1,
   };
-  componentDidMount() {
-    // this.setState(({ bleh }) => {
-    //   if (bleh !== 2) return { bleh: bleh + 1 };
-    // });
-    // console.log(this.state.bleh);
-    //get DB tasks
-    getTasks(this.props.project._id)
-      .then((data) => {
-        if (data.err !== undefined) {
-          if (data.err === "No tasks found") {
-            this.setState({ tasks: [] });
-          }
-        } else {
-          if (data.tasks.length > 0 && data.tasks !== undefined)
-            this.setState({ tasks: data.tasks });
-        }
-      })
-      .then(() => {
-        if (!this.state.tasks || this.state.tasks[0] === "") return null;
-        this.state.tasks.map((task) => {
-          // label: "Bleh",
-          // description: "Bleh max",
-          // time: 2,
-          // pessimistic: 3,
-          // optimistic: 1,
-          // predecessors: ["1", "2"],
-          task["label"] = task.taskName;
-          task["description"] = task.description;
-          task["time"] = task.mostLikelyTime;
-          task["optimistic"] = task.optimisticTime;
-          task["pessimistic"] = task.pessimisticTime;
-          // console.log(task);
-          if (
-            task.taskName !== "Completed!!" &&
-            task.taskName !== "Lets Start Working"
-          ) {
-            let ele = [...this.state.elements];
-            // console.log(ele);
-            let newNode = {
-              key: task._id,
-              id: (ele.length + 1).toString(),
-              data: task,
-              sourcePosition: "right",
-              targetPosition: "left",
-              position:
-                task.position !== undefined
-                  ? task.position
-                  : {
-                      x: (Math.random() * window.innerWidth) / 2,
-                      y: (Math.random() * window.innerHeight) / 2,
-                    },
-            };
-            ele.push(newNode);
-            this.setState({ elements: ele });
-            let newNodes = [...this.state.nodes];
-            newNodes.push(newNode);
-            this.setState({ nodes: newNodes });
-            this.props.nodeAdded({ node: newNode });
-            // console.log(this.state.elements);
-          } else {
-            if (task.taskName === "Lets Start Working") {
-              let ele = [...this.state.elements];
-              let newNode = {
-                key: task._id,
-                id: "1",
-                type: "input",
-                data: {
-                  label: "Lets Start Working",
-                  description:
-                    "Start working on tasks to complete project on time",
-                  pessimistic: 0,
-                  time: 0,
-                  optimistic: 0,
-                  predecessors: [],
-                  _id: task._id,
-                },
-                sourcePosition: "right",
-                position:
-                  task.position !== undefined ? task.position : { x: 0, y: 0 },
-              };
-              ele.push(newNode);
-              this.setState({ elements: ele });
-              this.props.nodeAdded({ node: newNode });
-            }
-            if (task.taskName === "Completed!!") {
-              let ele = [...this.state.elements];
-              let newNode = {
-                key: task._id,
-                id: "2",
-                type: "output",
-                data: {
-                  label: "Completed!!",
-                  description: "Yaaayy you gus have completed the project",
-                  pessimistic: 0,
-                  time: 0,
-                  optimistic: 0,
-                  predecessors: task.predecessors,
-                  _id: task._id,
-                },
-                targetPosition: "left",
-                position:
-                  task.position !== undefined
-                    ? task.position
-                    : { x: 500, y: 0 },
-              };
-              ele.push(newNode);
-              this.setState({ elements: ele });
-              let newNodes = [...this.state.nodes];
-              newNodes.push(newNode);
-              this.setState({ nodes: newNodes });
-              this.props.nodeAdded({ node: newNode });
-            }
-          }
-        });
-      })
-      .then(() => {
-        getConnections(this.props.project._id).then((data) => {
-          // this.state.elements.map((elem) => console.log(elem));
-          // console.log(this.state.elements);
-
-          data.connections.map((link) => {
-            // console.log(link);
-            this.state.elements.map((elem) => {
-              if (elem.key !== undefined) {
-                if (link.from.toString() === elem.key.toString()) {
-                  // console.log("from:", elem);
-                  this.setState({ source: elem });
-                }
-                if (link.to.toString() === elem.key.toString()) {
-                  // console.log("to:", elem);
-                  this.setState({ target: elem });
-                }
-              }
-              // console.log(getSource(link));
-              // console.log(elem);
-              // this.getSource(link);
-            });
-            let source = this.state.source;
-            let target = this.state.target;
-            // console.log(source);
-            // console.log(target);
-            // console.log(source, target);
-            // if (source.id !== undefined && target.id !== undefined) {
-            let edge = {
-              id:
-                "reactflow__edge-" +
-                source.id.toString() +
-                "null-" +
-                target.id.toString() +
-                "null",
-              source: source.id.toString(),
-              sourceHandle: null,
-              target: target.id.toString(),
-              targetHandle: null,
-            };
-            let ele = [...this.state.elements];
-            if (!this.edgeInElements(ele, edge)) {
-              this.props.connectionAdded({ connection: edge });
-              ele.push(edge);
-              // this.state.elements = ele;
-              this.setState({ elements: ele });
-              // console.log(this.state.elements);
-            }
-
-            return "done";
-            // }
-          });
-        });
-
-        // Pert display
-        // this.pertCalc();
-      });
-
-    //get DB connections
-  }
   onLoad = (reactFlowInstance) => {
     reactFlowInstance.fitView();
   };
@@ -242,14 +74,6 @@ class LayoutComponent extends Component {
     return inside;
   }
   onConnect = (params) => {
-    // postEdges(params);
-    // props.connectNodes(parseInt(params.source), parseInt(params.target));
-    // console.log(params.source, params.target);
-    // props.updateEdges();
-    // let predecessorArr = [];
-    // await getPredecessors(parseInt(params.target), params.source.toString())
-    //   .then((val) => (predecessorArr = val))
-    //   .catch((err) => console.log(err));
     let source = params.source;
     let target = params.target;
     if (source !== undefined && target !== undefined) {
@@ -285,7 +109,6 @@ class LayoutComponent extends Component {
         putConnections(this.props.project._id, sourceId, targetId).then(() => {
           console.log("connection " + sourceId + "to " + targetId + "added");
         });
-        // this.state.elements = ele;
       }
       this.props.connectionAdded(edge);
       this.setState({ elements: ele });
@@ -294,11 +117,9 @@ class LayoutComponent extends Component {
   };
   getIdOfObjectId = (elemId) => {
     let id = {};
-    // console.log(Number.isInteger(elemId));
     id = this.state.elements.map((elem) => {
       if (elem.data !== undefined)
         if (elem.data._id.toString() === elemId) {
-          // console.log("element number:" + elem.id);
           id = elem.id;
         }
       return id;
@@ -322,7 +143,6 @@ class LayoutComponent extends Component {
     let nodes = this.state.nodes.map((elem) => ({
       ...elem,
     }));
-    // console.log();
     nodes.map((elem) => {
       if (
         elem.data.predecessors.length === 0 ||
@@ -334,11 +154,8 @@ class LayoutComponent extends Component {
         let predecessors = [...elem.data.predecessors];
         predecessors[index] = id.toString();
         elem.data = { ...elem.data, predecessors };
-        // console.log(elem.data);
-        // console.log(elem.data);
       });
     });
-    // console.log(nodes);
     tasksObject = nodes.map((elem) => {
       if (
         elem.data.predecessors.length === 0 ||
@@ -364,26 +181,140 @@ class LayoutComponent extends Component {
     console.log(pert);
   };
   onElementClick = (event, element) => {
-    // console.log(this.state.elements);
-    // setSelectedNode(element.data);
-    // console.log(element.data);
     console.log(element);
   };
+  componentDidUpdate(prevState, prevProps) {
+    if (prevState.tasks.length !== this.props.tasks.length) {
+      const { tasks } = this.props;
+      let newTasks = [];
+      tasks.map((task) => {
+        newTasks.push({ ...task });
+      });
+      let newNodes = [];
+      newTasks.map((task) => {
+        task["label"] = task.taskName;
+        task["description"] = task.description;
+        task["time"] = task.mostLikelyTime;
+        task["optimistic"] = task.optimisticTime;
+        task["pessimistic"] = task.pessimisticTime;
+        if (
+          task.taskName !== "Completed!!" &&
+          task.taskName !== "Lets Start Working"
+        ) {
+          let newNode = {
+            key: task._id,
+            id: (newNodes.length + 1).toString(),
+            data: task,
+            sourcePosition: "right",
+            targetPosition: "left",
+            position:
+              task.position !== undefined
+                ? task.position
+                : {
+                    x: (Math.random() * window.innerWidth) / 2,
+                    y: (Math.random() * window.innerHeight) / 2,
+                  },
+          };
+          newNodes.push(newNode);
+        }
+        if (task.taskName === "Lets Start Working") {
+          let ele = [...this.state.elements];
+          let newNode = {
+            key: task._id,
+            id: "1",
+            type: "input",
+            data: {
+              label: "Lets Start Working",
+              description: "Start working on tasks to complete project on time",
+              pessimistic: 0,
+              time: 0,
+              optimistic: 0,
+              predecessors: [],
+              _id: task._id,
+            },
+            sourcePosition: "right",
+            position:
+              task.position !== undefined ? task.position : { x: 0, y: 0 },
+          };
+          newNodes.push(newNode);
+        }
+        if (task.taskName === "Completed!!") {
+          let ele = [...this.state.elements];
+          let newNode = {
+            key: task._id,
+            id: "2",
+            type: "output",
+            data: {
+              label: "Completed!!",
+              description: "Yaaayy you gus have completed the project",
+              pessimistic: 0,
+              time: 0,
+              optimistic: 0,
+              predecessors: task.predecessors,
+              _id: task._id,
+            },
+            targetPosition: "left",
+            position:
+              task.position !== undefined ? task.position : { x: 500, y: 0 },
+          };
+          newNodes.push(newNode);
+        }
+      });
+      this.props.replaceNodes({ nodes: newNodes });
 
+      getConnections(this.props.project._id).then((data) => {
+        let connections = [];
+        data.connections.map((link) => {
+          newNodes.map((elem) => {
+            if (elem.key !== undefined) {
+              if (link.from.toString() === elem.key.toString()) {
+                this.setState({ source: elem });
+              }
+              if (link.to.toString() === elem.key.toString()) {
+                this.setState({ target: elem });
+              }
+            }
+          });
+          let source = this.state.source;
+          let target = this.state.target;
+          let edge = {
+            id:
+              "reactflow__edge-" +
+              source.id.toString() +
+              "null-" +
+              target.id.toString() +
+              "null",
+            source: source.id.toString(),
+            sourceHandle: null,
+            target: target.id.toString(),
+            targetHandle: null,
+          };
+          connections.push(edge);
+
+          return "done";
+        });
+        console.log(connections);
+        this.props.replaceConnections({ connections: connections });
+      });
+    }
+  }
   render() {
-    if (this.state.tasks === undefined) return null;
-    if (this.state.tasks.length === 0) return <div>No tasks</div>;
-    const { nodes, connections } = this.props;
+    if (this.props.tasks.length === 0) return <div>No tasks</div>;
+    const { nodes, connections, tasks } = this.props;
     const { status } = this.props.project;
-    let connect = status === "Completed" ? false : true;
-
-    let elements = [...nodes, ...connections];
-    // console.log(elements, this.state.elements);
+    let connectCheck = status === "Completed" ? false : true;
+    const elements = [];
+    nodes.map((node) => {
+      elements.push({ ...node });
+    });
+    connections.map((connection) => {
+      elements.push({ ...connection });
+    });
     return (
       <div>
         <div className="container-fluid">
           <ReactFlow
-            elements={this.state.elements}
+            elements={elements}
             onLoad={this.onLoad}
             style={{
               width: "100%",
@@ -397,8 +328,9 @@ class LayoutComponent extends Component {
             connectionLineType="bezier"
             snapToGrid={true}
             snapGrid={[16, 16]}
-            nodesConnectable={connect}
-            nodesDraggable={connect}
+            nodesConnectable={connectCheck}
+            nodesDraggable={connectCheck}
+            defaultZoom={1.5}
           >
             <Background color="#888" gap={16} />
             <MiniMap
@@ -410,41 +342,6 @@ class LayoutComponent extends Component {
             />
             <Controls />
           </ReactFlow>
-          <Button
-            onClick={() => {
-              this.pertCalc();
-            }}
-          >
-            Pert
-          </Button>
-          {/*<Modal show={this.state.show} onHide={this.handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Details</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <h5>
-                <center>
-                  <strong>
-                    <u>PERT OBJECTS</u>
-                  </strong>
-                </center>
-              </h5>
-              <Task tasks={this.state.task} />
-              <h5>
-                <center>
-                  <strong>
-                    <u>PERT</u>
-                  </strong>
-                </center>
-              </h5>
-              {/* <Pert pert={this.state.pert} /> */}
-          {/* {console.log(this.state.pert)} */}
-          {/* </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={this.handleClose}>Close</Button>
-            </Modal.Footer>
-          </Modal>*/}{" "}
-          */}
         </div>
       </div>
     );
@@ -456,11 +353,17 @@ const mapStateToProps = (state) => ({
   connections: state.cpm.connections,
   state: state,
   notifications: state.notifications.notifications,
+  tasks: state.tasks.tasks,
+  elements: state.cpm.elements,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   nodeAdded: (params) => dispatch(nodeAdded(params)),
   connectionAdded: (params) => dispatch(connectionAdded(params)),
+  updateTasks: (params) => dispatch(updateTasks(params)),
+  replaceNodes: (params) => dispatch(replaceNodes(params)),
+  replaceConnections: (params) => dispatch(replaceConnections(params)),
+  replaceElements: (params) => dispatch(replaceElements(params)),
 });
 
 export default connect(

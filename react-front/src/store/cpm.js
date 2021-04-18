@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getTasks } from "../project/apiProject";
 
 let lastNodeId = 0;
 let lastConnectionId = 0;
@@ -8,6 +9,7 @@ const slice = createSlice({
   initialState: {
     nodes: [],
     connections: [],
+    elements: [],
   },
   reducers: {
     nodeAdded: (state, action) => {
@@ -27,7 +29,25 @@ const slice = createSlice({
       //   console.log(action);
       //   console.log(state, action.payload);
     },
+    replaceNodes: (state, action) => {
+      const nodes = action.payload.nodes;
+      void (state.nodes = nodes);
+    },
+    replaceConnections: (state, action) => {
+      const connections = action.payload.connections;
+      void (state.connections = connections);
+    },
+    replaceElements: (state, action) => {
+      const elements = action.payload.elements;
+      void (state.elements = elements);
+    },
   },
 });
-export const { nodeAdded, connectionAdded } = slice.actions;
+export const {
+  nodeAdded,
+  connectionAdded,
+  replaceNodes,
+  replaceConnections,
+  replaceElements,
+} = slice.actions;
 export default slice.reducer;

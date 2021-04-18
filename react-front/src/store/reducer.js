@@ -1,9 +1,10 @@
 import cpmReducer from "./cpm";
 import notificationReducer from "./notifications";
-import projectDashBoardReducer from "./dashboard";
+import tasksReducer from "./tasks";
 import { combineReducers } from "redux";
 
 export default combineReducers({
   cpm: cpmReducer,
   notifications: notificationReducer,
+  tasks: tasksReducer,
 });

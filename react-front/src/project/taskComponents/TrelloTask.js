@@ -3,7 +3,10 @@ import { listmytasks } from "../apiProject";
 import { getCurrentUser } from "./../../user/apiUser";
 import { updateTask } from "./../apiProject";
 import Board from "react-trello";
-import { deleteTask } from "../apiProject";
+import { deleteTask, getTasks } from "../apiProject";
+import { connect } from "react-redux";
+import { updateTasks } from "./../../store/tasks";
+import { toast, ToastContainer } from "react-toastify";
 
 let data = {};
 let projleader = "";
@@ -47,33 +50,46 @@ const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
   }
 };
 
-const onCardDelete = (cardId, laneId) =>{
-  if(projleader === getCurrentUser()._id)
-  {
-    let response = window.confirm("Are you Sure?");
-    if (response) {
-      deleteTask(cardId, projectId).then((data) => {
-        console.log(data);
-      });
-    }
-  }
-  else
-    alert("You are not allowed to delete tasks.. Your action will be reverted..");
-}
-
 class TrelloTask extends Component {
   state = {
     mytasks: [],
     boardData: { lanes: [] },
     editable: true,
-    isleader : false,
+    isleader: false,
   };
   setEventBus = (eventBus) => {
     this.setState({ eventBus });
   };
 
+  onCardDelete = async (cardId, laneId) => {
+    if (projleader === getCurrentUser()._id) {
+      let response = window.confirm("Are you Sure?");
+      if (response) {
+        await deleteTask(cardId, projectId);
+        await getTasks(projectId).then((data) => {
+          this.props.updateTasks({ tasks: data.tasks });
+          // console.log(data);
+        });
+        // this.updateBoard();
+      } else {
+        // toast.error("Gimme a second...", {
+        //   position: "top-right",
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        // });
+        window.location.reload();
+      }
+    } else {
+      toast.warning(
+        "You are not allowed to delete tasks.. Your action will be reverted.."
+      );
+    }
+  };
   async componentDidMount() {
-
     projectId = this.props.projectId;
     if (this.props.status === "Completed") {
       this.setState({
@@ -86,22 +102,28 @@ class TrelloTask extends Component {
       allproj.forEach((proj) => {
         if (proj._id === this.props.projectId) {
           projleader = proj.leader;
-          this.setState({
-            mytasks: proj.tasks,
-          });
+          // this.setState({
+          //   mytasks: proj.tasks,
+          // });
           // console.log(this.state.mytasks)
         }
       });
     });
-
-    if (getCurrentUser()._id === projleader) 
+    getTasks(this.props.projectId).then((val) => {
+      val.tasks.shift();
+      val.tasks.shift();
+      this.setState({ mytasks: val.tasks });
+      this.updateBoard();
+    });
+    if (getCurrentUser()._id === projleader)
       this.setState({
-        isleader : true,
+        isleader: true,
       });
-
+  }
+  updateBoard = () => {
     const mytasks = this.state.mytasks;
-    
-
+    // console.log(mytasks);
+    // console.log("mytasks:" + mytasks);
     let cards_planned = [];
     let cards_wip = [];
     let cards_review = [];
@@ -181,8 +203,7 @@ class TrelloTask extends Component {
       ],
     };
     this.setState({ boardData: data });
-  }
-
+  };
   shouldReceiveNewData = (nextData) => {
     let cards = [];
     nextData.lanes.forEach((data) => {
@@ -198,11 +219,32 @@ class TrelloTask extends Component {
     });
     this.setState({ mytasks: cards });
   };
-
+  // componentWillReceiveProps() {
+  //   if (
+  //     this.state.mytasks.length < this.props.tasks.length &&
+  //     this.state.mytasks.length !== this.props.tasks.length
+  //   ) {
+  //     this.setState({ mytasks: this.props.tasks });
+  //     console.log("new Tasks:", this.state.tasks);
+  //     // this.updateBoard();
+  //   }
+  // }
+  componentDidUpdate(prevProps, prevState) {
+    const tasks = [...this.props.tasks];
+    tasks.shift();
+    tasks.shift();
+    if (prevState.mytasks.length !== tasks.length) {
+      this.setState({ mytasks: tasks });
+      this.updateBoard();
+    }
+    // console.log(prevState.mytasks.length, tasks.length);
+  }
   render() {
+    // console.log(this.state.mytasks);
     flag = false;
     return (
       <div>
+        <ToastContainer />
         <div>
           <h3>Task List</h3>
         </div>
@@ -215,7 +257,7 @@ class TrelloTask extends Component {
             eventBusHandle={this.setEventBus}
             handleDragStart={handleDragStart}
             handleDragEnd={handleDragEnd}
-            onCardDelete={onCardDelete}
+            onCardDelete={this.onCardDelete}
             style={{
               backgroundColor: "#eee",
             }}
@@ -232,4 +274,12 @@ class TrelloTask extends Component {
   }
 }
 
-export default TrelloTask;
+const mapStateToProps = (state) => ({
+  tasks: state.tasks.tasks,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  updateTasks: (params) => dispatch(updateTasks(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrelloTask);

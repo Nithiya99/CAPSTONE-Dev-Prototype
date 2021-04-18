@@ -272,7 +272,7 @@ export const addTask = (projectId, task) => {
     },
     body: JSON.stringify(Obj),
   };
-  console.log(settings.body);
+  // console.log(settings.body);
   return fetch(
     `http://localhost:8081/project/tasks/${userId}/${projectId}`,
     settings
