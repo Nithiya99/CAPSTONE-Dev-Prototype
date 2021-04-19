@@ -10,8 +10,6 @@ import DefaultProfile from "../images/avatar.png";
 import { read } from "../user/apiUser";
 import { isAuthenticated } from "../auth";
 
-// import "./Chat.css";
-
 var options = {
   rememberUpgrade: true,
   transports: ["websocket"],
@@ -192,90 +190,3 @@ function Chat(props) {
 }
 
 export default Chat;
-
-// import TextField from "@material-ui/core/TextField"
-// import React, { useEffect, useRef, useState } from "react"
-// import io from "socket.io-client";
-// import { getCurrentUser } from "./../user/apiUser";
-// import "./Chat.css";
-
-// var options = {
-//     rememberUpgrade: true,
-//     transports: ["websocket"],
-//     secure: true,
-//     rejectUnauthorized: false,
-// };
-
-// const socketio = io("http://localhost:8081", options);
-
-// function Chat() {
-// 	const [ state, setState ] = useState({ message: "", name: getCurrentUser().name })
-// 	const [ chat, setChat ] = useState([])
-
-// 	// const socketRef = useRef()
-
-// 	// useEffect(
-// 	// 	() => {
-// 	// 		socketRef.current = socketio;
-// 	// 		socketRef.current.on("message", ({ name, message }) => {
-// 	// 			setChat([ ...chat, { name, message } ])
-// 	// 		})
-// 	// 		return () => socketRef.current.disconnect()
-// 	// 	},
-// 	// 	[ chat ]
-// 	// )
-
-// 	socketio.on("message", ({ name, message }) => {
-// 		setChat([ ...chat, { name, message } ])
-// 	})
-
-// 	const onTextChange = (e) => {
-// 		setState({ ...state, [e.target.name]: e.target.value })
-// 	}
-
-// 	const onMessageSubmit = (e) => {
-// 		const { name, message } = state
-// 		socketio.emit("message", { name, message })
-
-// 		e.preventDefault()
-// 		setState({ message: "", name })
-// 		// console.log(chat)
-// 	}
-
-// 	const renderChat = () => {
-//         // console.log(chat);
-// 		return chat.map(({ name, message }, index) => (
-// 			<div key={index}>
-// 				<h4>
-// 					{name}: <span>{message}</span>
-// 				</h4>
-// 			</div>
-// 		))
-// 	}
-
-// 	return (
-// 		<div className="card">
-// 			<div className="row">
-// 				<form onSubmit={onMessageSubmit}>
-// 					<div>
-// 						<TextField
-// 							name="message"
-// 							onChange={(e) => onTextChange(e)}
-// 							value={state.message}
-// 							id="outlined-multiline-static"
-// 							variant="outlined"
-// 							label="Message"
-// 						/>
-// 					</div>
-// 					<button>Send Message</button>
-// 				</form>
-// 				<div className="render-chat">
-// 					<h3>Chat Log</h3>
-// 					{renderChat()}
-// 				</div>
-// 			</div>
-// 		</div>
-// 	)
-// }
-
-// export default Chat;

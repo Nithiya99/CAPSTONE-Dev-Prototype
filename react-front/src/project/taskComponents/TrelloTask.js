@@ -7,48 +7,12 @@ import { deleteTask, getTasks } from "../apiProject";
 import { connect } from "react-redux";
 import { updateTasks } from "./../../store/tasks";
 import { toast, ToastContainer } from "react-toastify";
-
+import EditModel from "./EditModel";
 let data = {};
 let projleader = "";
 let tasks = [];
 let flag = false;
 let projectId = "";
-
-const handleDragStart = (cardId, laneId) => {
-  console.log("drag started");
-  flag = false;
-  if (tasks === {}) return;
-  tasks.forEach((task) => {
-    if (task.id === cardId) {
-      // console.log(getCurrentUser()._id)
-      task.assigned.forEach((user) => {
-        // console.log(user)
-        if (user === getCurrentUser()._id) flag = true;
-      });
-    }
-  });
-};
-
-const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
-  console.log("drag ended");
-
-  if (
-    projleader === getCurrentUser()._id &&
-    sourceLaneId === "Review" &&
-    targetLaneId === "COMPLETED"
-  )
-    flag = true;
-
-  if (projleader === getCurrentUser()._id && sourceLaneId === "COMPLETED")
-    flag = true;
-
-  if (flag === false) {
-    alert(
-      "Sry.. You are not allowed to do this operation.. Changes made will be resetted"
-    );
-    window.location.reload(false);
-  }
-};
 
 class TrelloTask extends Component {
   state = {
@@ -56,9 +20,47 @@ class TrelloTask extends Component {
     boardData: { lanes: [] },
     editable: true,
     isleader: false,
+    show: false,
+    alltasks: [],
+    cardId: "",
+    currentTask: {},
   };
   setEventBus = (eventBus) => {
     this.setState({ eventBus });
+  };
+  handleDragStart = (cardId, laneId) => {
+    console.log("drag started");
+    flag = false;
+    if (tasks === {}) return;
+    tasks.forEach((task) => {
+      if (task.id === cardId) {
+        // console.log(getCurrentUser()._id)
+        task.assigned.forEach((user) => {
+          // console.log(user)
+          if (user === getCurrentUser()._id) flag = true;
+        });
+      }
+    });
+  };
+  handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
+    console.log("drag ended");
+
+    if (
+      projleader === getCurrentUser()._id &&
+      sourceLaneId === "Review" &&
+      targetLaneId === "COMPLETED"
+    )
+      flag = true;
+
+    if (projleader === getCurrentUser()._id && sourceLaneId === "COMPLETED")
+      flag = true;
+
+    if (flag === false) {
+      alert(
+        "Sry.. You are not allowed to do this operation.. Changes made will be resetted"
+      );
+      window.location.reload(false);
+    }
   };
 
   onCardDelete = async (cardId, laneId) => {
@@ -87,6 +89,7 @@ class TrelloTask extends Component {
       toast.warning(
         "You are not allowed to delete tasks.. Your action will be reverted.."
       );
+      window.location.reload();
     }
   };
   async componentDidMount() {
@@ -112,7 +115,7 @@ class TrelloTask extends Component {
     getTasks(this.props.projectId).then((val) => {
       val.tasks.shift();
       val.tasks.shift();
-      this.setState({ mytasks: val.tasks });
+      this.setState({ mytasks: val.tasks, alltasks: val.tasks });
       this.updateBoard();
     });
     if (getCurrentUser()._id === projleader)
@@ -120,6 +123,21 @@ class TrelloTask extends Component {
         isleader: true,
       });
   }
+  showMe = () => {
+    this.setState({ show: true });
+  };
+  hideMe = () => {
+    this.setState({ show: false });
+  };
+
+  onCardClick = (cardId, metadata, laneId) => {
+    const currentTask = this.state.alltasks.find(({ _id }) => _id === cardId);
+    this.setState({
+      cardId: cardId,
+      currentTask,
+    });
+    this.showMe();
+  };
   updateBoard = () => {
     const mytasks = this.state.mytasks;
     // console.log(mytasks);
@@ -158,7 +176,7 @@ class TrelloTask extends Component {
             backgroundColor: "#3179ba",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 260,
+            width: "17vw",
           },
         },
         {
@@ -171,7 +189,7 @@ class TrelloTask extends Component {
             backgroundColor: "#FFCC33",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 260,
+            width: "17vw",
           },
         },
         {
@@ -184,7 +202,7 @@ class TrelloTask extends Component {
             backgroundColor: "#FF9900",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 260,
+            width: "17vw",
           },
         },
         {
@@ -197,7 +215,7 @@ class TrelloTask extends Component {
             backgroundColor: "#00CC00",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 260,
+            width: "17vw",
           },
         },
       ],
@@ -244,6 +262,18 @@ class TrelloTask extends Component {
     flag = false;
     return (
       <div>
+        {this.state.show && this.state.isleader ? (
+          <EditModel
+            projectId={projectId}
+            task={this.state.currentTask}
+            id={this.state.cardId}
+            show={this.state.show}
+            showMe={this.showMe}
+            hideMe={this.hideMe}
+          />
+        ) : (
+          <div></div>
+        )}
         <ToastContainer />
         <div>
           <h3>Task List</h3>
@@ -255,16 +285,19 @@ class TrelloTask extends Component {
             data={this.state.boardData}
             onDataChange={this.shouldReceiveNewData}
             eventBusHandle={this.setEventBus}
-            handleDragStart={handleDragStart}
-            handleDragEnd={handleDragEnd}
+            handleDragStart={this.handleDragStart}
+            handleDragEnd={this.handleDragEnd}
             onCardDelete={this.onCardDelete}
+            onCardClick={this.onCardClick}
+            hideCardDeleteIcon={!this.state.isleader}
             style={{
               backgroundColor: "#eee",
+              height: "65vh",
             }}
             cardStyle={{
-              minWidth: 250,
-              width: 250,
-              maxWidth: 250,
+              minWidth: "16vw",
+              width: "16vw",
+              maxWidth: "16vw",
               overflow: "hidden",
             }}
           />

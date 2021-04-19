@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Accordion, Card, Button, Row, Tab, Col, Nav } from "react-bootstrap";
 import AddTask from "./taskComponents/AddTask";
-import MyTasks from "./taskComponents/MyTask";
 import LayoutComponent from "./layout/LayoutComponent";
 import TrelloTask from "./taskComponents/TrelloTask";
 import GroupTwoToneIcon from "@material-ui/icons/GroupTwoTone";

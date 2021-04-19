@@ -219,6 +219,7 @@ exports.updateTasks = async (request, res) => {
       task.optimisiticTime = request.body.optimisiticTime;
       task.mostLikelyTime = request.body.mostLikelyTime;
       task.status = request.body.status;
+      task.assignedTo = request.body.assignedTo;
     }
   });
   proj_completion(project);
@@ -266,5 +267,22 @@ exports.deleteTasks = (req, res) => {
   project.connections = newcons;
   // project.save();
   proj_completion(project);
+  return res.status(200).json({ project });
+};
+
+exports.deleteConnections = (req, res) => {
+  // console.log(req.body);
+  let project = req.projectObject;
+  let cons = project.connections;
+  let newcons = [];
+  // console.log(req.body.Id);
+  cons.forEach((con) => {
+    if (con._id.toString() !== req.body.Id.toString()) {
+      newcons.push(con);
+    }
+  });
+  console.log(newcons);
+  project.connections = newcons;
+  project.save();
   return res.status(200).json({ project });
 };

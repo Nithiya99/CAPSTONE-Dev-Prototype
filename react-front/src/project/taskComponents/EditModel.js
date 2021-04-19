@@ -1,6 +1,8 @@
 import { Modal, Button } from "react-bootstrap";
 import React, { Component } from "react";
 import { updateTask } from "./../apiProject";
+import AssignPerson from "./../../utils/signupbutton/Tagify/AssignPerson";
+import { getUserById } from "./../../user/apiUser";
 class EditModel extends Component {
   state = {
     title: "",
@@ -9,6 +11,9 @@ class EditModel extends Component {
     pessimisticTime: 0,
     optimisticTime: 0,
     mostLikelyTime: 0,
+    task_responsible: [],
+    task_responsible_string: "",
+    assigned: [],
   };
   componentDidMount() {
     this.setState({
@@ -19,8 +24,28 @@ class EditModel extends Component {
       mostLikelyTime: this.props.task.mostLikelyTime,
       id: this.props.task._id,
       laneId: this.props.task.status,
+      assigned: this.props.task.assignedTo,
+    });
+    const assignedToMembs = this.props.task.assignedTo;
+    let string = "";
+    assignedToMembs.map((memb) => {
+      getUserById(memb).then((user) => {
+        let { task_responsible } = this.state;
+        task_responsible.push(user.user.name);
+        string += user.user.name + ",";
+        this.setState({
+          task_responsible: task_responsible,
+          task_responsible_string: string,
+        });
+      });
     });
   }
+  assignTo = (members) => {
+    this.setState({ task_responsible: members });
+  };
+  assignIds = (ids) => {
+    this.setState({ assigned: ids });
+  };
   render() {
     let task = this.props.task;
     if (task === {}) return;
@@ -74,6 +99,13 @@ class EditModel extends Component {
             onChange={(e) => this.setState({ pessimisticTime: e.target.value })}
           ></input>
           <br></br>
+          <AssignPerson
+            projectId={this.props.projectId}
+            assignTo={this.assignTo}
+            assignIds={this.assignIds}
+            label={"Assigned to"}
+            value={this.state.task_responsible_string}
+          />
         </Modal.Body>
         <Modal.Footer>
           <Button

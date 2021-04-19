@@ -24,6 +24,7 @@ class AssignPerson extends Component {
           assignTo={this.props.assignTo}
           label={this.props.label}
           assignIds={this.props.assignIds}
+          value={this.props.value}
         />
       </>
     );

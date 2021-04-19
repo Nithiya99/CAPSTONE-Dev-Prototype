@@ -9,11 +9,13 @@ import ReactFlow, {
   Background,
   Controls,
   MiniMap,
+  removeElements,
 } from "react-flow-renderer";
 import {
   addTask,
   getTasks,
   putConnections,
+  deleteConnections,
   getConnections,
   putPredecessors,
   putPosition,
@@ -52,6 +54,18 @@ class LayoutComponent extends Component {
     show: false,
     checked: false,
     bleh: 1,
+  };
+  onElementsRemove = (elementsToRemove) => {
+    let cons = this.props.connections;
+    cons.map((con) => {
+      if (con.id === elementsToRemove[0].id) {
+        console.log(con.id, elementsToRemove[0].id);
+        deleteConnections(this.props.project._id, con._id).then((data) => {
+          console.log("connection deleted");
+        });
+        return;
+      }
+    });
   };
   onLoad = (reactFlowInstance) => {
     reactFlowInstance.fitView();
@@ -105,13 +119,13 @@ class LayoutComponent extends Component {
       putPredecessors(this.props.project._id, targetId, sourceId).then(() => {
         console.log(sourceId + " has new Predecessor " + targetId);
       });
-      let ele = [...this.state.elements];
-      if (!this.edgeInElements(ele, edge)) {
-        ele.push(edge);
-        putConnections(this.props.project._id, sourceId, targetId).then(() => {
-          console.log("connection " + sourceId + "to " + targetId + "added");
-        });
-      }
+      // let ele = [...this.state.elements];
+      // if (!this.edgeInElements(ele, edge)) {
+      //   ele.push(edge);
+      putConnections(this.props.project._id, sourceId, targetId).then(() => {
+        console.log("connection " + sourceId + "to " + targetId + "added");
+      });
+      // }
       this.props.connectionAdded({ connection: edge });
       // this.setState({ elements: ele });
       // console.log(this.state.elements);
@@ -304,6 +318,7 @@ class LayoutComponent extends Component {
               sourceHandle: null,
               target: target.id.toString(),
               targetHandle: null,
+              _id: link._id,
             };
             connections.push(edge);
 
@@ -344,6 +359,7 @@ class LayoutComponent extends Component {
             onNodeDragStop={this.onNodeDragStop}
             onConnect={this.onConnect}
             onElementClick={this.onElementClick}
+            onElementsRemove={this.onElementsRemove}
             connectionLineStyle={{ stroke: "#ddd", strokeWidth: 2 }}
             connectionLineType="bezier"
             snapToGrid={true}

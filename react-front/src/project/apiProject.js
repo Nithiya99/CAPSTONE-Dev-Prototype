@@ -445,6 +445,7 @@ export const updateTask = (task, projectId) => {
     optimisticTime: parseInt(task.optimisticTime),
     mostLikelyTime: parseInt(task.mostLikelyTime),
     status: task.laneId,
+    assignedTo: task.assigned,
   };
   // console.log(task);
   return fetch(
@@ -520,6 +521,29 @@ export const getProject = (id) => {
       "Content-type": "application/json",
     },
   })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const deleteConnections = (projectId, Id) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let Obj = {
+    Id: Id,
+  };
+  return fetch(
+    "http://localhost:8081/project/connections/" + projectId.toString(),
+    {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(Obj),
+    }
+  )
     .then((response) => {
       return response.json();
     })
