@@ -115,6 +115,7 @@ class LayoutComponent extends Component {
       this.props.connectionAdded({ connection: edge });
       // this.setState({ elements: ele });
       // console.log(this.state.elements);
+      this.pertCalc();
     }
   };
   getIdOfObjectId = (elemId) => {
@@ -182,10 +183,17 @@ class LayoutComponent extends Component {
     console.log("TasksObject:");
     console.log(tasksObjectFinal);
     console.log("Pert:");
-    let pert = jsPERT(tasksObjectFinal);
+    let pert = {};
+    try {
+      pert = jsPERT(tasksObjectFinal);
+      this.props.setPert({ pert });
+      console.log(this.props.pert);
+    } catch (err) {
+      console.log(err);
+      this.props.setPert({ pert });
+      console.log(this.props.pert);
+    }
     // this.setState({ pert });
-    this.props.setPert({ pert });
-    console.log(this.props.pert);
   };
   onElementClick = (event, element) => {
     console.log(element);
@@ -321,7 +329,7 @@ class LayoutComponent extends Component {
     connections.map((connection) => {
       elements.push({ ...connection });
     });
-    console.log("nodes:", nodes);
+    // console.log("nodes:", nodes);
     return (
       <div>
         <div className="container-fluid">
