@@ -158,7 +158,7 @@ class TrelloTask extends Component {
             backgroundColor: "#3179ba",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 260,
+            width: "17vw",
           },
         },
         {
@@ -171,7 +171,7 @@ class TrelloTask extends Component {
             backgroundColor: "#FFCC33",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 260,
+            width: "17vw",
           },
         },
         {
@@ -184,7 +184,7 @@ class TrelloTask extends Component {
             backgroundColor: "#FF9900",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 260,
+            width: "17vw",
           },
         },
         {
@@ -197,7 +197,7 @@ class TrelloTask extends Component {
             backgroundColor: "#00CC00",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: 260,
+            width: "17vw",
           },
         },
       ],
@@ -260,11 +260,12 @@ class TrelloTask extends Component {
             onCardDelete={this.onCardDelete}
             style={{
               backgroundColor: "#eee",
+              height: "65vh",
             }}
             cardStyle={{
-              minWidth: 250,
-              width: 250,
-              maxWidth: 250,
+              minWidth: "16vw",
+              width: "16vw",
+              maxWidth: "16vw",
               overflow: "hidden",
             }}
           />
