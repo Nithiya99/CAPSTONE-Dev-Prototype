@@ -108,10 +108,10 @@ exports.addConnection = (req, res) => {
     project.save((err) => {
       if (err) return res.status(400).json({ err });
     });
+    return res.status(200).json({ project });
   } catch (err) {
     console.log(err);
   }
-  return res.status(200).json({ project });
 };
 
 exports.getAllConnections = (req, res) => {
