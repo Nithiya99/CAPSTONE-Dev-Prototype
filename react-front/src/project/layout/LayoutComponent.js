@@ -26,6 +26,7 @@ import {
   replaceNodes,
   replaceConnections,
   replaceElements,
+  setPert,
 } from "../../store/cpm";
 import { updateTasks } from "../../store/tasks";
 const styles = (theme) => ({
@@ -89,10 +90,11 @@ class LayoutComponent extends Component {
         target: target.toString(),
         targetHandle: null,
       };
-      console.log(this.state.elements);
+      // console.log(this.state.elements);
       let sourceId = "";
       let targetId = "";
-      this.state.elements.map((elem) => {
+      // console.log(this.props.nodes);
+      this.props.nodes.map((elem) => {
         if (elem.id === source) {
           sourceId = elem.key;
         }
@@ -110,14 +112,15 @@ class LayoutComponent extends Component {
           console.log("connection " + sourceId + "to " + targetId + "added");
         });
       }
-      this.props.connectionAdded(edge);
-      this.setState({ elements: ele });
-      console.log(this.state.elements);
+      this.props.connectionAdded({ connection: edge });
+      // this.setState({ elements: ele });
+      // console.log(this.state.elements);
     }
   };
   getIdOfObjectId = (elemId) => {
     let id = {};
-    id = this.state.elements.map((elem) => {
+    const { nodes } = this.props;
+    id = nodes.map((elem) => {
       if (elem.data !== undefined)
         if (elem.data._id.toString() === elemId) {
           id = elem.id;
@@ -126,11 +129,11 @@ class LayoutComponent extends Component {
     });
     return id[id.length - 1];
   };
-  handleClose = () => {
-    this.setState({ show: false });
-  };
+  // handleClose = () => {
+  //   this.setState({ show: false });
+  // };
   pertCalc = () => {
-    this.setState({ show: true });
+    // this.setState({ show: true });
     let tasksObject = {
       1: {
         id: "1",
@@ -140,7 +143,8 @@ class LayoutComponent extends Component {
         predecessors: [],
       },
     };
-    let nodes = this.state.nodes.map((elem) => ({
+    // console.log("inside pertCalc:", tasksObject);
+    let nodes = this.props.nodes.map((elem) => ({
       ...elem,
     }));
     nodes.map((elem) => {
@@ -151,11 +155,13 @@ class LayoutComponent extends Component {
         return;
       elem.data.predecessors.map((pre, index) => {
         let id = this.getIdOfObjectId(pre.toString());
+        // console.log(id);
         let predecessors = [...elem.data.predecessors];
         predecessors[index] = id.toString();
         elem.data = { ...elem.data, predecessors };
       });
     });
+    // console.log(nodes);
     tasksObject = nodes.map((elem) => {
       if (
         elem.data.predecessors.length === 0 ||
@@ -177,8 +183,9 @@ class LayoutComponent extends Component {
     console.log(tasksObjectFinal);
     console.log("Pert:");
     let pert = jsPERT(tasksObjectFinal);
-    this.setState({ pert });
-    console.log(pert);
+    // this.setState({ pert });
+    this.props.setPert({ pert });
+    console.log(this.props.pert);
   };
   onElementClick = (event, element) => {
     console.log(element);
@@ -262,40 +269,44 @@ class LayoutComponent extends Component {
       });
       this.props.replaceNodes({ nodes: newNodes });
 
-      getConnections(this.props.project._id).then((data) => {
-        let connections = [];
-        data.connections.map((link) => {
-          newNodes.map((elem) => {
-            if (elem.key !== undefined) {
-              if (link.from.toString() === elem.key.toString()) {
-                this.setState({ source: elem });
+      getConnections(this.props.project._id)
+        .then((data) => {
+          let connections = [];
+          data.connections.map((link) => {
+            newNodes.map((elem) => {
+              if (elem.key !== undefined) {
+                if (link.from.toString() === elem.key.toString()) {
+                  this.setState({ source: elem });
+                }
+                if (link.to.toString() === elem.key.toString()) {
+                  this.setState({ target: elem });
+                }
               }
-              if (link.to.toString() === elem.key.toString()) {
-                this.setState({ target: elem });
-              }
-            }
-          });
-          let source = this.state.source;
-          let target = this.state.target;
-          let edge = {
-            id:
-              "reactflow__edge-" +
-              source.id.toString() +
-              "null-" +
-              target.id.toString() +
-              "null",
-            source: source.id.toString(),
-            sourceHandle: null,
-            target: target.id.toString(),
-            targetHandle: null,
-          };
-          connections.push(edge);
+            });
+            let source = this.state.source;
+            let target = this.state.target;
+            let edge = {
+              id:
+                "reactflow__edge-" +
+                source.id.toString() +
+                "null-" +
+                target.id.toString() +
+                "null",
+              source: source.id.toString(),
+              sourceHandle: null,
+              target: target.id.toString(),
+              targetHandle: null,
+            };
+            connections.push(edge);
 
-          return "done";
+            return "done";
+          });
+          // console.log(connections);
+          this.props.replaceConnections({ connections: connections });
+        })
+        .then(() => {
+          this.pertCalc();
         });
-        console.log(connections);
-        this.props.replaceConnections({ connections: connections });
-      });
     }
   }
   render() {
@@ -310,6 +321,7 @@ class LayoutComponent extends Component {
     connections.map((connection) => {
       elements.push({ ...connection });
     });
+    console.log("nodes:", nodes);
     return (
       <div>
         <div className="container-fluid">
@@ -330,7 +342,7 @@ class LayoutComponent extends Component {
             snapGrid={[16, 16]}
             nodesConnectable={connectCheck}
             nodesDraggable={connectCheck}
-            defaultZoom={1.5}
+            defaultZoom={1}
           >
             <Background color="#888" gap={16} />
             <MiniMap
@@ -355,6 +367,7 @@ const mapStateToProps = (state) => ({
   notifications: state.notifications.notifications,
   tasks: state.tasks.tasks,
   elements: state.cpm.elements,
+  pert: state.cpm.pert,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -364,6 +377,7 @@ const mapDispatchToProps = (dispatch) => ({
   replaceNodes: (params) => dispatch(replaceNodes(params)),
   replaceConnections: (params) => dispatch(replaceConnections(params)),
   replaceElements: (params) => dispatch(replaceElements(params)),
+  setPert: (params) => dispatch(setPert(params)),
 });
 
 export default connect(

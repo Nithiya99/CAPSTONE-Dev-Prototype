@@ -10,22 +10,17 @@ const slice = createSlice({
     nodes: [],
     connections: [],
     elements: [],
+    pert: {},
   },
   reducers: {
     nodeAdded: (state, action) => {
-      state.nodes.push({
-        id: ++lastNodeId,
-        node: action.payload.node,
-      });
+      state.nodes.push(action.payload.node);
       //   console.log(action);
       //   console.log(state, action.payload);
     },
     connectionAdded: (state, action) => {
       // console.log(action.payload);
-      state.connections.push({
-        id: ++lastConnectionId,
-        connection: action.payload.connection,
-      });
+      state.connections.push(action.payload.connection);
       //   console.log(action);
       //   console.log(state, action.payload);
     },
@@ -41,6 +36,10 @@ const slice = createSlice({
       const elements = action.payload.elements;
       void (state.elements = elements);
     },
+    setPert: (state, action) => {
+      const pert = action.payload.pert;
+      void (state.pert = pert);
+    },
   },
 });
 export const {
@@ -49,5 +48,6 @@ export const {
   replaceNodes,
   replaceConnections,
   replaceElements,
+  setPert,
 } = slice.actions;
 export default slice.reducer;

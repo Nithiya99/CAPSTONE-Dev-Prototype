@@ -91,21 +91,26 @@ exports.updatePredecessors = (req, res) => {
 };
 
 exports.addConnection = (req, res) => {
-  let user = req.profile;
-  let project = req.projectObject;
-  // let connections = project.connections;
-  if (project.connections === undefined) {
-    project.connections = [];
-    project.save();
+  try {
+    let user = req.profile;
+    let project = req.projectObject;
+    // let connections = project.connections;
+    if (project.connections === undefined) {
+      project.connections = [];
+      project.save();
+    }
+    let Obj = {
+      from: req.body.from,
+      to: req.body.to,
+    };
+    project.connections.push(Obj);
+    console.log(project.connections);
+    project.save((err) => {
+      if (err) return res.status(400).json({ err });
+    });
+  } catch (err) {
+    console.log(err);
   }
-  let Obj = {
-    from: req.body.from,
-    to: req.body.to,
-  };
-  project.connections.push(Obj);
-  project.save((err) => {
-    if (err) return res.status(400).json({ err });
-  });
   return res.status(200).json({ project });
 };
 

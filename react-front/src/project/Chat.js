@@ -178,7 +178,7 @@ function Chat(props) {
               />
             </Col>
             <Col>
-              <button class="btn btn-primary">
+              <button className="btn btn-primary">
                 Send Message <SendIcon />
               </button>
             </Col>

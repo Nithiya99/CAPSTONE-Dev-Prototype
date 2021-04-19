@@ -3,6 +3,7 @@ import AssignPerson from "../../utils/signupbutton/Tagify/AssignPerson";
 import { addTask, getTasks } from "../apiProject";
 import { connect } from "react-redux";
 import { updateTasks } from "./../../store/tasks";
+import { ToastContainer, toast } from "react-toastify";
 class AddTask extends Component {
   constructor() {
     super();
@@ -78,11 +79,15 @@ class AddTask extends Component {
       task_pessimistic: "",
       task_mostLikely: "",
     });
-    addTask(this.props.projectId, newTask).then((data) => {
-      this.props.updateTasks({
-        tasks: data.tasks,
+    addTask(this.props.projectId, newTask)
+      .then((data) => {
+        this.props.updateTasks({
+          tasks: data.tasks,
+        });
+      })
+      .then(() => {
+        toast.success(newTask.task_title + " added to project.");
       });
-    });
     // getTasks(this.props.projectId).then((val) =>
     //   this.props.updateTasks({
     //     tasks: val.tasks,
@@ -92,8 +97,10 @@ class AddTask extends Component {
   };
   render() {
     // console.log(this.props.tasks);
+
     return (
       <form onSubmit={this.onSubmit}>
+        <ToastContainer />
         <div className="form-group">
           <label>Task Title: </label>
           <input

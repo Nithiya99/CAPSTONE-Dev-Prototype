@@ -358,6 +358,7 @@ export const putConnections = (projectId, source, target) => {
     from: source,
     to: target,
   };
+  console.log(Obj);
   return fetch(
     "http://localhost:8081/project/connections/" +
       userId.toString() +
