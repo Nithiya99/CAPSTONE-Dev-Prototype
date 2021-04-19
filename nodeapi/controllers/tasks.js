@@ -275,12 +275,28 @@ exports.deleteConnections = (req, res) => {
   let project = req.projectObject;
   let cons = project.connections;
   let newcons = [];
+  let tasks = project.tasks;
   // console.log(req.body.Id);
+  let to = "", from = "";
   cons.forEach((con) => {
     if (con._id.toString() !== req.body.Id.toString()) {
       newcons.push(con);
     }
+    else
+    {
+      to = con.to;
+      from = con.from;
+    }
   });
+  tasks.map((task) =>{
+    if(task._id.toString() === to.toString())
+    {
+      const index = task.predecessors.indexOf(from.toString());
+      if (index > -1) {
+        task.predecessors.splice(index, 1);
+      }
+    }
+  })
   console.log(newcons);
   project.connections = newcons;
   project.save();
