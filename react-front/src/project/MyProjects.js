@@ -20,6 +20,8 @@ import UserRecommendation from "./UserRecommendation";
 import socket from "./../utils/Socket";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { clearAll } from "../store/cpm";
+import { connect } from "react-redux";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -290,5 +292,8 @@ class MyProjects extends Component {
     );
   }
 }
+const mapDispatchToProps = (dispatch) => ({
+  clearAll: (params) => dispatch(clearAll(params)),
+});
 
-export default MyProjects;
+export default connect(null, mapDispatchToProps)(MyProjects);

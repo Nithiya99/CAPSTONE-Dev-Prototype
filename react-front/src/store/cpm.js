@@ -11,6 +11,7 @@ const slice = createSlice({
     connections: [],
     elements: [],
     pert: {},
+    expectedTime: 0,
   },
   reducers: {
     nodeAdded: (state, action) => {
@@ -40,6 +41,18 @@ const slice = createSlice({
       const pert = action.payload.pert;
       void (state.pert = pert);
     },
+    setExpectedTime: (state, action) => {
+      const expectedTime = action.payload.expectedTime;
+      // console.log(expectedTime);
+      void (state.expectedTime = expectedTime);
+    },
+    clearAll: (state, action) => {
+      state.nodes = [];
+      state.connections = [];
+      state.elements = [];
+      state.pert = {};
+      state.expectedTime = 0;
+    },
   },
 });
 export const {
@@ -49,5 +62,7 @@ export const {
   replaceConnections,
   replaceElements,
   setPert,
+  setExpectedTime,
+  clearAll,
 } = slice.actions;
 export default slice.reducer;

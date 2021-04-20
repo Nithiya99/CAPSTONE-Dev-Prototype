@@ -29,6 +29,7 @@ import {
   replaceConnections,
   replaceElements,
   setPert,
+  setExpectedTime,
 } from "../../store/cpm";
 import { updateTasks } from "../../store/tasks";
 const styles = (theme) => ({
@@ -134,7 +135,7 @@ class LayoutComponent extends Component {
       this.props.connectionAdded({ connection: edge });
       // this.setState({ elements: ele });
       // console.log(this.state.elements);
-      // this.pertCalc();
+      this.pertCalc();
     }
   };
   getIdOfObjectId = (elemId) => {
@@ -154,15 +155,6 @@ class LayoutComponent extends Component {
   // };
   pertCalc = () => {
     // this.setState({ show: true });
-    let tasksObject = {
-      1: {
-        id: "1",
-        mostLikelyTime: 0,
-        optimisticTime: 0,
-        pessimisticTime: 0,
-        predecessors: [],
-      },
-    };
     // console.log("inside pertCalc:", tasksObject);
     let nodes = this.props.nodes.map((elem) => ({
       ...elem,
@@ -171,7 +163,40 @@ class LayoutComponent extends Component {
     //   ...elem,
     // }));
     // console.log(connections);
-    nodes.map((elem) => {
+    // let { connections } = this.props;
+    console.log("props:", this.props.connections);
+    // console.log("connections:");
+    let ids = [];
+    this.props.connections.map((connection) => {
+      console.log(connection.source, connection.target);
+      if (!ids.includes(connection.source)) {
+        ids.push(connection.source.toString());
+      }
+      if (!ids.includes(connection.target)) {
+        ids.push(connection.target.toString());
+      }
+    });
+    console.log("nodes:");
+    let newNodes = [];
+    nodes.map((node) => {
+      if (ids.includes(node.id)) newNodes.push(node);
+    });
+
+    let tasksObject = ids.includes("1")
+      ? {
+          1: {
+            id: "1",
+            mostLikelyTime: 0,
+            optimisticTime: 0,
+            pessimisticTime: 0,
+            predecessors: [],
+          },
+        }
+      : {};
+    console.log("TasksObject before node addition:", tasksObject);
+    console.log(ids);
+    console.log("nodes sent for pertcalc:", newNodes);
+    newNodes.map((elem) => {
       if (
         elem.data.predecessors.length === 0 ||
         elem.data.predecessors === undefined
@@ -186,13 +211,8 @@ class LayoutComponent extends Component {
       });
     });
     // console.log(nodes);
-    tasksObject = nodes.map((elem) => {
-      if (
-        elem.data.predecessors.length === 0 ||
-        elem.data.predecessors === undefined
-      )
-        return;
-
+    tasksObject = newNodes.map((elem) => {
+      console.log("tasksObject node:", elem);
       tasksObject[elem.id.toString()] = {
         id: elem.id.toString(),
         optimisticTime: elem.data.optimistic,
@@ -207,14 +227,24 @@ class LayoutComponent extends Component {
     console.log(tasksObjectFinal);
     console.log("Pert:");
     let pert = {};
+    // console.log("gonna set pert");
     try {
+      // if (tasksObject[1] !== undefined) {
+      // console.log(tasksObject[1]);
       pert = jsPERT(tasksObjectFinal);
       this.props.setPert({ pert });
       console.log(this.props.pert);
+      this.props.setExpectedTime({
+        expectedTime: Math.floor(this.props.pert.latestFinishTimes.__end),
+      });
+      // }
     } catch (err) {
-      console.log(err);
-      this.props.setPert({ pert });
+      // console.log(err);
+      this.props.setPert({ pert: {} });
       console.log(this.props.pert);
+      this.props.setExpectedTime({
+        expectedTime: 0,
+      });
     }
     // this.setState({ pert });
   };
@@ -222,9 +252,11 @@ class LayoutComponent extends Component {
     console.log(element);
   };
   componentDidUpdate(prevState, prevProps) {
-    // console.log(prevState.connections, this.props.connections);
     if (this.props.connections.length !== prevState.connections.length) {
       this.pertCalc();
+      console.log(prevState.connections.length, this.props.connections.length);
+      console.log("Pert from comp update:", this.props.pert);
+      console.log("Pert calculation nodes:", this.props.nodes);
     }
     if (prevState.tasks.length !== this.props.tasks.length) {
       const { tasks } = this.props;
@@ -303,46 +335,47 @@ class LayoutComponent extends Component {
         }
       });
       this.props.replaceNodes({ nodes: newNodes });
+      if (this.props.connections.length === 0) {
+        getConnections(this.props.project._id)
+          .then((data) => {
+            let connections = [];
+            data.connections.map((link) => {
+              newNodes.map((elem) => {
+                if (elem.key !== undefined) {
+                  if (link.from.toString() === elem.key.toString()) {
+                    this.setState({ source: elem });
+                  }
+                  if (link.to.toString() === elem.key.toString()) {
+                    this.setState({ target: elem });
+                  }
+                }
+              });
+              let source = this.state.source;
+              let target = this.state.target;
+              let edge = {
+                id:
+                  "reactflow__edge-" +
+                  source.id.toString() +
+                  "null-" +
+                  target.id.toString() +
+                  "null",
+                source: source.id.toString(),
+                sourceHandle: null,
+                target: target.id.toString(),
+                targetHandle: null,
+                _id: link._id,
+              };
+              connections.push(edge);
 
-      getConnections(this.props.project._id)
-        .then((data) => {
-          let connections = [];
-          data.connections.map((link) => {
-            newNodes.map((elem) => {
-              if (elem.key !== undefined) {
-                if (link.from.toString() === elem.key.toString()) {
-                  this.setState({ source: elem });
-                }
-                if (link.to.toString() === elem.key.toString()) {
-                  this.setState({ target: elem });
-                }
-              }
+              return "done";
             });
-            let source = this.state.source;
-            let target = this.state.target;
-            let edge = {
-              id:
-                "reactflow__edge-" +
-                source.id.toString() +
-                "null-" +
-                target.id.toString() +
-                "null",
-              source: source.id.toString(),
-              sourceHandle: null,
-              target: target.id.toString(),
-              targetHandle: null,
-              _id: link._id,
-            };
-            connections.push(edge);
-
-            return "done";
+            // console.log(connections);
+            this.props.replaceConnections({ connections: connections });
+          })
+          .then(() => {
+            this.pertCalc();
           });
-          // console.log(connections);
-          this.props.replaceConnections({ connections: connections });
-        })
-        .then(() => {
-          this.pertCalc();
-        });
+      }
     }
   }
   render() {
@@ -415,6 +448,7 @@ const mapDispatchToProps = (dispatch) => ({
   replaceConnections: (params) => dispatch(replaceConnections(params)),
   replaceElements: (params) => dispatch(replaceElements(params)),
   setPert: (params) => dispatch(setPert(params)),
+  setExpectedTime: (params) => dispatch(setExpectedTime(params)),
 });
 
 export default connect(

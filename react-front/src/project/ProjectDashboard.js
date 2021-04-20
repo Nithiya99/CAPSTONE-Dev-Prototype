@@ -14,8 +14,14 @@ import Chat from "./Chat";
 import { getTasks } from "./apiProject";
 import { connect } from "react-redux";
 import { updateTasks } from "../store/tasks";
+import { clearAll } from "../store/cpm";
+
 class ProjectDashboard extends Component {
+  state = {
+    expectedTime: {},
+  };
   componentDidMount() {
+    this.props.clearAll();
     const { project } = this.props.location.state;
     getTasks(project._id).then((val) => {
       this.props.updateTasks({
@@ -23,6 +29,19 @@ class ProjectDashboard extends Component {
       });
     });
   }
+  // componentDidUpdate(prevState) {
+  //   if (prevState.connections.length !== this.props.connections.length) {
+  //     // if (this.props.pert.latestFinishTimes !== undefined)
+  //     //   console.log("end time:", this.props.pert.latestFinishTimes.__end);
+  //     const expectedTime =
+  //       this.props.pert.latestFinishTimes !== undefined
+  //         ? Math.floor(this.props.pert.latestFinishTimes.__end)
+  //         : "Not set yet";
+  //     this.setState({ expectedTime });
+  //     this.props.setExpectedTime({ expectedTime });
+  //   }
+  //   // console.log(prevState);
+  // }
   render() {
     if (this.props.location.state.project === undefined) {
       return null;
@@ -35,6 +54,8 @@ class ProjectDashboard extends Component {
     let difference = Math.abs(day2 - day1);
     let days = parseInt(difference / (1000 * 3600 * 24));
     // console.log(days);
+    const { expectedTime } = this.props;
+    console.log(expectedTime);
     return (
       <div className="pt-5">
         <Tab.Container id="left-tabs-example" defaultActiveKey="projStats">
@@ -135,11 +156,7 @@ class ProjectDashboard extends Component {
                       <h4>No. of days:</h4>
                       <span>{days}</span>
                       <h4>Estimated date:</h4>
-                      <span>
-                        {this.props.pert.latestFinishTimes !== undefined
-                          ? Math.floor(this.props.pert.latestFinishTimes.__end)
-                          : "Expected time not Estimated"}
-                      </span>
+                      <span>{expectedTime}</span>
                     </div>
                   </div>
                 </Tab.Pane>
@@ -225,10 +242,13 @@ class ProjectDashboard extends Component {
 const mapStateToProps = (state) => ({
   tasks: state.tasks.tasks,
   pert: state.cpm.pert,
+  connections: state.cpm.connections,
+  expectedTime: state.cpm.expectedTime,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   updateTasks: (params) => dispatch(updateTasks(params)),
+  clearAll: () => dispatch(clearAll()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectDashboard);
