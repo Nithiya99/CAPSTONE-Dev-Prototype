@@ -71,6 +71,7 @@ exports.createProject = (req, res) => {
     targetPosition: "left",
     position: { x: 500, y: 0 },
   });
+  // project.created = new Date();
   console.log(project.leader._id);
   project.save((err, result) => {
     if (err) return res.status(400).json({ error: err });

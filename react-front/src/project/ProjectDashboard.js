@@ -29,6 +29,12 @@ class ProjectDashboard extends Component {
     }
     const { project } = this.props.location.state;
     // console.log(this.props.location);
+    let today = new Date();
+    let day1 = new Date(today.toUTCString());
+    let day2 = new Date(project.created);
+    let difference = Math.abs(day2 - day1);
+    let days = parseInt(difference / (1000 * 3600 * 24));
+    // console.log(days);
     return (
       <div className="pt-5">
         <Tab.Container id="left-tabs-example" defaultActiveKey="projStats">
@@ -125,7 +131,16 @@ class ProjectDashboard extends Component {
                         </span>
                       </div>
                     </div>
-                    <div className="card-body">testing</div>
+                    <div className="card-body">
+                      <h4>No. of days:</h4>
+                      <span>{days}</span>
+                      <h4>Estimated date:</h4>
+                      <span>
+                        {this.props.pert.latestFinishTimes !== undefined
+                          ? Math.floor(this.props.pert.latestFinishTimes.__end)
+                          : "Expected time not Estimated"}
+                      </span>
+                    </div>
                   </div>
                 </Tab.Pane>
                 <Tab.Pane eventKey="netDiagram">
@@ -209,6 +224,7 @@ class ProjectDashboard extends Component {
 }
 const mapStateToProps = (state) => ({
   tasks: state.tasks.tasks,
+  pert: state.cpm.pert,
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -30,6 +30,10 @@ var projectSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
+  created: {
+    type: String,
+    default: Date,
+  },
   feedback: [
     {
       projectId: { type: ObjectId, ref: "Project" },

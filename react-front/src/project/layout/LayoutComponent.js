@@ -57,20 +57,20 @@ class LayoutComponent extends Component {
   };
   onElementsRemove = (elementsToRemove) => {
     let cons = this.props.connections;
+    const filteredConnections = cons.filter(
+      (con) => con.id !== elementsToRemove[0].id
+    );
+    this.props.replaceConnections({ connections: filteredConnections });
     cons.map((con) => {
       if (con.id === elementsToRemove[0].id) {
         console.log(con.id, elementsToRemove[0].id);
         deleteConnections(this.props.project._id, con._id).then((data) => {
           console.log("connection deleted");
+          // this.pertCalc();
         });
         return;
       }
     });
-    const filteredConnections = cons.filter(
-      (con) => con.id !== elementsToRemove[0].id
-    );
-    // console.log(filteredConnections);
-    this.props.replaceConnections({ connections: filteredConnections });
   };
   onLoad = (reactFlowInstance) => {
     reactFlowInstance.fitView();
@@ -134,7 +134,7 @@ class LayoutComponent extends Component {
       this.props.connectionAdded({ connection: edge });
       // this.setState({ elements: ele });
       // console.log(this.state.elements);
-      this.pertCalc();
+      // this.pertCalc();
     }
   };
   getIdOfObjectId = (elemId) => {
@@ -167,6 +167,10 @@ class LayoutComponent extends Component {
     let nodes = this.props.nodes.map((elem) => ({
       ...elem,
     }));
+    // let connections = this.props.connections.map((elem) => ({
+    //   ...elem,
+    // }));
+    // console.log(connections);
     nodes.map((elem) => {
       if (
         elem.data.predecessors.length === 0 ||
@@ -218,6 +222,10 @@ class LayoutComponent extends Component {
     console.log(element);
   };
   componentDidUpdate(prevState, prevProps) {
+    // console.log(prevState.connections, this.props.connections);
+    if (this.props.connections.length !== prevState.connections.length) {
+      this.pertCalc();
+    }
     if (prevState.tasks.length !== this.props.tasks.length) {
       const { tasks } = this.props;
       let newTasks = [];
