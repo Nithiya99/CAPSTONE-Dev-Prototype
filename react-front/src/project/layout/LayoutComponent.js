@@ -66,6 +66,11 @@ class LayoutComponent extends Component {
         return;
       }
     });
+    const filteredConnections = cons.filter(
+      (con) => con.id !== elementsToRemove[0].id
+    );
+    // console.log(filteredConnections);
+    this.props.replaceConnections({ connections: filteredConnections });
   };
   onLoad = (reactFlowInstance) => {
     reactFlowInstance.fitView();
