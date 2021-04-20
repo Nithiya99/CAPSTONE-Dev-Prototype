@@ -76,10 +76,12 @@ class Signin extends Component {
         }
       })
       .then(() => {
-        const userId = isAuthenticated().user._id;
-        socket.emit("login", {
-          userId,
-        });
+        if(isAuthenticated()){
+          const userId = isAuthenticated().user._id;
+          socket.emit("login", {
+            userId,
+          });
+        }
       });
   };
 

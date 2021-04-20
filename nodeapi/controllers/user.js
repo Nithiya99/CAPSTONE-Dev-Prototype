@@ -46,7 +46,7 @@ exports.allUsers = (req, res) => {
     }
     res.json(users);
   }).select(
-    "name email updated created username bio social location skills dob projects completed_projects rating completion_percentage_of_all_projects"
+    "name email updated created username bio social location skills dob projects completed_projects rating completion_percentage_of_all_projects followers following"
   );
 };
 
@@ -106,4 +106,27 @@ exports.setRating = (req, res) => {
     });
   });
   return res.status(200).json({ message: "Updated Ratings" });
+};
+
+exports.followRequest =(req,res) => {
+  let user = req.profile;
+  console.log(user);
+  user.following.push(req.body.followId);
+  user.save();
+  User.findById(req.body.followId,(err,result) =>{
+    result.followers.push(user._id);
+    result.save()
+  })
+  return res.status(200).json({user})
+};
+
+exports.unfollowRequest =(req,res) => {
+  let user =req.profile;
+  user.following.pull(req.body.followId);
+  user.save()
+  User.findById(req.body.followId,(err,result) =>{
+    result.followers.pull(user._id);
+    result.save()
+  })
+  return res.status(200).json({user})
 };
