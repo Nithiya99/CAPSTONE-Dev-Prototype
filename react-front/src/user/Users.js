@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { list } from "./apiUser";
+import { list, getCurrentUser, followUser, unfollowUser } from "./apiUser";
 import DefaultProfile from "../images/avatar.png";
 import { Link } from "react-router-dom";
 
@@ -52,9 +52,26 @@ class Users extends Component {
                   <Link to="#" className="btn btn-outline-primary">
                     Message
                   </Link>
-                  <Link to="#" className="btn btn-outline-success">
-                    Follow
-                  </Link>
+                  {user.followers.indexOf(getCurrentUser()._id)>-1 ? (
+                    <button
+                      className="btn btn-raised btn-primary ml-3" 
+                      onClick = {(e) =>
+                        unfollowUser(e,user._id)
+                        .then((data) => console.log(data))
+                      }>
+                      UnFollow
+                    </button>
+                    ) : (
+                      <button 
+                      className="btn btn-raised btn-primary ml-3" 
+                      onClick = {(e) =>
+                        followUser(e,user._id)
+                        .then((data) => console.log(data))
+                      }>
+                      Follow
+                      </button>
+                    )
+                  }
                 </div>
               </div>
             </div>
@@ -65,7 +82,9 @@ class Users extends Component {
   );
 
   render() {
-    const { users } = this.state;
+    let users = this.state.users;
+    console.log(users);
+    users = users.filter((x) => x._id !== getCurrentUser()._id);
     return (
       <div className="container">
         <h2 className="mt-5 mb-5">Users</h2>

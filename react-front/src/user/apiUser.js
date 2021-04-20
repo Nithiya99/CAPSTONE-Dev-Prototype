@@ -105,3 +105,48 @@ export const setRating = (userId, rating) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const followUser = (e,userId)=>{
+  e.preventDefault();
+  let currentUserId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch(`http://localhost:8081/follow/${currentUserId}`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      followId: userId,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      return data;
+    });
+}
+
+
+export const unfollowUser = (e,userId) => {
+  e.preventDefault();
+  console.log(userId);
+  let currentUserId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch(`http://localhost:8081/unfollow/${currentUserId}`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      followId: userId,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      return data;
+    });
+
+}

@@ -108,6 +108,14 @@ var userSchema = new mongoose.Schema({
       type: String,
     },
   },
+  followers: [{
+    type:ObjectId,
+    ref:"User"
+  }],
+  following: [{
+    type:ObjectId,
+    ref:"User"
+  }],
 });
 
 userSchema
