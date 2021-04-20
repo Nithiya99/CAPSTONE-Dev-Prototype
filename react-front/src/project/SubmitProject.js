@@ -42,18 +42,18 @@ class SubmitProject extends Component {
     //     console.log(user);
     //   });
     // });
-    // setRating(userId, rating).then((data) => {
-    //   if (data.message === "Updated Ratings") {
-    //     // finish(projectId, token).then((data) => {
-    //     //   if (data.error) {
-    //     //     console.log(data.error);
-    //     //   } else {
-    //     //     alert("Project marked as completed :) ");
-    //     //     window.location.reload();
-    //     //   }
-    //     // });
-    //   }
-    // });
+    setRating(userId, rating).then((data) => {
+      if (data.message === "Updated Ratings") {
+        finish(projectId, token).then((data) => {
+          if (data.error) {
+            console.log(data.error);
+          } else {
+            alert("Project marked as completed :) ");
+            window.location.reload();
+          }
+        });
+      }
+    });
   };
   setRatingObject = (rating) => {
     this.setState({ rating });

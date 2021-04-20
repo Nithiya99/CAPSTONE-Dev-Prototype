@@ -6,14 +6,16 @@ const { addNotification } = require("./notifications");
 
 const sumItUp = async (project, sum) => {
   // console.log(project);
+  let proj_completion_percentage = 0;
   try {
     const { completion_percentage } = await Project.findById(project).exec();
+    proj_completion_percentage = completion_percentage;
   } catch (err) {
     console.log(err);
   }
-  sum += completion_percentage;
+  sum += proj_completion_percentage;
   console.log(
-    `completion_percentage is ${completion_percentage}, updated sum is ${sum}`
+    `completion_percentage is ${proj_completion_percentage}, updated sum is ${sum}`
   );
   return sum;
 };

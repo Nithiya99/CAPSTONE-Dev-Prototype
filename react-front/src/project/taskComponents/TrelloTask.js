@@ -176,7 +176,7 @@ class TrelloTask extends Component {
             backgroundColor: "#3179ba",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: "17vw",
+            width: "260",
           },
         },
         {
@@ -189,7 +189,7 @@ class TrelloTask extends Component {
             backgroundColor: "#FFCC33",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: "17vw",
+            width: "260",
           },
         },
         {
@@ -202,7 +202,7 @@ class TrelloTask extends Component {
             backgroundColor: "#FF9900",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: "17vw",
+            width: "260",
           },
         },
         {
@@ -215,7 +215,7 @@ class TrelloTask extends Component {
             backgroundColor: "#00CC00",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: "17vw",
+            width: "260",
           },
         },
       ],
@@ -295,9 +295,9 @@ class TrelloTask extends Component {
               height: "65vh",
             }}
             cardStyle={{
-              minWidth: "16vw",
-              width: "16vw",
-              maxWidth: "16vw",
+              minWidth: "250",
+              width: "250",
+              maxWidth: "250",
               overflow: "hidden",
             }}
           />

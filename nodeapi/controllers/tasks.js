@@ -108,10 +108,10 @@ exports.addConnection = (req, res) => {
     project.save((err) => {
       if (err) return res.status(400).json({ err });
     });
+    return res.status(200).json({ project });
   } catch (err) {
     console.log(err);
   }
-  return res.status(200).json({ project });
 };
 
 exports.getAllConnections = (req, res) => {
@@ -158,7 +158,7 @@ exports.putPosition = (req, res) => {
 const sumItUp = async (project, sum) => {
   // console.log(project);
   const { completion_percentage } = await Project.findById(project).exec();
-  if (typeof completion_percentage === Number) sum += completion_percentage;
+  sum += completion_percentage;
   // console.log(`completion_percentage is ${completion_percentage}, updated sum is ${sum}`);
   return sum;
 };
@@ -275,12 +275,28 @@ exports.deleteConnections = (req, res) => {
   let project = req.projectObject;
   let cons = project.connections;
   let newcons = [];
+  let tasks = project.tasks;
   // console.log(req.body.Id);
+  let to = "", from = "";
   cons.forEach((con) => {
     if (con._id.toString() !== req.body.Id.toString()) {
       newcons.push(con);
     }
+    else
+    {
+      to = con.to;
+      from = con.from;
+    }
   });
+  tasks.map((task) =>{
+    if(task._id.toString() === to.toString())
+    {
+      const index = task.predecessors.indexOf(from.toString());
+      if (index > -1) {
+        task.predecessors.splice(index, 1);
+      }
+    }
+  })
   console.log(newcons);
   project.connections = newcons;
   project.save();
