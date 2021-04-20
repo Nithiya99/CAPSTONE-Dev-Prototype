@@ -1,8 +1,15 @@
 import React, { Component } from "react";
-import { list, getCurrentUser, followUser, unfollowUser } from "./apiUser";
+import {
+  list,
+  getCurrentUser,
+  followUser,
+  unfollowUser,
+  getUserById,
+} from "./apiUser";
 import DefaultProfile from "../images/avatar.png";
 import { Link } from "react-router-dom";
-
+import { connect } from "react-redux";
+import { updateFollowing } from "../store/user";
 class Users extends Component {
   constructor() {
     super();
@@ -19,8 +26,18 @@ class Users extends Component {
         this.setState({ users: data });
       }
     });
+    getUserById(getCurrentUser()._id).then((data) => {
+      this.props.updateFollowing({
+        following: data.user.following,
+      });
+      // console.log(curUser);
+    });
+    // console.log(this.state.following);
   }
-
+  componentDidUpdate(prevState, prevProps) {
+    console.log(prevState);
+    console.log(prevProps);
+  }
   renderUsers = (users) => (
     <div className="row row-cols-1 row-cols-md-4">
       {users.map((user, i) => (
@@ -52,26 +69,37 @@ class Users extends Component {
                   <Link to="#" className="btn btn-outline-primary">
                     Message
                   </Link>
-                  {user.followers.indexOf(getCurrentUser()._id)>-1 ? (
+                  {this.props.following.includes(user._id) ? (
                     <button
-                      className="btn btn-raised btn-primary ml-3" 
-                      onClick = {(e) =>
-                        unfollowUser(e,user._id)
-                        .then((data) => console.log(data))
-                      }>
+                      className="btn btn-raised btn-primary ml-3"
+                      onClick={(e) => {
+                        unfollowUser(e, user._id).then(
+                          (data) =>
+                            this.props.updateFollowing({
+                              following: data.user.following,
+                            })
+                          // console.log(data)
+                        );
+                      }}
+                    >
                       UnFollow
                     </button>
-                    ) : (
-                      <button 
-                      className="btn btn-raised btn-primary ml-3" 
-                      onClick = {(e) =>
-                        followUser(e,user._id)
-                        .then((data) => console.log(data))
-                      }>
+                  ) : (
+                    <button
+                      className="btn btn-raised btn-primary ml-3"
+                      onClick={(e) =>
+                        followUser(e, user._id).then(
+                          (data) =>
+                            this.props.updateFollowing({
+                              following: data.user.following,
+                            })
+                          // console.log(data.user.following)
+                        )
+                      }
+                    >
                       Follow
-                      </button>
-                    )
-                  }
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -83,7 +111,8 @@ class Users extends Component {
 
   render() {
     let users = this.state.users;
-    console.log(users);
+    // console.log(users);
+    // console.log(this.props);
     users = users.filter((x) => x._id !== getCurrentUser()._id);
     return (
       <div className="container">
@@ -94,4 +123,12 @@ class Users extends Component {
   }
 }
 
-export default Users;
+const mapStateToProps = (state) => ({
+  following: state.user.following,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  updateFollowing: (params) => dispatch(updateFollowing(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Users);
