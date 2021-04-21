@@ -23,7 +23,7 @@ function Chat(props) {
   const [state, setState] = useState({
     message: "",
     name: getCurrentUser().name,
-    created: Date(),
+    created: new Date(),
   });
   const [chat, setChat] = useState([]);
   const socketRef = useRef();
