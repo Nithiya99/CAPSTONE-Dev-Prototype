@@ -174,6 +174,7 @@ class ProjectDashboard extends Component {
                       ) : (
                         <></>
                       )}
+                      <h2>Critical Path</h2>
                       <div>{console.log(this.props.pert.criticalPath)}</div>
                     </div>
                   </div>
