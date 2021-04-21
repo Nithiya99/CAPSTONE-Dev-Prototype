@@ -90,21 +90,21 @@ class ProjectDashboard extends Component {
                         </div>
                       </Nav.Link>
                     </Nav.Item>
-                    <Nav.Item>
-                      <Nav.Link eventKey="addTask">
-                        {project.status !== "Completed" &&
-                        getCurrentUser()._id === project.leader ? (
+                    {project.status !== "Completed" &&
+                    getCurrentUser()._id === project.leader ? (
+                      <Nav.Item>
+                        <Nav.Link eventKey="addTask">
                           <div className="d-flex align-items-center">
                             <div className="mr-3">
                               <PlaylistAddTwoToneIcon />
                             </div>
                             <div>Add Task</div>
                           </div>
-                        ) : (
-                          <div> </div>
-                        )}
-                      </Nav.Link>
-                    </Nav.Item>
+                        </Nav.Link>
+                      </Nav.Item>
+                    ) : (
+                      <div> </div>
+                    )}
                     <Nav.Item>
                       <Nav.Link eventKey="netDiagram">
                         <div className="d-flex align-items-center">
@@ -174,6 +174,7 @@ class ProjectDashboard extends Component {
                       ) : (
                         <></>
                       )}
+                      <div>{console.log(this.props.pert.criticalPath)}</div>
                     </div>
                   </div>
                 </Tab.Pane>
