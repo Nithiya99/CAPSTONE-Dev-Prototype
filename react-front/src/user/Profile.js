@@ -1,16 +1,25 @@
 import React, { Component } from "react";
 import { isAuthenticated } from "../auth";
 import { Redirect, Link } from "react-router-dom";
-import { read } from "./apiUser";
+import {
+  read,
+  getCurrentUser,
+  followUser,
+  unfollowUser,
+  getUserById,
+} from "./apiUser";
 import DefaultProfile from "../images/avatar.png";
 import DeleteUser from "./DeleteUser";
 import { Row, Tab, Col, Nav } from "react-bootstrap";
 import PersonTwoToneIcon from "@material-ui/icons/PersonTwoTone";
 import ChatTwoToneIcon from "@material-ui/icons/ChatTwoTone";
 import AccountTreeTwoToneIcon from "@material-ui/icons/AccountTreeTwoTone";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
 import DonutChart from "react-donut-chart";
 import { listmyprojects } from "./../project/apiProject";
-
+import { connect } from "react-redux";
+import { updateFollowing } from "../store/user";
 class Profile extends Component {
   constructor() {
     super();
@@ -37,6 +46,13 @@ class Profile extends Component {
     listmyprojects().then((projects) => {
       this.setState({ projects: projects.userProjects });
     });
+    // const { following } = this.props;
+    // console.log(1);
+    getUserById(getCurrentUser()._id).then((data) => {
+      this.props.updateFollowing({
+        following: data.user.following,
+      });
+    });
   }
   // this.setState({ projects });
 
@@ -52,6 +68,8 @@ class Profile extends Component {
     let ongoing = 0;
     let completed = 0;
     let overdue = 0;
+    const { following } = this.props;
+    console.log(following);
     if (projects !== undefined) {
       projects.map((project) => {
         if (project.status === "Completed") completed++;
@@ -78,17 +96,52 @@ class Profile extends Component {
                       </h5>
                       <div className="text-muted">@{user.username}</div>
                       {isAuthenticated().user &&
-                        isAuthenticated().user._id === user._id && (
-                          <div className="mt-2">
-                            <Link
-                              className="btn btn-sm btn-primary mr-2 py-2 px-3 px-xxl-5 my-1"
-                              to={`/user/edit/${user._id}`}
-                            >
-                              Edit Profile
-                            </Link>
-                            <DeleteUser userId={user._id} />
-                          </div>
-                        )}
+                      isAuthenticated().user._id === user._id ? (
+                        <div className="mt-2">
+                          <Link
+                            className="btn btn-sm btn-primary mr-2 py-2 px-3 px-xxl-5 my-1"
+                            to={`/user/edit/${user._id}`}
+                          >
+                            Edit Profile
+                          </Link>
+                          <DeleteUser userId={user._id} />
+                        </div>
+                      ) : (
+                        <div className="mt-2">
+                          {user._id !== getCurrentUser()._id ? (
+                            user.followers.indexOf(getCurrentUser()._id) >
+                            -1 ? (
+                              <button
+                                className="btn btn-raised btn-primary"
+                                onClick={(e) =>
+                                  unfollowUser(e, user._id).then((data) =>
+                                    this.props.updateFollowing({
+                                      following: data.user.following,
+                                    })
+                                  )
+                                }
+                              >
+                                UnFollow <PersonAddDisabledIcon />
+                              </button>
+                            ) : (
+                              <button
+                                className="btn btn-raised btn-primary"
+                                onClick={(e) =>
+                                  followUser(e, user._id).then((data) =>
+                                    this.props.updateFollowing({
+                                      following: data.user.following,
+                                    })
+                                  )
+                                }
+                              >
+                                Follow <PersonAddIcon />
+                              </button>
+                            )
+                          ) : (
+                            <div></div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className=" pt-3">
@@ -300,4 +353,11 @@ class Profile extends Component {
   }
 }
 
-export default Profile;
+const mapStateToProps = (state) => ({
+  following: state.user.following,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  updateFollowing: (params) => dispatch(updateFollowing(params)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

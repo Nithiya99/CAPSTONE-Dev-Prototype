@@ -104,19 +104,10 @@ var projectSchema = new mongoose.Schema({
       status: {
         type: String,
       },
-      subtasks: [
-        {
-          subTaskName: {
-            type: String,
-          },
-          subTaskDescription: {
-            type: String,
-          },
-          done: {
-            type: Boolean,
-          },
-        },
-      ],
+      created: {
+        type: String,
+        default: Date,
+      },
       pessimisticTime: {
         type: Number,
       },

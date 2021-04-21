@@ -10,6 +10,8 @@ import DefaultProfile from "../images/avatar.png";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { updateFollowing } from "../store/user";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
 class Users extends Component {
   constructor() {
     super();
@@ -83,6 +85,7 @@ class Users extends Component {
                       }}
                     >
                       UnFollow
+                      <PersonAddDisabledIcon />
                     </button>
                   ) : (
                     <button
@@ -98,6 +101,7 @@ class Users extends Component {
                       }
                     >
                       Follow
+                      <PersonAddIcon />
                     </button>
                   )}
                 </div>

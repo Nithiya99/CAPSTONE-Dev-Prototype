@@ -54,8 +54,10 @@ class ProjectDashboard extends Component {
     let difference = Math.abs(day2 - day1);
     let days = parseInt(difference / (1000 * 3600 * 24));
     // console.log(days);
-    const { expectedTime } = this.props;
-    console.log(expectedTime);
+    const { expectedTime, slacks } = this.props;
+    // console.log(slacks);
+    // if (slacks === undefined) return ;
+    if (expectedTime === undefined) return null;
     return (
       <div className="pt-5">
         <Tab.Container id="left-tabs-example" defaultActiveKey="projStats">
@@ -157,6 +159,21 @@ class ProjectDashboard extends Component {
                       <span>{days}</span>
                       <h4>Estimated date:</h4>
                       <span>{expectedTime}</span>
+                      {slacks !== undefined ? (
+                        <>
+                          <h4>Tasks that can be slacked On:</h4>
+                          <span>
+                            {Object.keys(slacks).map((key) => {
+                              <div>
+                                {console.log(key, slacks[key])}
+                                {key} : {slacks[key]}
+                              </div>;
+                            })}
+                          </span>
+                        </>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   </div>
                 </Tab.Pane>
@@ -244,6 +261,7 @@ const mapStateToProps = (state) => ({
   pert: state.cpm.pert,
   connections: state.cpm.connections,
   expectedTime: state.cpm.expectedTime,
+  slacks: state.cpm.slacks,
 });
 
 const mapDispatchToProps = (dispatch) => ({

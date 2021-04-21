@@ -30,6 +30,7 @@ import {
   replaceElements,
   setPert,
   setExpectedTime,
+  setSlacks,
 } from "../../store/cpm";
 import { updateTasks } from "../../store/tasks";
 const styles = (theme) => ({
@@ -234,6 +235,11 @@ class LayoutComponent extends Component {
       pert = jsPERT(tasksObjectFinal);
       this.props.setPert({ pert });
       console.log(this.props.pert);
+      // this.props.setSlacks({ slackObject: this.props.pert.slack });
+      console.log("slacks:");
+      newNodes.map((elem) => {
+        console.log(elem.id, pert.slack[elem.id]);
+      });
       this.props.setExpectedTime({
         expectedTime: Math.floor(this.props.pert.latestFinishTimes.__end),
       });
@@ -438,6 +444,7 @@ const mapStateToProps = (state) => ({
   tasks: state.tasks.tasks,
   elements: state.cpm.elements,
   pert: state.cpm.pert,
+  slacks: state.cpm.slacks,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -449,6 +456,7 @@ const mapDispatchToProps = (dispatch) => ({
   replaceElements: (params) => dispatch(replaceElements(params)),
   setPert: (params) => dispatch(setPert(params)),
   setExpectedTime: (params) => dispatch(setExpectedTime(params)),
+  setSlacks: (params) => dispatch(setSlacks(params)),
 });
 
 export default connect(

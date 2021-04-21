@@ -12,6 +12,7 @@ const slice = createSlice({
     elements: [],
     pert: {},
     expectedTime: 0,
+    slacks: {},
   },
   reducers: {
     nodeAdded: (state, action) => {
@@ -53,6 +54,10 @@ const slice = createSlice({
       state.pert = {};
       state.expectedTime = 0;
     },
+    setSlacks: (state, action) => {
+      const slackObject = action.payload.slackObject;
+      void (state.slacks = slackObject);
+    },
   },
 });
 export const {
@@ -64,5 +69,6 @@ export const {
   setPert,
   setExpectedTime,
   clearAll,
+  setSlacks,
 } = slice.actions;
 export default slice.reducer;
