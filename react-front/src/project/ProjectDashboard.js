@@ -215,27 +215,23 @@ class ProjectDashboard extends Component {
                     </div>
                   </div>
                 </Tab.Pane>
-                {getCurrentUser().id === project.leader ? (
-                  <Tab.Pane eventKey="addTask">
-                    <div className="card card-stretch">
-                      <div className="card-header">
-                        <div className="card-title align-items-start flex-column">
-                          <h4 className="card-label font-weight-bolder text-dark">
-                            Create Task
-                          </h4>
-                          <span className="text-muted font-weight-bold font-size-sm mt-1">
-                            Add Tasks and allocate to memebers.
-                          </span>
-                        </div>
-                      </div>
-                      <div className="card-body">
-                        <AddTask projectId={project._id} />
+                <Tab.Pane eventKey="addTask">
+                  <div className="card card-stretch">
+                    <div className="card-header">
+                      <div className="card-title align-items-start flex-column">
+                        <h4 className="card-label font-weight-bolder text-dark">
+                          Create Task
+                        </h4>
+                        <span className="text-muted font-weight-bold font-size-sm mt-1">
+                          Add Tasks and allocate to memebers.
+                        </span>
                       </div>
                     </div>
-                  </Tab.Pane>
-                ) : (
-                  <></>
-                )}
+                    <div className="card-body">
+                      <AddTask projectId={project._id} />
+                    </div>
+                  </div>
+                </Tab.Pane>
                 <Tab.Pane eventKey="Chat">
                   <div className="card card-stretch">
                     <div className="card-header">
