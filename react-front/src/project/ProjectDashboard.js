@@ -14,7 +14,7 @@ import Chat from "./Chat";
 import { getTasks } from "./apiProject";
 import { connect } from "react-redux";
 import { updateTasks } from "../store/tasks";
-import { clearAll } from "../store/cpm";
+import { clearAll, setCriticalPath } from "../store/cpm";
 
 class ProjectDashboard extends Component {
   state = {
@@ -42,6 +42,26 @@ class ProjectDashboard extends Component {
   //   }
   //   // console.log(prevState);
   // }
+  renderSlacks(slacks) {
+    return Object.keys(slacks).map((key) => (
+      <div>
+        {key} : {slacks[key]}
+      </div>
+    ));
+  }
+  renderCriticalPath(criticalPathArr, criticalPathObject) {
+    console.log("criticalPathArr:", criticalPathArr);
+    console.log("criticalPathObject:", criticalPathObject);
+    return criticalPathArr.map((node, index) => (
+      <>
+        {/* {index !== 1 && index !== 2 ?*/}
+        {index !== criticalPathArr.length - 1
+          ? criticalPathObject[node].label.toString() + " , "
+          : criticalPathObject[node].label.toString() + " ."}
+        {/* : ""} */}
+      </>
+    ));
+  }
   render() {
     if (this.props.location.state.project === undefined) {
       return null;
@@ -54,7 +74,7 @@ class ProjectDashboard extends Component {
     let difference = Math.abs(day2 - day1);
     let days = parseInt(difference / (1000 * 3600 * 24));
     // console.log(days);
-    const { expectedTime, slacks } = this.props;
+    const { expectedTime, slacks, criticalPath, pert } = this.props;
     // console.log(slacks);
     // if (slacks === undefined) return ;
     if (expectedTime === undefined) return null;
@@ -162,19 +182,27 @@ class ProjectDashboard extends Component {
                       {slacks !== undefined ? (
                         <>
                           <h4>Tasks that can be slacked On:</h4>
-                          <span>
-                            {Object.keys(slacks).map((key) => {
-                              <div>
-                                {console.log(key, slacks[key])}
-                                {key} : {slacks[key]}
-                              </div>;
-                            })}
-                          </span>
+                          <div>{this.renderSlacks(slacks)}</div>
                         </>
                       ) : (
                         <></>
                       )}
-                      <div>{console.log(this.props.pert.criticalPath)}</div>
+                      <div>
+                        <div>
+                          <h4>Critical Path:</h4>
+                        </div>
+                        <div>
+                          {pert.criticalPath !== undefined &&
+                          criticalPath !== undefined ? (
+                            this.renderCriticalPath(
+                              pert.criticalPath,
+                              criticalPath
+                            )
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </Tab.Pane>
@@ -263,6 +291,7 @@ const mapStateToProps = (state) => ({
   connections: state.cpm.connections,
   expectedTime: state.cpm.expectedTime,
   slacks: state.cpm.slacks,
+  criticalPath: state.cpm.criticalPath,
 });
 
 const mapDispatchToProps = (dispatch) => ({

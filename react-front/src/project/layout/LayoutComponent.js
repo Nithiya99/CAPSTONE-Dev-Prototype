@@ -31,6 +31,7 @@ import {
   setPert,
   setExpectedTime,
   setSlacks,
+  setCriticalPath,
 } from "../../store/cpm";
 import { updateTasks } from "../../store/tasks";
 const styles = (theme) => ({
@@ -237,9 +238,33 @@ class LayoutComponent extends Component {
       console.log(this.props.pert);
       // this.props.setSlacks({ slackObject: this.props.pert.slack });
       console.log("slacks:");
-      newNodes.map((elem) => {
-        console.log(elem.id, pert.slack[elem.id]);
+      let slackObject = {};
+      slackObject = newNodes.map((elem, index) => {
+        // console.log(elem.id, pert.slack[elem.id]);
+        if (index !== 0 && index !== 1) {
+          slackObject[elem.data.label] = pert.slack[elem.id];
+          return slackObject;
+        }
       });
+      console.log("slacks Object:", slackObject[slackObject.length - 1]);
+      let obj = slackObject[slackObject.length - 1];
+      this.props.setSlacks({ slackObject: obj });
+      let newNodesObject = {};
+      newNodesObject = newNodes.map((node) => {
+        newNodesObject[node.id] = node.data;
+        return newNodesObject;
+      });
+      newNodesObject = newNodesObject[newNodesObject.length - 1];
+      console.log("newNodesObject:", newNodesObject);
+      let criticalPathData = {};
+      criticalPathData = pert.criticalPath.map((id) => {
+        criticalPathData[id] = newNodesObject[id];
+        return criticalPathData;
+      });
+      criticalPathData = criticalPathData[criticalPathData.length - 1];
+      console.log("criticalPathDataObject:", criticalPathData);
+      this.props.setCriticalPath({ criticalPath: criticalPathData });
+
       this.props.setExpectedTime({
         expectedTime: Math.floor(this.props.pert.latestFinishTimes.__end),
       });
@@ -445,6 +470,7 @@ const mapStateToProps = (state) => ({
   elements: state.cpm.elements,
   pert: state.cpm.pert,
   slacks: state.cpm.slacks,
+  criticalPath: state.cpm.criticalPath,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -457,6 +483,7 @@ const mapDispatchToProps = (dispatch) => ({
   setPert: (params) => dispatch(setPert(params)),
   setExpectedTime: (params) => dispatch(setExpectedTime(params)),
   setSlacks: (params) => dispatch(setSlacks(params)),
+  setCriticalPath: (params) => dispatch(setCriticalPath(params)),
 });
 
 export default connect(
