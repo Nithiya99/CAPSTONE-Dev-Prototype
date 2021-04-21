@@ -90,21 +90,21 @@ class ProjectDashboard extends Component {
                         </div>
                       </Nav.Link>
                     </Nav.Item>
-                    <Nav.Item>
-                      <Nav.Link eventKey="addTask">
-                        {project.status !== "Completed" &&
-                        getCurrentUser()._id === project.leader ? (
+                    {project.status !== "Completed" &&
+                    getCurrentUser()._id === project.leader ? (
+                      <Nav.Item>
+                        <Nav.Link eventKey="addTask">
                           <div className="d-flex align-items-center">
                             <div className="mr-3">
                               <PlaylistAddTwoToneIcon />
                             </div>
                             <div>Add Task</div>
                           </div>
-                        ) : (
-                          <div> </div>
-                        )}
-                      </Nav.Link>
-                    </Nav.Item>
+                        </Nav.Link>
+                      </Nav.Item>
+                    ) : (
+                      <div> </div>
+                    )}
                     <Nav.Item>
                       <Nav.Link eventKey="netDiagram">
                         <div className="d-flex align-items-center">
@@ -174,6 +174,7 @@ class ProjectDashboard extends Component {
                       ) : (
                         <></>
                       )}
+                      <div>{console.log(this.props.pert.criticalPath)}</div>
                     </div>
                   </div>
                 </Tab.Pane>
@@ -214,23 +215,27 @@ class ProjectDashboard extends Component {
                     </div>
                   </div>
                 </Tab.Pane>
-                <Tab.Pane eventKey="addTask">
-                  <div className="card card-stretch">
-                    <div className="card-header">
-                      <div className="card-title align-items-start flex-column">
-                        <h4 className="card-label font-weight-bolder text-dark">
-                          Create Task
-                        </h4>
-                        <span className="text-muted font-weight-bold font-size-sm mt-1">
-                          Add Tasks and allocate to memebers.
-                        </span>
+                {getCurrentUser().id === project.leader ? (
+                  <Tab.Pane eventKey="addTask">
+                    <div className="card card-stretch">
+                      <div className="card-header">
+                        <div className="card-title align-items-start flex-column">
+                          <h4 className="card-label font-weight-bolder text-dark">
+                            Create Task
+                          </h4>
+                          <span className="text-muted font-weight-bold font-size-sm mt-1">
+                            Add Tasks and allocate to memebers.
+                          </span>
+                        </div>
+                      </div>
+                      <div className="card-body">
+                        <AddTask projectId={project._id} />
                       </div>
                     </div>
-                    <div className="card-body">
-                      <AddTask projectId={project._id} />
-                    </div>
-                  </div>
-                </Tab.Pane>
+                  </Tab.Pane>
+                ) : (
+                  <></>
+                )}
                 <Tab.Pane eventKey="Chat">
                   <div className="card card-stretch">
                     <div className="card-header">
