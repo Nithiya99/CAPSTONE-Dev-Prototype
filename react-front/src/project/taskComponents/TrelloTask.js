@@ -46,23 +46,21 @@ class TrelloTask extends Component {
         });
       }
     });
-    // console.log(flag);
+    console.log(laneId);
+    if (
+      projleader === getCurrentUser()._id &&
+      (laneId === "Review" || laneId === "COMPLETED")
+    )
+      this.setState({
+        flag: true,
+      });
   };
   handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
     console.log("drag ended");
-    // console.log(projleader, source);
-    if (
-      projleader === getCurrentUser()._id &&
-      sourceLaneId === "Review" &&
-      targetLaneId === "COMPLETED"
-    )
-      flag = true;
 
-    if (projleader === getCurrentUser()._id && sourceLaneId === "COMPLETED")
-      flag = true;
+    if (sourceLaneId === targetLaneId) this.setState({ flag: true });
 
-    console.log("flag:", flag);
-    if (flag === false) {
+    if (this.state.flag === false) {
       alert(
         "Sry.. You are not allowed to do this operation.. Changes made will be resetted"
       );
