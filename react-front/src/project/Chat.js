@@ -66,6 +66,7 @@ function Chat(props) {
     });
     socketRef.current.on("chat" + project_id, (data) => {
       setChat(data);
+      console.log(data);
     });
     socketRef.current.on(
       "message" + project_id,

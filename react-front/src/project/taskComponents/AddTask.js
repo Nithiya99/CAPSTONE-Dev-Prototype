@@ -79,15 +79,26 @@ class AddTask extends Component {
       task_pessimistic: "",
       task_mostLikely: "",
     });
-    addTask(this.props.projectId, newTask)
-      .then((data) => {
-        this.props.updateTasks({
-          tasks: data.tasks,
+    if (
+      newTask.task_title !== "" &&
+      newTask.task_description !== "" &&
+      newTask.task_responsible !== [] &&
+      newTask.task_optimistic !== "" &&
+      newTask.task_pessimistic !== "" &&
+      newTask.task_mostLikely !== ""
+    ) {
+      addTask(this.props.projectId, newTask)
+        .then((data) => {
+          this.props.updateTasks({
+            tasks: data.tasks,
+          });
+        })
+        .then(() => {
+          toast.success(newTask.task_title + " added to project.");
         });
-      })
-      .then(() => {
-        toast.success(newTask.task_title + " added to project.");
-      });
+    } else {
+      toast.error("Enter all the details to add the task!");
+    }
     // getTasks(this.props.projectId).then((val) =>
     //   this.props.updateTasks({
     //     tasks: val.tasks,

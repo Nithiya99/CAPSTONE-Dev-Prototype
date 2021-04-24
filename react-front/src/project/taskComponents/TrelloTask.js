@@ -23,7 +23,7 @@ class TrelloTask extends Component {
     alltasks: [],
     cardId: "",
     currentTask: {},
-    flag : false,
+    flag: false,
   };
   setEventBus = (eventBus) => {
     this.setState({ eventBus });
@@ -31,7 +31,7 @@ class TrelloTask extends Component {
   handleDragStart = (cardId, laneId) => {
     this.setState({
       flag: false,
-    })
+    });
     console.log("drag started");
     if (tasks === {}) return;
     tasks.forEach((task) => {
@@ -42,23 +42,27 @@ class TrelloTask extends Component {
           if (user === getCurrentUser()._id)
             this.setState({
               flag: true,
-            })
+            });
         });
       }
     });
-    console.log(laneId)
-    if(projleader === getCurrentUser()._id && (laneId === "Review" || laneId ==="COMPLETED"))
-      this.setState({
-        flag: true,
-      })
+    // console.log(flag);
   };
   handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
     console.log("drag ended");
+    // console.log(projleader, source);
+    if (
+      projleader === getCurrentUser()._id &&
+      sourceLaneId === "Review" &&
+      targetLaneId === "COMPLETED"
+    )
+      flag = true;
 
-    if(sourceLaneId === targetLaneId)
-      this.setState({ flag : true })
-    
-    if (this.state.flag === false) {
+    if (projleader === getCurrentUser()._id && sourceLaneId === "COMPLETED")
+      flag = true;
+
+    console.log("flag:", flag);
+    if (flag === false) {
       alert(
         "Sry.. You are not allowed to do this operation.. Changes made will be resetted"
       );
