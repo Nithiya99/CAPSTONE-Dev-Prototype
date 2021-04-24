@@ -11,7 +11,6 @@ import EditModel from "./EditModel";
 let data = {};
 let projleader = "";
 let tasks = [];
-let flag = false;
 let projectId = "";
 
 class TrelloTask extends Component {
@@ -24,38 +23,42 @@ class TrelloTask extends Component {
     alltasks: [],
     cardId: "",
     currentTask: {},
+    flag : false,
   };
   setEventBus = (eventBus) => {
     this.setState({ eventBus });
   };
   handleDragStart = (cardId, laneId) => {
+    this.setState({
+      flag: false,
+    })
     console.log("drag started");
-    flag = false;
     if (tasks === {}) return;
     tasks.forEach((task) => {
       if (task.id === cardId) {
         // console.log(getCurrentUser()._id)
         task.assigned.forEach((user) => {
           // console.log(user)
-          if (user === getCurrentUser()._id) flag = true;
+          if (user === getCurrentUser()._id)
+            this.setState({
+              flag: true,
+            })
         });
       }
     });
+    console.log(laneId)
+    if(projleader === getCurrentUser()._id && (laneId === "Review" || laneId ==="COMPLETED"))
+      this.setState({
+        flag: true,
+      })
   };
   handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
     console.log("drag ended");
 
-    if (
-      projleader === getCurrentUser()._id &&
-      sourceLaneId === "Review" &&
-      targetLaneId === "COMPLETED"
-    )
-      flag = true;
-
-    if (projleader === getCurrentUser()._id && sourceLaneId === "COMPLETED")
-      flag = true;
-
-    if (flag === false) {
+    if(sourceLaneId === targetLaneId)
+      this.setState({ flag : true })
+    
+    if (this.state.flag === false) {
       alert(
         "Sry.. You are not allowed to do this operation.. Changes made will be resetted"
       );
@@ -226,7 +229,7 @@ class TrelloTask extends Component {
     let cards = [];
     nextData.lanes.forEach((data) => {
       data.cards.forEach((card) => {
-        if (flag === true) card.status = card.laneId;
+        if (this.state.flag === true) card.status = card.laneId;
         else card.laneId = card.status;
         cards.push(card);
       });
@@ -259,7 +262,6 @@ class TrelloTask extends Component {
   }
   render() {
     // console.log(this.state.mytasks);
-    flag = false;
     return (
       <div>
         {this.state.show && this.state.isleader ? (
@@ -292,7 +294,7 @@ class TrelloTask extends Component {
             hideCardDeleteIcon={!this.state.isleader}
             style={{
               backgroundColor: "#eee",
-              height: "65vh",
+              // height: "65vh",
             }}
             cardStyle={{
               minWidth: "250",
