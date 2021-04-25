@@ -4,11 +4,12 @@ import useStayScrolled from "react-stay-scrolled";
 import io from "socket.io-client";
 import { getCurrentUser } from "./../user/apiUser";
 import { updateChat } from "./apiProject";
-import { Row, Col } from "react-bootstrap";
+import { Col } from "react-bootstrap";
 import SendIcon from "@material-ui/icons/Send";
 import DefaultProfile from "../images/avatar.png";
 import { read } from "../user/apiUser";
 import { isAuthenticated } from "../auth";
+import moment from "moment";
 
 var options = {
   rememberUpgrade: true,
@@ -55,6 +56,7 @@ function Chat(props) {
       setChat(data);
     });
   }, []);
+  
   useEffect(() => {
     socketRef.current = socketRef.current = io.connect(
       "http://localhost:8081",
@@ -99,6 +101,13 @@ function Chat(props) {
     setState({ message: "", name });
   };
 
+  const messagesEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+  }
+  useEffect(scrollToBottom, [chat]);
+
   const renderChat = () => {
     return chat.map(({ name, message, created }, index) => (
       <div>
@@ -116,7 +125,7 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">{created}</span>
+                <span className="text-muted font-size-sm">{moment(created).format('DD-MM-YYYY, h:mm:ss a')}</span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left bubble-alt">
@@ -141,7 +150,7 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">{created}</span>
+                <span className="text-muted font-size-sm">{moment(created).format('DD-MM-YYYY, h:mm:ss a')}</span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left  bubble">
@@ -160,7 +169,8 @@ function Chat(props) {
   return (
     <div>
       <div ref={divRef} className="render-chat">
-        {renderChat()}
+          {renderChat()}
+        <div ref={messagesEndRef} />
       </div>
       {status !== "Completed" ? (
         <form onSubmit={onMessageSubmit}>
