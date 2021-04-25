@@ -182,7 +182,8 @@ class TrelloTask extends Component {
             backgroundColor: "#3179ba",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: "260",
+            width: "23.5%",
+            maxHeight: "60vh",
           },
         },
         {
@@ -195,7 +196,8 @@ class TrelloTask extends Component {
             backgroundColor: "#FFCC33",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: "260",
+            width: "23.5%",
+            maxHeight: "60vh",
           },
         },
         {
@@ -208,7 +210,8 @@ class TrelloTask extends Component {
             backgroundColor: "#FF9900",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: "260",
+            width: "23.5%",
+            maxHeight: "60vh",
           },
         },
         {
@@ -221,7 +224,8 @@ class TrelloTask extends Component {
             backgroundColor: "#00CC00",
             boxShadow: "2px 2px 4px 0px rgba(0,0,0,0.75)",
             color: "#fff",
-            width: "260",
+            width: "23.5%",
+            maxHeight: "60vh",
           },
         },
       ],
@@ -307,13 +311,14 @@ class TrelloTask extends Component {
             hideCardDeleteIcon={!this.state.isleader}
             style={{
               backgroundColor: "#eee",
-              // height: "65vh",
+              height: "65vh",
             }}
             cardStyle={{
-              minWidth: "250",
-              width: "250",
-              maxWidth: "250",
               overflow: "hidden",
+              width : "90%",
+              marginLeft: "auto",
+              marginRight: "auto",
+
             }}
           />
         </div>

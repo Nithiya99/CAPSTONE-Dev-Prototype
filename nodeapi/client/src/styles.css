@@ -84,3 +84,20 @@ body {
   color: rgb(29, 26, 26);
   word-wrap: break-word;
 }
+
+.bubble-date {
+  box-sizing: border-box;
+  float: left;
+  width: auto;
+  max-width: 80%;
+  position: relative;
+  background: #e7e7e7;
+  clear: both;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  color: rgb(29, 26, 26);
+  word-wrap: break-word;
+}

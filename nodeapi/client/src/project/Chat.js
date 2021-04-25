@@ -109,6 +109,7 @@ function Chat(props) {
   useEffect(scrollToBottom, [chat]);
   
   var d= new Date();
+  var f=0;
   function setdate(dd)
   {
     d = dd;
@@ -117,6 +118,7 @@ function Chat(props) {
   function settoday(dd)
   {
     d = dd;
+    f=1;
   }
 
   const renderChat = () => {
@@ -127,9 +129,13 @@ function Chat(props) {
           moment(created).format('DD-MM-YYYY') !== moment(d).format('DD-MM-YYYY') ? 
           (
             moment(created).format('DD-MM-YYYY') === moment(new Date()).format('DD-MM-YYYY') ?
-            (<span className="text-muted font-size-sm">Today{settoday(created)}</span>) : 
-            (<span className="text-muted font-size-sm">{setdate(created)}</span>)
-          ):(<div></div>)
+            (<span className="text-dark-75 font-weight-bold font-size-sm bubble-date">Today{settoday(created)}</span>) : 
+            (<span className="text-dark-75 font-weight-bold font-size-sm bubble-date">{setdate(created)}</span>)
+          ):(
+            moment(created).format('DD-MM-YYYY') === moment(new Date()).format('DD-MM-YYYY') && f === 0 ? 
+            (<span className="text-dark-75 font-weight-bold font-size-sm bubble-date">Today{settoday(created)}</span>):
+            (<></>)
+          )
         }
         </div>
         {isAuthenticated().user.name === name ? (
