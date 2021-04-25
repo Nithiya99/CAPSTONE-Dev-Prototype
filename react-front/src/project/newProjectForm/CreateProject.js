@@ -9,7 +9,7 @@ class CreateProject extends Component {
     this.state = {
       title: "",
       description: "",
-      skills: [],
+      skills: [""],
       error: "",
       roleDetails: [
         {
@@ -87,7 +87,7 @@ class CreateProject extends Component {
           this.setState({
             title: "",
             description: "",
-            skills: [],
+            skills: [""],
             roleDetails: [
               {
                 index: Math.random(),

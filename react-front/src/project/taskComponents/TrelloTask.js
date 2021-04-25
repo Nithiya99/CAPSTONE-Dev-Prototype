@@ -5,7 +5,7 @@ import { updateTask } from "./../apiProject";
 import Board from "react-trello";
 import { deleteTask, getTasks } from "../apiProject";
 import { connect } from "react-redux";
-import { updateTasks } from "./../../store/tasks";
+import { updateTasks, updateTrello } from "./../../store/tasks";
 import { toast, ToastContainer } from "react-toastify";
 import EditModel from "./EditModel";
 let data = {};
@@ -136,11 +136,12 @@ class TrelloTask extends Component {
   };
 
   onCardClick = (cardId, metadata, laneId) => {
-    const currentTask = this.state.alltasks.find(({ _id }) => _id === cardId);
+    const currentTask = this.props.tasks.find(({ _id }) => _id === cardId);
     this.setState({
       cardId: cardId,
       currentTask,
     });
+    // console.log(this.state.currentTask);
     this.showMe();
   };
   updateBoard = () => {
@@ -257,13 +258,23 @@ class TrelloTask extends Component {
     tasks.shift();
     tasks.shift();
     if (prevState.mytasks.length !== tasks.length) {
-      this.setState({ mytasks: tasks });
-      this.updateBoard();
+      if (this.props.updateTrelloBoard) {
+        console.log(this.props.updateTrelloBoard);
+        getTasks(this.props.projectId)
+          .then((data) => {
+            this.setState({ mytasks: data.tasks });
+            this.updateBoard();
+          })
+          .then(() => this.props.updateTrello({ update: false }));
+        console.log(prevState.mytasks, tasks);
+      }
+      // this.setState({ mytasks: tasks });
     }
     // console.log(prevState.mytasks.length, tasks.length);
   }
   render() {
     // console.log(this.state.mytasks);
+    // console.log(this.state.currentTask);
     return (
       <div>
         {this.state.show && this.state.isleader ? (
@@ -313,10 +324,12 @@ class TrelloTask extends Component {
 
 const mapStateToProps = (state) => ({
   tasks: state.tasks.tasks,
+  updateTrelloBoard: state.tasks.updateTrelloBoard,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   updateTasks: (params) => dispatch(updateTasks(params)),
+  updateTrello: (params) => dispatch(updateTrello(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrelloTask);

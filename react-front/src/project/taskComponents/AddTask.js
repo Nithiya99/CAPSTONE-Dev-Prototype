@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import AssignPerson from "../../utils/signupbutton/Tagify/AssignPerson";
 import { addTask, getTasks } from "../apiProject";
 import { connect } from "react-redux";
-import { updateTasks } from "./../../store/tasks";
+import { updateTasks, updateTrello } from "./../../store/tasks";
 import { ToastContainer, toast } from "react-toastify";
 class AddTask extends Component {
   constructor() {
@@ -92,6 +92,7 @@ class AddTask extends Component {
           this.props.updateTasks({
             tasks: data.tasks,
           });
+          this.props.updateTrello({ update: true });
         })
         .then(() => {
           toast.success(newTask.task_title + " added to project.");
@@ -185,6 +186,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   updateTasks: (params) => dispatch(updateTasks(params)),
+  updateTrello: (params) => dispatch(updateTrello(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTask);

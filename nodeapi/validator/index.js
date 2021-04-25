@@ -83,6 +83,7 @@ exports.createProjectValidator = (req, res, next) => {
       min: 4,
       max: 2000,
     });
+  req.check("skills", "Enter skills").notEmpty();
   // req
   //   .check(
   //     "roleDetails",

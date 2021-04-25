@@ -11,7 +11,7 @@ export default class EditProject extends Component {
       description: "",
       skills: [],
       error: "",
-      team:[],
+      team: [],
       tasks: [],
       roleDetails: [],
       open: false,
@@ -27,8 +27,8 @@ export default class EditProject extends Component {
       roleDetails: project.roles,
       leader: project.leader,
       id: project._id,
-      team : project.team,
-      tasks : project.tasks,
+      team: project.team,
+      tasks: project.tasks,
     });
     let str = "";
     project.skills.map((skill) => {
@@ -85,14 +85,14 @@ export default class EditProject extends Component {
   clickSubmit = (event) => {
     event.preventDefault();
     this.setState({ loading: true });
-    let { title, description, skills, roleDetails,team,tasks } = this.state;
+    let { title, description, skills, roleDetails, team, tasks } = this.state;
     let project = {
       title,
       description,
       skills,
       roleDetails,
       team,
-      tasks
+      tasks,
     };
     updateProject(project, this.state.id).then((val) => {
       console.log(val);
@@ -180,7 +180,7 @@ export default class EditProject extends Component {
               onChange={this.handleRoleChange}
             />
 
-            <div className="row">
+            <div className="d-flex justify-content-center">
               <button
                 onClick={() => this.addNewRow()}
                 type="button"

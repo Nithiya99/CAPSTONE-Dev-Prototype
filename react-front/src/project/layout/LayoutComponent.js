@@ -34,6 +34,7 @@ import {
   setCriticalPath,
 } from "../../store/cpm";
 import { updateTasks } from "../../store/tasks";
+import { getCurrentUser } from "./../../user/apiUser";
 const styles = (theme) => ({
   modal: {
     display: "flex",
@@ -58,22 +59,25 @@ class LayoutComponent extends Component {
     checked: false,
     bleh: 1,
   };
+
   onElementsRemove = (elementsToRemove) => {
-    let cons = this.props.connections;
-    const filteredConnections = cons.filter(
-      (con) => con.id !== elementsToRemove[0].id
-    );
-    this.props.replaceConnections({ connections: filteredConnections });
-    cons.map((con) => {
-      if (con.id === elementsToRemove[0].id) {
-        console.log(con.id, elementsToRemove[0].id);
-        deleteConnections(this.props.project._id, con._id).then((data) => {
-          console.log("connection deleted");
-          // this.pertCalc();
-        });
-        return;
-      }
-    });
+    if (this.props.project.leader.toString() === getCurrentUser()._id) {
+      let cons = this.props.connections;
+      const filteredConnections = cons.filter(
+        (con) => con.id !== elementsToRemove[0].id
+      );
+      this.props.replaceConnections({ connections: filteredConnections });
+      cons.map((con) => {
+        if (con.id === elementsToRemove[0].id) {
+          console.log(con.id, elementsToRemove[0].id);
+          deleteConnections(this.props.project._id, con._id).then((data) => {
+            console.log("connection deleted");
+            // this.pertCalc();
+          });
+          return;
+        }
+      });
+    }
   };
   onLoad = (reactFlowInstance) => {
     reactFlowInstance.fitView();
@@ -97,47 +101,49 @@ class LayoutComponent extends Component {
     return inside;
   }
   onConnect = (params) => {
-    let source = params.source;
-    let target = params.target;
-    if (source !== undefined && target !== undefined) {
-      let edge = {
-        id:
-          "reactflow__edge-" +
-          source.toString() +
-          "null-" +
-          target.toString() +
-          "null",
-        source: source.toString(),
-        sourceHandle: null,
-        target: target.toString(),
-        targetHandle: null,
-      };
-      // console.log(this.state.elements);
-      let sourceId = "";
-      let targetId = "";
-      // console.log(this.props.nodes);
-      this.props.nodes.map((elem) => {
-        if (elem.id === source) {
-          sourceId = elem.key;
-        }
-        if (elem.id === target) {
-          targetId = elem.key;
-        }
-      });
-      putPredecessors(this.props.project._id, targetId, sourceId).then(() => {
-        console.log(sourceId + " has new Predecessor " + targetId);
-      });
-      // let ele = [...this.state.elements];
-      // if (!this.edgeInElements(ele, edge)) {
-      //   ele.push(edge);
-      putConnections(this.props.project._id, sourceId, targetId).then(() => {
-        console.log("connection " + sourceId + "to " + targetId + "added");
-      });
-      // }
-      this.props.connectionAdded({ connection: edge });
-      // this.setState({ elements: ele });
-      // console.log(this.state.elements);
-      this.pertCalc();
+    if (this.props.project.leader.toString() === getCurrentUser()._id) {
+      let source = params.source;
+      let target = params.target;
+      if (source !== undefined && target !== undefined) {
+        let edge = {
+          id:
+            "reactflow__edge-" +
+            source.toString() +
+            "null-" +
+            target.toString() +
+            "null",
+          source: source.toString(),
+          sourceHandle: null,
+          target: target.toString(),
+          targetHandle: null,
+        };
+        // console.log(this.state.elements);
+        let sourceId = "";
+        let targetId = "";
+        // console.log(this.props.nodes);
+        this.props.nodes.map((elem) => {
+          if (elem.id === source) {
+            sourceId = elem.key;
+          }
+          if (elem.id === target) {
+            targetId = elem.key;
+          }
+        });
+        putPredecessors(this.props.project._id, targetId, sourceId).then(() => {
+          console.log(sourceId + " has new Predecessor " + targetId);
+        });
+        // let ele = [...this.state.elements];
+        // if (!this.edgeInElements(ele, edge)) {
+        //   ele.push(edge);
+        putConnections(this.props.project._id, sourceId, targetId).then(() => {
+          console.log("connection " + sourceId + "to " + targetId + "added");
+        });
+        // }
+        this.props.connectionAdded({ connection: edge });
+        // this.setState({ elements: ele });
+        // console.log(this.state.elements);
+        this.pertCalc();
+      }
     }
   };
   getIdOfObjectId = (elemId) => {
@@ -282,6 +288,129 @@ class LayoutComponent extends Component {
   onElementClick = (event, element) => {
     console.log(element);
   };
+  componentDidMount() {
+    let newNodes = [];
+
+    getTasks(this.props.project._id).then((data) => {
+      console.log(data.tasks);
+      const tasks = data.tasks;
+      let newTasks = [];
+      tasks.map((task) => {
+        newTasks.push({ ...task });
+      });
+      newTasks.map((task) => {
+        task["label"] = task.taskName;
+        task["description"] = task.description;
+        task["time"] = task.mostLikelyTime;
+        task["optimistic"] = task.optimisticTime;
+        task["pessimistic"] = task.pessimisticTime;
+        if (
+          task.taskName !== "Completed!!" &&
+          task.taskName !== "Lets Start Working"
+        ) {
+          let newNode = {
+            key: task._id,
+            id: (newNodes.length + 1).toString(),
+            data: task,
+            sourcePosition: "right",
+            targetPosition: "left",
+            position:
+              task.position !== undefined
+                ? task.position
+                : {
+                    x: (Math.random() * window.innerWidth) / 2,
+                    y: (Math.random() * window.innerHeight) / 2,
+                  },
+          };
+          newNodes.push(newNode);
+        }
+        if (task.taskName === "Lets Start Working") {
+          let ele = [...this.state.elements];
+          let newNode = {
+            key: task._id,
+            id: "1",
+            type: "input",
+            data: {
+              label: "Lets Start Working",
+              description: "Start working on tasks to complete project on time",
+              pessimistic: 0,
+              time: 0,
+              optimistic: 0,
+              predecessors: [],
+              _id: task._id,
+            },
+            sourcePosition: "right",
+            position:
+              task.position !== undefined ? task.position : { x: 0, y: 0 },
+          };
+          newNodes.push(newNode);
+        }
+        if (task.taskName === "Completed!!") {
+          let ele = [...this.state.elements];
+          let newNode = {
+            key: task._id,
+            id: "2",
+            type: "output",
+            data: {
+              label: "Completed!!",
+              description: "Yaaayy you gus have completed the project",
+              pessimistic: 0,
+              time: 0,
+              optimistic: 0,
+              predecessors: task.predecessors,
+              _id: task._id,
+            },
+            targetPosition: "left",
+            position:
+              task.position !== undefined ? task.position : { x: 500, y: 0 },
+          };
+          newNodes.push(newNode);
+        }
+      });
+      this.props.replaceNodes({ nodes: newNodes });
+      console.log("Mount nodes:", this.props.nodes);
+    });
+    getConnections(this.props.project._id)
+      .then((data) => {
+        let connections = [];
+        data.connections.map((link) => {
+          newNodes.map((elem) => {
+            if (elem.key !== undefined) {
+              if (link.from.toString() === elem.key.toString()) {
+                this.setState({ source: elem });
+              }
+              if (link.to.toString() === elem.key.toString()) {
+                this.setState({ target: elem });
+              }
+            }
+          });
+          let source = this.state.source;
+          let target = this.state.target;
+          if (source !== undefined && target !== undefined) {
+            let edge = {
+              id:
+                "reactflow__edge-" +
+                source.id.toString() +
+                "null-" +
+                target.id.toString() +
+                "null",
+              source: source.id.toString(),
+              sourceHandle: null,
+              target: target.id.toString(),
+              targetHandle: null,
+              _id: link._id,
+            };
+            connections.push(edge);
+          }
+          return "done";
+        });
+        // console.log(connections);
+        this.props.replaceConnections({ connections: connections });
+      })
+      .then(() => {
+        this.pertCalc();
+      });
+  }
   componentDidUpdate(prevState, prevProps) {
     if (this.props.connections.length !== prevState.connections.length) {
       this.pertCalc();

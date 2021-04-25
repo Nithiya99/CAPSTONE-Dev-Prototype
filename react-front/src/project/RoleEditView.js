@@ -62,22 +62,12 @@ const RoleEditView = (props) => {
         </div>
         {/*</div>*/}
         <div className="form-group col-md-2 mt-4">
-          {idx === 0 ? (
-            <button
-              onClick={() => props.add()}
-              type="button"
-              className="btn btn-primary text-center"
-            >
-              <i className="fa fa-plus" aria-hidden="true" />
-            </button>
-          ) : (
-            <button
-              className="btn btn-danger"
-              onClick={() => props.delete(props.roleDetails[idx])}
-            >
-              <i className="fa fa-minus" aria-hidden="true" />
-            </button>
-          )}
+          <button
+            className="btn btn-danger"
+            onClick={() => props.delete(props.roleDetails[idx])}
+          >
+            <i className="fa fa-minus" aria-hidden="true" />
+          </button>
         </div>
       </div>
     );

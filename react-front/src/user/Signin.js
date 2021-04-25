@@ -76,7 +76,7 @@ class Signin extends Component {
         }
       })
       .then(() => {
-        if(isAuthenticated()){
+        if (isAuthenticated()) {
           const userId = isAuthenticated().user._id;
           socket.emit("login", {
             userId,
@@ -151,7 +151,7 @@ class Signin extends Component {
                         Login
                       </button>
                     </div>
-                    <div className="row">
+                    <div className="d-flex justify-content-center">
                       <GoogleLogin
                         clientId="11029788971-15i4cq1rn9lijdh2k685to3ri1vtb682.apps.googleusercontent.com"
                         buttonText="Login"
