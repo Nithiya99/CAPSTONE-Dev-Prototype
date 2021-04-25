@@ -107,11 +107,32 @@ function Chat(props) {
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   }
   useEffect(scrollToBottom, [chat]);
+  
+  var d= new Date();
+  function setdate(dd)
+  {
+    d = dd;
+    return moment(dd).format('DD-MM-YYYY');
+  }
+  function settoday(dd)
+  {
+    d = dd;
+  }
 
   const renderChat = () => {
     return chat.map(({ name, message, created }, index) => (
       <div>
-        {isAuthenticated().user.name === name && (
+        <div className="d-flex flex-column m-3 align-items-center">
+        {
+          moment(created).format('DD-MM-YYYY') !== moment(d).format('DD-MM-YYYY') ? 
+          (
+            moment(created).format('DD-MM-YYYY') === moment(new Date()).format('DD-MM-YYYY') ?
+            (<span className="text-muted font-size-sm">Today{settoday(created)}</span>) : 
+            (<span className="text-muted font-size-sm">{setdate(created)}</span>)
+          ):(<div></div>)
+        }
+        </div>
+        {isAuthenticated().user.name === name ? (
           <div className="d-flex flex-column m-3 align-items-end " key={index}>
             <div className="d-flex align-items-center">
               <div className="symbol symbol-circle symbol-40 mr-3">
@@ -125,15 +146,15 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">{moment(created).format('DD-MM-YYYY, h:mm:ss a')}</span>
+                <span className="text-muted font-size-sm">{moment(created).format('h:mm a')}</span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left bubble-alt">
               {message}
             </div>
           </div>
-        )}
-        {isAuthenticated().user.name !== name && (
+        ):
+        (
           <div
             className="d-flex flex-column m-3 align-items-start "
             key={index}
@@ -150,7 +171,7 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">{moment(created).format('DD-MM-YYYY, h:mm:ss a')}</span>
+                <span className="text-muted font-size-sm">{moment(created).format('h:mm a')}</span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left  bubble">
