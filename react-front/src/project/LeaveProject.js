@@ -10,8 +10,7 @@ class LeaveProject extends Component {
   leaveproject = () => {
     const project = this.props.project;
     console.log(project);
-    let final_team = [];
-    let final_tasks = [];
+    let final_team = [], final_tasks = [], final_roles = [];
     let tasks = project.tasks;
     tasks.forEach((task) => {
       let final_task = task;
@@ -28,17 +27,22 @@ class LeaveProject extends Component {
     });
     console.log(final_tasks);
 
-    let membs = this.props.project.team;
+    let membs = project.team;
     membs.forEach((user) => {
       if (user !== getCurrentUser()._id) final_team.push(user);
       console.log(final_team);
+    });
+
+    let roles = project.roles;
+    roles.map((role)=>{
+      if(role.assignedTo !== getCurrentUser()._id) final_roles.push(role);
     });
 
     let proj = {
       title: project.title,
       description: project.description,
       skills: project.skills,
-      roles: project.skills,
+      roleDetails: final_roles,
       team: final_team,
       tasks: final_tasks,
     };

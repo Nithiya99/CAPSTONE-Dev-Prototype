@@ -4,11 +4,12 @@ import useStayScrolled from "react-stay-scrolled";
 import io from "socket.io-client";
 import { getCurrentUser } from "./../user/apiUser";
 import { updateChat } from "./apiProject";
-import { Row, Col } from "react-bootstrap";
+import { Col } from "react-bootstrap";
 import SendIcon from "@material-ui/icons/Send";
 import DefaultProfile from "../images/avatar.png";
 import { read } from "../user/apiUser";
 import { isAuthenticated } from "../auth";
+import moment from "moment";
 
 var options = {
   rememberUpgrade: true,
@@ -55,6 +56,7 @@ function Chat(props) {
       setChat(data);
     });
   }, []);
+  
   useEffect(() => {
     socketRef.current = socketRef.current = io.connect(
       "http://localhost:8081",
@@ -99,10 +101,38 @@ function Chat(props) {
     setState({ message: "", name });
   };
 
+  const messagesEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+  }
+  useEffect(scrollToBottom, [chat]);
+  
+  var d= new Date();
+  function setdate(dd)
+  {
+    d = dd;
+    return moment(dd).format('DD-MM-YYYY');
+  }
+  function settoday(dd)
+  {
+    d = dd;
+  }
+
   const renderChat = () => {
     return chat.map(({ name, message, created }, index) => (
       <div>
-        {isAuthenticated().user.name === name && (
+        <div className="d-flex flex-column m-3 align-items-center">
+        {
+          moment(created).format('DD-MM-YYYY') !== moment(d).format('DD-MM-YYYY') ? 
+          (
+            moment(created).format('DD-MM-YYYY') === moment(new Date()).format('DD-MM-YYYY') ?
+            (<span className="text-muted font-size-sm">Today{settoday(created)}</span>) : 
+            (<span className="text-muted font-size-sm">{setdate(created)}</span>)
+          ):(<div></div>)
+        }
+        </div>
+        {isAuthenticated().user.name === name ? (
           <div className="d-flex flex-column m-3 align-items-end " key={index}>
             <div className="d-flex align-items-center">
               <div className="symbol symbol-circle symbol-40 mr-3">
@@ -116,15 +146,15 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">{created}</span>
+                <span className="text-muted font-size-sm">{moment(created).format('h:mm a')}</span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left bubble-alt">
               {message}
             </div>
           </div>
-        )}
-        {isAuthenticated().user.name !== name && (
+        ):
+        (
           <div
             className="d-flex flex-column m-3 align-items-start "
             key={index}
@@ -141,7 +171,7 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">{created}</span>
+                <span className="text-muted font-size-sm">{moment(created).format('h:mm a')}</span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left  bubble">
@@ -160,7 +190,8 @@ function Chat(props) {
   return (
     <div>
       <div ref={divRef} className="render-chat">
-        {renderChat()}
+          {renderChat()}
+        <div ref={messagesEndRef} />
       </div>
       {status !== "Completed" ? (
         <form onSubmit={onMessageSubmit}>
