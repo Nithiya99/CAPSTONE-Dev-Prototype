@@ -1,5 +1,5 @@
 {
-  "name": "react-front",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -34,6 +34,7 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.9",
     "sentence-similarity": "^3.0.2",
+    "serve": "^11.3.2",
     "similarity-score": "^1.0.0",
     "socket.io-client": "^4.0.1",
     "web-vitals": "^0.2.4"
@@ -50,6 +51,7 @@
       "react-app/jest"
     ]
   },
+  "proxy": "http://localhost:8081",
   "browserslist": {
     "production": [
       ">0.2%",

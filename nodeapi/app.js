@@ -15,7 +15,7 @@ const { getChat, addFeedbackNotification } = require("./controllers/project");
 // "mongodb://localhost/nodeapi"
 // process.env.MONGO_URI
 mongoose
-  .connect("mongodb://localhost/nodeapi", {
+  .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -66,7 +66,7 @@ app.use(function (err, req, res, next) {
     res.status(401).json({ error: "Unauthrized!" });
   }
 });
-
+require("./prod")(app);
 const port = process.env.PORT || 8081;
 const server = app.listen(port, () => {
   console.log(`A Node JS API is listening on port: ${port}`);
