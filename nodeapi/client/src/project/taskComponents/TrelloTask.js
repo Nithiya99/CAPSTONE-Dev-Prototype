@@ -146,6 +146,8 @@ class TrelloTask extends Component {
   };
   updateBoard = () => {
     const mytasks = this.state.mytasks;
+    // console.log("slackObject:", this.props.slackObject);
+    const { slackObject } = this.props;
     // console.log(mytasks);
     // console.log("mytasks:" + mytasks);
     let cards_planned = [];
@@ -153,10 +155,15 @@ class TrelloTask extends Component {
     let cards_review = [];
     let cards_completed = [];
     mytasks.forEach((task) => {
+      if (slackObject[task.taskName] !== undefined)
+        console.log("Overdue:", slackObject[task.taskName].overdue);
       var card = {
         id: task._id,
         title: task.taskName,
-        label: task.mostLikelyTime + " days",
+        label:
+          slackObject[task.taskName].slack -
+          slackObject[task.taskName].days +
+          " days left",
         description: task.taskDescription,
         pessimisticTime: task.pessimisticTime,
         optimisticTime: task.optimisticTime,
@@ -164,6 +171,10 @@ class TrelloTask extends Component {
         desc: task.taskDescription,
         mostLikelyTime: task.mostLikelyTime,
         status: task.status,
+
+        style: {
+          backgroundColor: slackObject[task.taskName].overdue ? "#ED2939" : "",
+        },
       };
       if (task.status === "PLANNED") cards_planned.push(card);
       else if (task.status === "WIP") cards_wip.push(card);
@@ -315,10 +326,9 @@ class TrelloTask extends Component {
             }}
             cardStyle={{
               overflow: "hidden",
-              width : "90%",
+              width: "90%",
               marginLeft: "auto",
               marginRight: "auto",
-
             }}
           />
         </div>
@@ -330,6 +340,7 @@ class TrelloTask extends Component {
 const mapStateToProps = (state) => ({
   tasks: state.tasks.tasks,
   updateTrelloBoard: state.tasks.updateTrelloBoard,
+  slackObject: state.cpm.slacks,
 });
 
 const mapDispatchToProps = (dispatch) => ({

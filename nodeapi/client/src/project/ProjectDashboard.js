@@ -45,13 +45,15 @@ class ProjectDashboard extends Component {
   renderSlacks(slacks) {
     return Object.keys(slacks).map((key) => (
       <div>
-        {key} : {slacks[key]}
+        Label: {key} | slack: {slacks[key].slack} | days: {slacks[key].days} |
+        Overdue:
+        {slacks[key].overdue ? <>Overdue</> : <>On schedule</>}
       </div>
     ));
   }
   renderCriticalPath(criticalPathArr, criticalPathObject) {
-    console.log("criticalPathArr:", criticalPathArr);
-    console.log("criticalPathObject:", criticalPathObject);
+    // console.log("criticalPathArr:", criticalPathArr);
+    // console.log("criticalPathObject:", criticalPathObject);
     return criticalPathArr.map((node, index) => (
       <>
         {/* {index !== 1 && index !== 2 ?*/}

@@ -69,7 +69,7 @@ class LayoutComponent extends Component {
       this.props.replaceConnections({ connections: filteredConnections });
       cons.map((con) => {
         if (con.id === elementsToRemove[0].id) {
-          console.log(con.id, elementsToRemove[0].id);
+          // console.log(con.id, elementsToRemove[0].id);
           deleteConnections(this.props.project._id, con._id).then((data) => {
             console.log("connection deleted");
             // this.pertCalc();
@@ -83,7 +83,7 @@ class LayoutComponent extends Component {
     reactFlowInstance.fitView();
   };
   onNodeDragStop = (e, node) => {
-    console.log(node.position, node.data._id);
+    // console.log(node.position, node.data._id);
     putPosition(this.props.project._id, node.data._id, node.position).then(
       () => {
         console.log(node.position + " is saved");
@@ -172,11 +172,11 @@ class LayoutComponent extends Component {
     // }));
     // console.log(connections);
     // let { connections } = this.props;
-    console.log("props:", this.props.connections);
+    // console.log("props:", this.props.connections);
     // console.log("connections:");
     let ids = [];
     this.props.connections.map((connection) => {
-      console.log(connection.source, connection.target);
+      // console.log(connection.source, connection.target);
       if (!ids.includes(connection.source)) {
         ids.push(connection.source.toString());
       }
@@ -184,7 +184,7 @@ class LayoutComponent extends Component {
         ids.push(connection.target.toString());
       }
     });
-    console.log("nodes:");
+    // console.log("nodes:");
     let newNodes = [];
     nodes.map((node) => {
       if (ids.includes(node.id)) newNodes.push(node);
@@ -201,9 +201,9 @@ class LayoutComponent extends Component {
           },
         }
       : {};
-    console.log("TasksObject before node addition:", tasksObject);
-    console.log(ids);
-    console.log("nodes sent for pertcalc:", newNodes);
+    // console.log("TasksObject before node addition:", tasksObject);
+    // console.log(ids);
+    // console.log("nodes sent for pertcalc:", newNodes);
     newNodes.map((elem) => {
       if (
         elem.data.predecessors.length === 0 ||
@@ -220,7 +220,7 @@ class LayoutComponent extends Component {
     });
     // console.log(nodes);
     tasksObject = newNodes.map((elem) => {
-      console.log("tasksObject node:", elem);
+      // console.log("tasksObject node:", elem);
       tasksObject[elem.id.toString()] = {
         id: elem.id.toString(),
         optimisticTime: elem.data.optimistic,
@@ -243,12 +243,24 @@ class LayoutComponent extends Component {
       this.props.setPert({ pert });
       console.log(this.props.pert);
       // this.props.setSlacks({ slackObject: this.props.pert.slack });
-      console.log("slacks:");
+      // console.log("slacks:");
       let slackObject = {};
       slackObject = newNodes.map((elem, index) => {
         // console.log(elem.id, pert.slack[elem.id]);
         if (index !== 0 && index !== 1) {
-          slackObject[elem.data.label] = pert.slack[elem.id];
+          // console.log("Slack elem:", elem);
+          let created = elem.data.created;
+          let today = new Date();
+          let day1 = new Date(today.toUTCString());
+          let day2 = new Date(created);
+          let difference = Math.abs(day2 - day1);
+          let days = parseInt(difference / (1000 * 3600 * 24));
+          // console.log(elem.data.label + " " + days + " " + pert.slack[elem.id]);
+          slackObject[elem.data.label] = {
+            slack: pert.slack[elem.id],
+            days,
+            overdue: pert.slack[elem.id] < days ? true : false,
+          };
           return slackObject;
         }
       });
@@ -261,7 +273,7 @@ class LayoutComponent extends Component {
         return newNodesObject;
       });
       newNodesObject = newNodesObject[newNodesObject.length - 1];
-      console.log("newNodesObject:", newNodesObject);
+      // console.log("newNodesObject:", newNodesObject);
       let criticalPathData = {};
       criticalPathData = pert.criticalPath.map((id) => {
         criticalPathData[id] = newNodesObject[id];
@@ -278,7 +290,7 @@ class LayoutComponent extends Component {
     } catch (err) {
       // console.log(err);
       this.props.setPert({ pert: {} });
-      console.log(this.props.pert);
+      // console.log(this.props.pert);
       this.props.setExpectedTime({
         expectedTime: 0,
       });
@@ -292,7 +304,7 @@ class LayoutComponent extends Component {
     let newNodes = [];
 
     getTasks(this.props.project._id).then((data) => {
-      console.log(data.tasks);
+      // console.log(data.tasks);
       const tasks = data.tasks;
       let newTasks = [];
       tasks.map((task) => {
@@ -368,7 +380,7 @@ class LayoutComponent extends Component {
         }
       });
       this.props.replaceNodes({ nodes: newNodes });
-      console.log("Mount nodes:", this.props.nodes);
+      // console.log("Mount nodes:", this.props.nodes);
     });
     getConnections(this.props.project._id)
       .then((data) => {
@@ -414,9 +426,9 @@ class LayoutComponent extends Component {
   componentDidUpdate(prevState, prevProps) {
     if (this.props.connections.length !== prevState.connections.length) {
       this.pertCalc();
-      console.log(prevState.connections.length, this.props.connections.length);
-      console.log("Pert from comp update:", this.props.pert);
-      console.log("Pert calculation nodes:", this.props.nodes);
+      // console.log(prevState.connections.length, this.props.connections.length);
+      // console.log("Pert from comp update:", this.props.pert);
+      // console.log("Pert calculation nodes:", this.props.nodes);
     }
     if (prevState.tasks.length !== this.props.tasks.length) {
       const { tasks } = this.props;

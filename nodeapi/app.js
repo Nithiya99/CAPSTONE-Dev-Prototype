@@ -15,7 +15,7 @@ const { getChat, addFeedbackNotification } = require("./controllers/project");
 // "mongodb://localhost/nodeapi"
 // process.env.MONGO_URI
 mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect("mongodb://localhost/nodeapi", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
