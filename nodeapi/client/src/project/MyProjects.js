@@ -30,7 +30,7 @@ class MyProjects extends Component {
   };
   componentDidMount() {
     listmyprojects().then((data) => this.setState({ myProjects: data }));
-    toast.dark("Loaded");
+    // toast.dark("Loaded");
   }
   renderProject(project) {
     // return <h5>{project.title}</h5>;

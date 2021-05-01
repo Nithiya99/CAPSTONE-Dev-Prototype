@@ -88,7 +88,6 @@ let users = {};
 let rating = {};
 sio.on("connection", (socket) => {
   console.log("Connected!");
-
   socket.on("addFeedbackForm", ({ rating, projectId }) => {
     addFeedbackNotification(rating, projectId);
   });

@@ -1,4 +1,4 @@
-export const addNotification = (userId, message, type) => {
+export const addNotification = (userId, message, type, projectId) => {
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let settings = {
     method: "PUT",
@@ -9,6 +9,7 @@ export const addNotification = (userId, message, type) => {
     body: JSON.stringify({
       notification: message,
       type,
+      projectId,
     }),
   };
   //   console.log(settings);

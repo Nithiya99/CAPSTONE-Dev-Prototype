@@ -7,6 +7,7 @@ exports.addNotification = (req, res) => {
     projectId: req.body.projectId ? req.body.projectId : "none",
   });
   user.newNotification = true;
+  console.log(user.notifications);
   user.save(); //(err) => {
   //   if (err)
   //     return res.status !== undefined

@@ -5,6 +5,7 @@ import {
   notificationAdded,
   getNotified,
   clearNotifications,
+  setSegregatedNotifications,
 } from "../store/notifications";
 import * as _ from "lodash";
 import { getCurrentUser } from "../user/apiUser";
@@ -26,6 +27,7 @@ class Home extends Component {
       })
       .then((val) => {
         let notifications = val.notifications;
+        console.log("Notifications:", notifications);
         notifications.map((notif) => {
           this.props.getNotified({
             type: notif.notifType,
@@ -35,8 +37,14 @@ class Home extends Component {
             projectId: notif.projectId ? notif.projectId : "none",
           });
         });
+
         let notificationGroupedObject = _.groupBy(notifications, "notifType");
+        console.log("Group Object:", notificationGroupedObject);
         this.setState({ notificationGroupedObject });
+        this.props.setSegregatedNotifications({
+          segregatedNotifications: notificationGroupedObject,
+        });
+        console.log(notifications);
       });
     listmyprojects().then((projects) =>
       this.setState({ projects: projects.userProjects })
@@ -65,7 +73,8 @@ class Home extends Component {
     //   console.log(notif);
     // });
 
-    // console.log(notificationGroupedObject);
+    Object.keys(notificationGroupedObject).length > 0 &&
+      console.log(Object.keys(notificationGroupedObject));
     // console.log(projects);
     if (
       Object.keys(notificationGroupedObject).length !== 0 &&
@@ -163,5 +172,7 @@ const mapDispatchToProps = (dispatch) => ({
   addNotification: (params) => dispatch(notificationAdded(params)),
   getNotified: (params) => dispatch(getNotified(params)),
   clearNotifications: () => dispatch(clearNotifications()),
+  setSegregatedNotifications: (params) =>
+    dispatch(setSegregatedNotifications(params)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

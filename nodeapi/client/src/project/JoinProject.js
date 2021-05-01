@@ -90,6 +90,7 @@ class JoinProject extends Component {
                                             getCurrentUser().name
                                           }!`,
                                           type: "RequestForRole",
+                                          projectId: project._id,
                                         });
                                       }
                                     });

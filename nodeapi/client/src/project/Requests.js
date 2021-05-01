@@ -50,11 +50,13 @@ class Requests extends Component {
                       getCurrentUser().name
                     }, Time to show off my skills B)`,
                     type: "RoleAccepted",
+                    projectId: projectId,
                   });
                   this.props.notificationAdded({
                     userId: getCurrentUser()._id,
                     message: `@${user.username} added to project! Welcome the new Member`,
                     type: "NewMember",
+                    projectId: projectId,
                   });
                 });
               }}
@@ -76,6 +78,7 @@ class Requests extends Component {
                     userId: user._id,
                     message: `Role Declined by ${getCurrentUser().name} :(`,
                     type: "RoleDeclined",
+                    projectId: projectId,
                   });
                 });
               }}

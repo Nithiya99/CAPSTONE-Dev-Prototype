@@ -161,9 +161,11 @@ class TrelloTask extends Component {
         id: task._id,
         title: task.taskName,
         label:
-          slackObject[task.taskName].slack -
-          slackObject[task.taskName].days +
-          " days left",
+          slackObject[task.taskName] !== undefined
+            ? slackObject[task.taskName].slack -
+              slackObject[task.taskName].days +
+              " days left"
+            : task.mostLikelyTime + " days left",
         description: task.taskDescription,
         pessimisticTime: task.pessimisticTime,
         optimisticTime: task.optimisticTime,
@@ -173,7 +175,12 @@ class TrelloTask extends Component {
         status: task.status,
 
         style: {
-          backgroundColor: slackObject[task.taskName].overdue ? "#ED2939" : "",
+          backgroundColor:
+            slackObject[task.taskName] !== undefined
+              ? slackObject[task.taskName].overdue
+                ? "#ED2939"
+                : ""
+              : "",
         },
       };
       if (task.status === "PLANNED") cards_planned.push(card);
