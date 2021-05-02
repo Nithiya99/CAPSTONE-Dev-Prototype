@@ -32,22 +32,8 @@ function Chat(props) {
   const divRef = useRef(null);
   const { stayScrolled } = useStayScrolled(divRef);
 
-  let init = (userId) => {
-    const token = isAuthenticated().token;
-    read(userId, token).then((data) => {
-      if (data.error) {
-        this.setState({ redirectToSignin: true });
-      } else {
-        this.setState({ user: data });
-      }
-    });
-  };
-
   useEffect(() => {
-    socketRef.current = socketRef.current = io.connect(
-      "http://localhost:8081",
-      options
-    );
+    socketRef.current = io.connect("http://localhost:8081", options);
     socketRef.current.emit("getChat", {
       project_id,
       client_chat_length: chat.length,
@@ -56,12 +42,9 @@ function Chat(props) {
       setChat(data);
     });
   }, []);
-  
+
   useEffect(() => {
-    socketRef.current = socketRef.current = io.connect(
-      "http://localhost:8081",
-      options
-    );
+    socketRef.current = io.connect("http://localhost:8081", options);
     socketRef.current.emit("getChat", {
       project_id,
       client_chat_length: chat.length,
@@ -101,42 +84,48 @@ function Chat(props) {
     setState({ message: "", name });
   };
 
-  const messagesEndRef = useRef(null)
+  const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  };
   useEffect(scrollToBottom, [chat]);
-  
-  var d= new Date();
-  var f=0;
-  function setdate(dd)
-  {
+
+  var d = new Date();
+  var f = 0;
+  function setdate(dd) {
     d = dd;
-    return moment(dd).format('DD-MM-YYYY');
+    return moment(dd).format("DD-MM-YYYY");
   }
-  function settoday(dd)
-  {
+  function settoday(dd) {
     d = dd;
-    f=1;
+    f = 1;
   }
 
   const renderChat = () => {
     return chat.map(({ name, message, created }, index) => (
       <div>
         <div className="d-flex flex-column m-3 align-items-center">
-        {
-          moment(created).format('DD-MM-YYYY') !== moment(d).format('DD-MM-YYYY') ? 
-          (
-            moment(created).format('DD-MM-YYYY') === moment(new Date()).format('DD-MM-YYYY') ?
-            (<span className="text-dark-75 font-weight-bold font-size-sm bubble-date">Today{settoday(created)}</span>) : 
-            (<span className="text-dark-75 font-weight-bold font-size-sm bubble-date">{setdate(created)}</span>)
-          ):(
-            moment(created).format('DD-MM-YYYY') === moment(new Date()).format('DD-MM-YYYY') && f === 0 ? 
-            (<span className="text-dark-75 font-weight-bold font-size-sm bubble-date">Today{settoday(created)}</span>):
-            (<></>)
-          )
-        }
+          {moment(created).format("DD-MM-YYYY") !==
+          moment(d).format("DD-MM-YYYY") ? (
+            moment(created).format("DD-MM-YYYY") ===
+            moment(new Date()).format("DD-MM-YYYY") ? (
+              <span className="text-dark-75 font-weight-bold font-size-sm bubble-date">
+                Today{settoday(created)}
+              </span>
+            ) : (
+              <span className="text-dark-75 font-weight-bold font-size-sm bubble-date">
+                {setdate(created)}
+              </span>
+            )
+          ) : moment(created).format("DD-MM-YYYY") ===
+              moment(new Date()).format("DD-MM-YYYY") && f === 0 ? (
+            <span className="text-dark-75 font-weight-bold font-size-sm bubble-date">
+              Today{settoday(created)}
+            </span>
+          ) : (
+            <></>
+          )}
         </div>
         {isAuthenticated().user.name === name ? (
           <div className="d-flex flex-column m-3 align-items-end " key={index}>
@@ -152,15 +141,16 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">{moment(created).format('h:mm a')}</span>
+                <span className="text-muted font-size-sm">
+                  {moment(created).format("h:mm a")}
+                </span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left bubble-alt">
               {message}
             </div>
           </div>
-        ):
-        (
+        ) : (
           <div
             className="d-flex flex-column m-3 align-items-start "
             key={index}
@@ -177,7 +167,9 @@ function Chat(props) {
                 <p className="text-dark-75 text-hover-primary font-weight-bold font-size-h6 m-0">
                   {name}
                 </p>
-                <span className="text-muted font-size-sm">{moment(created).format('h:mm a')}</span>
+                <span className="text-muted font-size-sm">
+                  {moment(created).format("h:mm a")}
+                </span>
               </div>
             </div>
             <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left  bubble">
@@ -196,7 +188,7 @@ function Chat(props) {
   return (
     <div>
       <div ref={divRef} className="render-chat">
-          {renderChat()}
+        {renderChat()}
         <div ref={messagesEndRef} />
       </div>
       {status !== "Completed" ? (

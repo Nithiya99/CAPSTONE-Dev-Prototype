@@ -106,7 +106,7 @@ export const setRating = (userId, rating) => {
     .catch((err) => console.log(err));
 };
 
-export const followUser = (e,userId)=>{
+export const followUser = (e, userId) => {
   e.preventDefault();
   let currentUserId = JSON.parse(localStorage.getItem("jwt")).user._id;
   let token = JSON.parse(localStorage.getItem("jwt")).token;
@@ -125,10 +125,9 @@ export const followUser = (e,userId)=>{
     .then((data) => {
       return data;
     });
-}
+};
 
-
-export const unfollowUser = (e,userId) => {
+export const unfollowUser = (e, userId) => {
   e.preventDefault();
   console.log(userId);
   let currentUserId = JSON.parse(localStorage.getItem("jwt")).user._id;
@@ -148,5 +147,71 @@ export const unfollowUser = (e,userId) => {
     .then((data) => {
       return data;
     });
+};
 
-}
+export const getfollowers = (userId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch("http://localhost:8081/followers/" + `${userId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const getfollowing = (userId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch("http://localhost:8081/following/" + `${userId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const getfriends = (userId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch("http://localhost:8081/friends/" + `${userId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const updatePersonalChat = (chat) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let Obj = {
+    chat: chat,
+  };
+  return fetch("http://localhost:8081/updatechat", {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(Obj),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

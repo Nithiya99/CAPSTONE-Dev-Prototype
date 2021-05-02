@@ -108,25 +108,93 @@ exports.setRating = (req, res) => {
   return res.status(200).json({ message: "Updated Ratings" });
 };
 
-exports.followRequest =(req,res) => {
+exports.followRequest = (req, res) => {
   let user = req.profile;
   console.log(user);
   user.following.push(req.body.followId);
   user.save();
-  User.findById(req.body.followId,(err,result) =>{
+  User.findById(req.body.followId, (err, result) => {
     result.followers.push(user._id);
-    result.save()
-  })
-  return res.status(200).json({user})
+    result.save();
+  });
+  return res.status(200).json({ user });
 };
 
-exports.unfollowRequest =(req,res) => {
-  let user =req.profile;
+exports.unfollowRequest = (req, res) => {
+  let user = req.profile;
   user.following.pull(req.body.followId);
-  user.save()
-  User.findById(req.body.followId,(err,result) =>{
+  user.save();
+  User.findById(req.body.followId, (err, result) => {
     result.followers.pull(user._id);
-    result.save()
-  })
-  return res.status(200).json({user})
+    result.save();
+  });
+  return res.status(200).json({ user });
+};
+
+exports.getfollowers = (req, res) => {
+  let user = req.profile;
+  User.findById(user._id).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found",
+      });
+    }
+    return res.json(user.followers);
+  });
+};
+
+exports.getfollowing = (req, res) => {
+  let user = req.profile;
+  User.findById(user._id).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found",
+      });
+    }
+    return res.json(user.following);
+  });
+};
+
+exports.getfriends = (req, res) => {
+  let user = req.profile;
+  User.findById(user._id).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found",
+      });
+    }
+    let final = user.following.filter((value) =>
+      user.followers.includes(value)
+    );
+    return res.json(final);
+  });
+};
+
+exports.updatePersonalChat = (req, res) => {
+  let chat_msg = req.body.chat;
+  console.log(chat_msg);
+  User.findById(req.body.chat.touser).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found",
+      });
+    }
+    user.chat.push(chat_msg);
+    user.save();
+  });
+  User.findById(req.body.chat.fromuser).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found",
+      });
+    }
+    user.chat.push(chat_msg);
+    user.save();
+  });
+  return res.status(200).json("hello");
+};
+
+exports.getPersonalChat = async (id) => {
+  const { chat } = await User.findById(id).exec();
+  return chat;
 };

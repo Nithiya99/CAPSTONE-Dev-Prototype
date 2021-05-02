@@ -95,6 +95,25 @@ const Menu = ({ history }) => {
             </div>
           </Nav.Item>
           <Nav.Item>
+            <div
+              style={isActive(
+                history,
+                `/mychats/${isAuthenticated().user._id}`
+              )}
+              className="p-3"
+            >
+              <Link
+                style={isActive(
+                  history,
+                  `/mychats/${isAuthenticated().user._id}`
+                )}
+                to={`/mychats/${isAuthenticated().user._id}`}
+              >
+                Chats
+              </Link>
+            </div>
+          </Nav.Item>
+          <Nav.Item>
             <div className="p-3">
               <span
                 style={

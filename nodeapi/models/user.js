@@ -71,6 +71,34 @@ var userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  chat: [
+    {
+      from_name: {
+        type: String,
+        required: true,
+      },
+      toname: {
+        type: String,
+        required: true,
+      },
+      message: {
+        type: String,
+        required: true,
+      },
+      created: {
+        type: Date,
+        default: Date.now,
+      },
+      touser: {
+        type: ObjectId,
+        ref: "User",
+      },
+      fromuser: {
+        type: ObjectId,
+        ref: "User",
+      },
+    },
+  ],
   notifications: [
     {
       message: {
@@ -108,14 +136,18 @@ var userSchema = new mongoose.Schema({
       type: String,
     },
   },
-  followers: [{
-    type:ObjectId,
-    ref:"User"
-  }],
-  following: [{
-    type:ObjectId,
-    ref:"User"
-  }],
+  followers: [
+    {
+      type: ObjectId,
+      ref: "User",
+    },
+  ],
+  following: [
+    {
+      type: ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 userSchema
