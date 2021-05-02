@@ -12,7 +12,19 @@ const slice = createSlice({
       void (state.following = tasks);
     },
     friendAdded: (state, action) => {
-      state.friends.push(action.payload.user);
+      const user = action.payload.user;
+      let obj = {};
+      let canAdd = true;
+      Object.keys(state).map((key) => {
+        state[key].map((val) => {
+          let userObj = { ...val };
+          if (userObj._id === user._id) {
+            canAdd = false;
+          }
+        });
+      });
+      console.log(canAdd);
+      if (canAdd) state.friends.push(user);
     },
   },
 });
