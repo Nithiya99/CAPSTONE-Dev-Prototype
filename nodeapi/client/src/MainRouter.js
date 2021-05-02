@@ -14,7 +14,8 @@ import ProjectDashboard from "./project/ProjectDashboard";
 import EditProject from "./project/EditProject";
 import { useDispatch } from "react-redux";
 import Notifications from "./core/Notifications";
-// import MyChats from "./user/MyChats";
+import MyChats from "./user/MyChats";
+import MyChatsNew from "./user/MyChatsNew";
 
 const MainRouter = () => {
   const dispatch = useDispatch();
@@ -42,7 +43,7 @@ const MainRouter = () => {
                 component={EditProject}
               ></Route>
               <Route path="/notifs/:userId" component={Notifications}></Route>
-              {/* <Route path="/mychats/:userId" component={MyChats}></Route> */}
+              <Route path="/mychats/:userId" component={MyChatsNew}></Route>
               <Route path="/user/edit/:userId" component={EditProfile}></Route>
               <Route path="/user/:userId" component={Profile}></Route>
             </Switch>
