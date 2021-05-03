@@ -20,32 +20,6 @@ class Home extends Component {
     show: false,
   };
   componentDidMount() {
-    this.props.clearNotifications();
-    getNotifications()
-      .then((response) => {
-        return response.json();
-      })
-      .then((val) => {
-        let notifications = val.notifications;
-        console.log("Notifications:", notifications);
-        notifications.map((notif) => {
-          this.props.getNotified({
-            type: notif.notifType,
-            id: notif._id,
-            message: notif.message,
-            read: notif.read,
-            projectId: notif.projectId ? notif.projectId : "none",
-          });
-        });
-
-        let notificationGroupedObject = _.groupBy(notifications, "notifType");
-        console.log("Group Object:", notificationGroupedObject);
-        this.setState({ notificationGroupedObject });
-        this.props.setSegregatedNotifications({
-          segregatedNotifications: notificationGroupedObject,
-        });
-        console.log(notifications);
-      });
     listmyprojects().then((projects) =>
       this.setState({ projects: projects.userProjects })
     );
@@ -170,9 +144,5 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   addNotification: (params) => dispatch(notificationAdded(params)),
-  getNotified: (params) => dispatch(getNotified(params)),
-  clearNotifications: () => dispatch(clearNotifications()),
-  setSegregatedNotifications: (params) =>
-    dispatch(setSegregatedNotifications(params)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

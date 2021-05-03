@@ -8,9 +8,6 @@ const MyChatsNew = () => {
   const dispatch = useDispatch();
   const friends = useSelector((state) => state.user.friends);
   const [user, setUser] = useState({});
-  function checkIfUserExists(friends, user) {
-    console.log(friends, user);
-  }
   useEffect(async () => {
     await getfriends(getCurrentUser()._id).then(async (data) => {
       let users = [];
