@@ -23,10 +23,12 @@ const slice = createSlice({
           }
         });
       });
-      console.log(canAdd);
       if (canAdd) state.friends.push(user);
     },
+    clearFriends : (state, action) =>{
+      void (state.friends = []);
+    }
   },
 });
-export const { updateFollowing, friendAdded } = slice.actions;
+export const { updateFollowing, friendAdded, clearFriends } = slice.actions;
 export default slice.reducer;

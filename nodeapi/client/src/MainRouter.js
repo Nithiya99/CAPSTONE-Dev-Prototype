@@ -14,7 +14,6 @@ import ProjectDashboard from "./project/ProjectDashboard";
 import EditProject from "./project/EditProject";
 import { useDispatch } from "react-redux";
 import Notifications from "./core/Notifications";
-import MyChats from "./user/MyChats";
 import MyChatsNew from "./user/MyChatsNew";
 
 const MainRouter = () => {

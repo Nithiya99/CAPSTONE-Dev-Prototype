@@ -173,25 +173,24 @@ exports.getfriends = (req, res) => {
 exports.updatePersonalChat = (req, res) => {
   let chat_msg = req.body.chat;
   console.log(chat_msg);
-  User.findById(req.body.chat.touser).exec((err, user) => {
-    if (err || !user) {
-      return res.status(400).json({
-        error: "User not found",
-      });
+  User.findById(req.body.chat.touser_id).exec((err, user) => {
+    if (err || !user)
+      console.log("user not found");
+    else
+    {
+      user.chat.push(chat_msg);
+      user.save();
     }
-    user.chat.push(chat_msg);
-    user.save();
   });
   User.findById(req.body.chat.fromuser).exec((err, user) => {
-    if (err || !user) {
-      return res.status(400).json({
-        error: "User not found",
-      });
+    if (err || !user)
+      console.log("user not found");
+    else{
+      user.chat.push(chat_msg);
+      user.save();
     }
-    user.chat.push(chat_msg);
-    user.save();
   });
-  return res.status(200).json("hello");
+  return res.status(200).json("personal chat updated");
 };
 
 exports.getPersonalChat = async (id) => {

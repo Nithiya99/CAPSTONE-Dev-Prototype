@@ -11,6 +11,7 @@ const dotenv = require("dotenv");
 var socket = require("socket.io");
 dotenv.config();
 const { getChat, addFeedbackNotification } = require("./controllers/project");
+const { getPersonalChat } = require("./controllers/user");
 
 // "mongodb://localhost/nodeapi"
 // process.env.MONGO_URI
@@ -120,4 +121,19 @@ sio.on("connection", (socket) => {
       users,
     });
   });
+
+  socket.on("getPersonalChat", async ({ userid, touser, client_chat_length }) => {
+    let chats = await getPersonalChat(userid);
+    chats = chats.filter(x => (x.fromuser+""===touser+"" || x.touser_id+""===touser+""))
+    if (client_chat_length !== chats.length)
+    {
+      sio.emit("personalchat" + userid, chats);
+    }
+  });
+
+  socket.on("personal_message", ({ from_name, toname, message, created, touser_id, fromuser }) => {
+    sio.emit("personal_message" + touser_id.toString(), {from_name, toname, message, created, touser_id, fromuser});
+    sio.emit("personal_message" + fromuser.toString(), {from_name, toname, message, created, touser_id, fromuser});
+  });
+
 });

@@ -89,7 +89,7 @@ var userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
       },
-      touser: {
+      touser_id: {
         type: ObjectId,
         ref: "User",
       },
