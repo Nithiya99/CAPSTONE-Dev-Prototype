@@ -41,7 +41,7 @@ const slice = createSlice({
         message: action.payload.message,
         read: action.payload.read,
         type: action.payload.type,
-        projectId: action,
+        projectId: action.payload.projectId,
       });
     },
     clearNotifications: (state, action) => {
