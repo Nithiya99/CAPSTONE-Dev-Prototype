@@ -22,7 +22,7 @@ var options = {
   rejectUnauthorized: false,
 };
 
-const MyChatsNew = () => {
+const MyChats = () => {
   const dispatch = useDispatch();
   const friends = useSelector((state) => state.user.friends);
   const [user, setUser] = useState({});
@@ -146,8 +146,8 @@ const MyChatsNew = () => {
     d = dd;
     f = 1;
   }
-
   const renderChat = () => {
+    f=0;
     return chat.map(({ from_name, message, created }, index) => (
       <div>
         <div className="d-flex flex-column m-3 align-items-center">
@@ -307,4 +307,4 @@ const MyChatsNew = () => {
   );
 };
 
-export default MyChatsNew;
+export default MyChats;
