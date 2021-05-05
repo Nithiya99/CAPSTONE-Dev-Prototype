@@ -20,39 +20,34 @@ exports.postById = (req, res, next, id) => {
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")
-    .select("_id title body")
+    .select("_id photo")
     .then((posts) => {
       res.json({ posts });
     })
     .catch((err) => console.log(err));
 };
 
-exports.createPost = (req, res, next) => {
-  let form = new formidable.IncomingForm();
-  form.keepExtensions = true;
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      return res.status(400).json({
-        error: "Image could not be uploaded",
-      });
-    }
-    let post = new Post(fields);
-
-    req.profile.hashed_password = undefined;
-    req.profile.salt = undefined;
-    post.postedBy = req.profile;
-
-    if (files.photo) {
-      post.photo.data = fs.readFileSync(files.photo.path);
-      post.photo.contentType = files.photo.type;
-    }
-    post.save((err, result) => {
-      if (err) {
-        return res.status(400).json({ error: err });
-      }
-      res.json(result);
-    });
+exports.createPost = (req, res) => {
+  const { pic } = req.body;
+  let user = req.profile;
+  if (!pic) {
+    return res
+      .status(403)
+      .json({ error: "add suitable photo to add to server" });
+  }
+  const post = new Post({
+    photo: pic,
+    postedBy: user._id,
   });
+  post
+    .save()
+    .then((result) => {
+      res.status(200).json({ post: result });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(402).json({ err: "could not save" });
+    });
 };
 
 exports.postsByUser = (req, res) => {

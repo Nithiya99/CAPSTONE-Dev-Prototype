@@ -14,6 +14,9 @@ import { getProject } from "../project/apiProject";
 import { listmyprojects } from "./../project/apiProject";
 import { Modal, Button } from "react-bootstrap";
 import RatingComponent from "../project/RatingComponent";
+import PostImage from "./../posts/PostImage";
+import { getAllPosts } from "./../posts/apiPosts";
+import Post from "../posts/Post";
 class Home extends Component {
   state = {
     notificationGroupedObject: {},
@@ -23,6 +26,11 @@ class Home extends Component {
     listmyprojects().then((projects) =>
       this.setState({ projects: projects.userProjects })
     );
+    getAllPosts()
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ posts: data.posts });
+      });
   }
   getProjectTeamFromState = (projectId) => {
     return this.state.projects.map((project) => {
@@ -32,9 +40,7 @@ class Home extends Component {
     });
     // return undefined;
   };
-  handleClose = () => {
-    this.setState({ show: false });
-  };
+
   render() {
     if (getCurrentUser()._id === undefined) return;
     const { notifications } = this.props;
@@ -60,12 +66,27 @@ class Home extends Component {
         console.log(notificationGroupedObject.FeedbackForm);
       }
     }
+    const { posts } = this.state;
+    if (posts === undefined) return null;
     return (
       <>
         <div className="jumbotron">
           <h2>Home</h2>
           <p className="lead">News Feed (Posts) will be here</p>
         </div>
+        <div className="card p-2">
+          <div className="card-body">
+            <PostImage />
+          </div>
+        </div>
+        {posts.map((post) => (
+          <Post
+            headerText={" Blehhhhh "}
+            footerText={"by " + post.postedBy.name}
+            cardText={post.photo}
+            imageUrl={post.photo}
+          />
+        ))}
         <ProjectRecommendation />
       </>
     );

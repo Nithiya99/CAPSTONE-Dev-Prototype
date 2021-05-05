@@ -10,22 +10,34 @@ import {
 } from "./apiUser";
 import DefaultProfile from "../images/avatar.png";
 import DeleteUser from "./DeleteUser";
-import { Row, Tab, Col, Nav } from "react-bootstrap";
+import {
+  Row,
+  Tab,
+  Col,
+  Nav,
+  Card,
+  ListGroup,
+  ListGroupItem,
+} from "react-bootstrap";
 import PersonTwoToneIcon from "@material-ui/icons/PersonTwoTone";
 import ChatTwoToneIcon from "@material-ui/icons/ChatTwoTone";
 import AccountTreeTwoToneIcon from "@material-ui/icons/AccountTreeTwoTone";
+import PhotoTwoToneIcon from "@material-ui/icons/PhotoTwoTone";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
 import DonutChart from "react-donut-chart";
 import { listmyprojects } from "./../project/apiProject";
 import { connect } from "react-redux";
 import { updateFollowing } from "../store/user";
+import Post from "./../posts/Post";
+import { getPostsOfUser } from "../posts/apiPosts";
 class Profile extends Component {
   constructor() {
     super();
     this.state = {
       user: "",
       redirectToSignin: false,
+      posts: [],
     };
   }
 
@@ -53,6 +65,11 @@ class Profile extends Component {
         following: data.user.following,
       });
     });
+    getPostsOfUser(userId)
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ posts: data });
+      });
   }
   // this.setState({ projects });
 
@@ -69,13 +86,15 @@ class Profile extends Component {
     let completed = 0;
     let overdue = 0;
     const { following } = this.props;
-    console.log(following);
+    // console.log(following);
     if (projects !== undefined) {
       projects.map((project) => {
         if (project.status === "Completed") completed++;
         if (project.status === "In Progress") ongoing++;
       });
     }
+    const { posts } = this.state;
+    if (posts === undefined) return null;
     return (
       <div className="container mt-5">
         <Tab.Container id="left-tabs-example" defaultActiveKey="personalInfo">
@@ -192,6 +211,16 @@ class Profile extends Component {
                             <AccountTreeTwoToneIcon />
                           </div>
                           <div>Project Stats</div>
+                        </div>
+                      </Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Nav.Link eventKey="posts">
+                        <div className="d-flex align-items-center">
+                          <div className="mr-3">
+                            <PhotoTwoToneIcon />
+                          </div>
+                          <div>Posts</div>
                         </div>
                       </Nav.Link>
                     </Nav.Item>
@@ -342,6 +371,18 @@ class Profile extends Component {
                         />
                       </table>
                     </div>
+                  </div>
+                </Tab.Pane>
+                <Tab.Pane eventKey="posts">
+                  <div>
+                    {posts.map((post) => (
+                      <Post
+                        headerText={" Blehhhhh "}
+                        footerText={"by " + post.postedBy.name}
+                        cardText={post.photo}
+                        imageUrl={post.photo}
+                      />
+                    ))}
                   </div>
                 </Tab.Pane>
               </Tab.Content>
