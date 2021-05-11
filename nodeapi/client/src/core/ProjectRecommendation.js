@@ -37,7 +37,7 @@ class ProjectRecommendation extends Component {
   }
 
   renderUsers = (final_out) => (
-    <div className="row row-cols-1 row-cols-md-3">
+    <div className="row row-cols-1 row-cols-md-1">
       {final_out.map((project, i) => (
         <div className="col">
           <div className="card mb-4" key={i}>

@@ -17,6 +17,11 @@ import RatingComponent from "../project/RatingComponent";
 import PostImage from "./../posts/PostImage";
 import { getAllPosts } from "./../posts/apiPosts";
 import Post from "../posts/Post";
+import LiveClock from "react-live-clock";
+import dayjs from "dayjs";
+import { Badge } from "react-bootstrap";
+import SearchTwoToneIcon from "@material-ui/icons/SearchTwoTone";
+
 class Home extends Component {
   state = {
     notificationGroupedObject: {},
@@ -70,24 +75,77 @@ class Home extends Component {
     if (posts === undefined) return null;
     return (
       <>
-        <div className="jumbotron">
-          <h2>Home</h2>
-          <p className="lead">News Feed (Posts) will be here</p>
-        </div>
-        <div className="card p-2">
-          <div className="card-body">
-            <PostImage />
+        <div
+          className="subheader py-2 py-lg-6  subheader-transparent "
+          id="kt_subheader"
+        >
+          <div className=" container  d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+            <div className="d-flex align-items-center flex-wrap mr-2">
+              <h5 className="text-dark font-weight-bold mt-2 mb-2 mr-5">
+                My Feed
+              </h5>
+              <div className="subheader-separator subheader-separator-ver mt-2 mb-2 mr-4 bg-gray-200"></div>
+              <span>
+                <div
+                  className="quick-search quick-search-inline ml-4 w-250px"
+                  id="kt_quick_search_inline"
+                >
+                  <form className="quick-search-form">
+                    <div className="input-group rounded">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <SearchTwoToneIcon />
+                        </span>
+                      </div>
+                      <input
+                        type="text"
+                        className="form-control h-40px"
+                        placeholder="Search..."
+                      />
+                    </div>
+                  </form>
+                </div>
+              </span>
+            </div>
+            <div class="d-flex align-items-center flex-wrap">
+              <Badge variant="primary">
+                <div className="d-flex align-items-center flex-wrap mr-2">
+                  <h6>{dayjs().format("DD MMMM, dddd")}</h6>
+                  <div className="subheader-separator subheader-separator-ver mt-2 mb-2 mr-4 ml-4 bg-gray-200"></div>
+                  <h6>
+                    <LiveClock format="hh:mm a" ticking />
+                  </h6>
+                </div>
+              </Badge>
+            </div>
           </div>
         </div>
-        {posts.map((post) => (
-          <Post
-            headerText={" Blehhhhh "}
-            footerText={"by " + post.postedBy.name}
-            cardText={post.photo}
-            imageUrl={post.photo}
-          />
-        ))}
-        <ProjectRecommendation />
+        <div className="container">
+          <div className="row">
+            <div className="col-md-8">
+              <div className="jumbotron w-100">
+                <h2>Home</h2>
+                <p className="lead">News Feed (Posts) will be here</p>
+              </div>
+              <div className="card p-2">
+                <div className="card-body">
+                  <PostImage />
+                </div>
+              </div>
+              {posts.map((post) => (
+                <Post
+                  headerText={" Blehhhhh "}
+                  footerText={"by " + post.postedBy.name}
+                  cardText={post.photo}
+                  imageUrl={post.photo}
+                />
+              ))}
+            </div>
+            <div className="col-md-4">
+              <ProjectRecommendation />
+            </div>
+          </div>
+        </div>
       </>
     );
   }

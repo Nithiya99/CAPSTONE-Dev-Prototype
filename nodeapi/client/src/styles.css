@@ -1,16 +1,42 @@
 body {
   font-family: "Poppins", sans-serif;
+  background-color: #f3f6f9;
+}
+
+/* @media (min-width: 992px) {
+  .header-mobile {
+    display: none;
+  }
+} */
+
+.no-underline {
+  text-decoration: none !important;
+}
+
+.navbarBg {
+  background-color: #5400fa;
+  height: 60px;
 }
 
 .signin-wrapper {
-  height: 100vh;
+  height: 50vh;
 }
 
-.signin-wrapper .row .col-md-8 {
-  background-image: url("./images/bg-01.jpg");
+.signin-content {
+  height: 94vh;
+}
+
+.signin-wrapper .row .col-md-7 {
+  background-image: url("./images/login.png");
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: 2% 70%;
+  background-position: 20%;
+  border-radius: 15px 0px 0px 15px;
+}
+
+.signin-form {
+  background-color: #3430ff;
+  border-radius: 0px 15px 15px 0px;
 }
 
 .sidebar {
@@ -20,7 +46,7 @@ body {
   left: 0;
   min-height: 100vh !important;
   z-index: 100;
-  padding: 48px 0 0;
+  padding: 60px 0 0;
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
 }
 #sidebar-wrapper {
