@@ -82,6 +82,20 @@ const Menu = ({ history }) => {
                               </span>
                             </Link>
                           </li>
+                          <li className="menu-item" aria-haspopup="true">
+                            <Link
+                              to="/users"
+                              style={isActive(history, "/users")}
+                              className="menu-link "
+                            >
+                              <span
+                                style={isActive(history, "/users")}
+                                className="menu-text"
+                              >
+                                Users
+                              </span>
+                            </Link>
+                          </li>
                           <li className="menu-item " aria-haspopup="true">
                             <Link
                               style={isActive(history, "/myprojects")}

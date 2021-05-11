@@ -12,6 +12,10 @@ import { connect } from "react-redux";
 import { updateFollowing } from "../store/user";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
+import LiveClock from "react-live-clock";
+import dayjs from "dayjs";
+import { Badge } from "react-bootstrap";
+import SearchTwoToneIcon from "@material-ui/icons/SearchTwoTone";
 class Users extends Component {
   constructor() {
     super();
@@ -119,10 +123,54 @@ class Users extends Component {
     // console.log(this.props);
     users = users.filter((x) => x._id !== getCurrentUser()._id);
     return (
-      <div className="container">
-        <h2 className="mt-5 mb-5">Users</h2>
-        {this.renderUsers(users)}
-      </div>
+      <>
+        <div
+          className="subheader py-2 py-lg-6  subheader-transparent "
+          id="kt_subheader"
+        >
+          <div className=" container  d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+            <div className="d-flex align-items-center flex-wrap mr-2">
+              <h5 className="text-dark font-weight-bold mt-2 mb-2 mr-5">
+                Users
+              </h5>
+              <div className="subheader-separator subheader-separator-ver mt-2 mb-2 mr-4 bg-gray-200"></div>
+              <span>
+                <div
+                  className="quick-search quick-search-inline ml-4 w-250px"
+                  id="kt_quick_search_inline"
+                >
+                  <form className="quick-search-form">
+                    <div className="input-group rounded">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <SearchTwoToneIcon />
+                        </span>
+                      </div>
+                      <input
+                        type="text"
+                        className="form-control h-40px"
+                        placeholder="Search..."
+                      />
+                    </div>
+                  </form>
+                </div>
+              </span>
+            </div>
+            <div class="d-flex align-items-center flex-wrap">
+              <Badge variant="primary">
+                <div className="d-flex align-items-center flex-wrap mr-2">
+                  <h6>{dayjs().format("DD MMMM, dddd")}</h6>
+                  <div className="subheader-separator subheader-separator-ver mt-2 mb-2 mr-4 ml-4 bg-gray-200"></div>
+                  <h6>
+                    <LiveClock format="hh:mm a" ticking />
+                  </h6>
+                </div>
+              </Badge>
+            </div>
+          </div>
+        </div>
+        <div className="container">{this.renderUsers(users)}</div>
+      </>
     );
   }
 }
