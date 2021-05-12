@@ -170,7 +170,7 @@ exports.projectById = (req, res, next, id) => {
   });
 };
 exports.getProject = (req, res) => {
-  console.log(req.projectObject);
+  // console.log(req.projectObject);
   if (req.projectObject !== undefined) {
     return res.status(200).json({ project: req.projectObject });
   } else {
@@ -281,7 +281,7 @@ exports.getRequests = (req, res) => {
 };
 exports.getProjectsOfUser = (req, res) => {
   let user = req.profile;
-  console.log(user);
+  // console.log(user);
   Project.find((err, projects) => {
     if (err) {
       res.status(400).json({ err });
@@ -393,7 +393,7 @@ exports.checkIfProjectExists = async (req, res) => {
 
 exports.submitProject = (req, res) => {
   let project = req.projectObject;
-  console.log(project);
+  // console.log(project);
   let team = project.team;
   project.status = "Completed";
   project.save();
@@ -437,7 +437,7 @@ exports.updateChat = (req, res) => {
 
 exports.addFeedbackNotification = async (rating, projectId) => {
   let projectName = await Project.findById(projectId).select("title").exec();
-  console.log(projectName);
+  // console.log(projectName);
   Object.keys(rating).map((userId) => {
     User.findById(userId, (err, result) => {
       let req = {

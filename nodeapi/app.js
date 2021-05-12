@@ -51,7 +51,8 @@ app.get("/", (req, res) => {
 
 //middleware
 app.use(morgan("dev"));
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(expressValidator());
 app.use(cors());
@@ -64,7 +65,7 @@ app.use("/", utilRoutes);
 app.use("/", notifRoutes);
 app.use(function (err, req, res, next) {
   if (err.name === "UnauthorizedError") {
-    res.status(401).json({ error: "Unauthrized!" });
+    res.status(401).json({ error: "Unauthorized!" });
   }
 });
 require("./prod")(app);
@@ -122,18 +123,39 @@ sio.on("connection", (socket) => {
     });
   });
 
-  socket.on("getPersonalChat", async ({ userid, touser, client_chat_length }) => {
-    let chats = await getPersonalChat(userid);
-    chats = chats.filter(x => (x.fromuser+""===touser+"" || x.touser_id+""===touser+""))
-    if (client_chat_length !== chats.length)
-    {
-      sio.emit("personalchat" + userid, chats);
+  socket.on(
+    "getPersonalChat",
+    async ({ userid, touser, client_chat_length }) => {
+      let chats = await getPersonalChat(userid);
+      chats = chats.filter(
+        (x) =>
+          x.fromuser + "" === touser + "" || x.touser_id + "" === touser + ""
+      );
+      if (client_chat_length !== chats.length) {
+        sio.emit("personalchat" + userid, chats);
+      }
     }
-  });
+  );
 
-  socket.on("personal_message", ({ from_name, toname, message, created, touser_id, fromuser }) => {
-    sio.emit("personal_message" + touser_id.toString(), {from_name, toname, message, created, touser_id, fromuser});
-    sio.emit("personal_message" + fromuser.toString(), {from_name, toname, message, created, touser_id, fromuser});
-  });
-
+  socket.on(
+    "personal_message",
+    ({ from_name, toname, message, created, touser_id, fromuser }) => {
+      sio.emit("personal_message" + touser_id.toString(), {
+        from_name,
+        toname,
+        message,
+        created,
+        touser_id,
+        fromuser,
+      });
+      sio.emit("personal_message" + fromuser.toString(), {
+        from_name,
+        toname,
+        message,
+        created,
+        touser_id,
+        fromuser,
+      });
+    }
+  );
 });

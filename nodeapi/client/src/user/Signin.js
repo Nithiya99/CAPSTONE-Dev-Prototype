@@ -93,79 +93,85 @@ class Signin extends Component {
     }
 
     return (
-      <div className="container-fluid signin-wrapper">
-        <div className="row h-100">
-          <div className="col-md-8"></div>
-          <div className="col-md-4">
-            <div className="d-flex align-items-center bd-highlight h-100">
-              <div className="box w-100">
-                <div
-                  className="alert alert-danger mb-5 col-sm-8 offset-2"
-                  style={{ display: error ? "" : "none" }}
-                >
-                  {error}
+      <div className=" h-100 signin-wrapper">
+        <div className="row signin-content justify-content-center align-items-center">
+          <div className="col-md-8">
+            <div className="row">
+              <div className="col-md-7"></div>
+              <div className="signin-form col-md-4 p-4">
+                <div className="d-flex align-items-center bd-highlight h-100">
+                  <div className="box w-100">
+                    <div
+                      className="alert alert-danger mb-5 col-sm-8 offset-2"
+                      style={{ display: error ? "" : "none" }}
+                    >
+                      {error}
+                    </div>
+
+                    {loading ? (
+                      <div className="jumbotron text-center">
+                        <h2>Loading...</h2>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    <h1 className="text-center text-white">
+                      Let's get back to work!
+                    </h1>
+
+                    <form className="mt-5">
+                      <div className="form-group">
+                        <div className="row">
+                          <div className="col-sm-10 offset-1">
+                            <label className="text-white">
+                              <big>Email</big>
+                            </label>
+                            <input
+                              className="form-control"
+                              onChange={this.handleChange("email")}
+                              value={email}
+                              type="email"
+                            />
+                          </div>
+                        </div>
+                        <div className="row mt-3">
+                          <div className="col-sm-10 offset-1">
+                            <label className="text-white">
+                              <big>Password</big>
+                            </label>
+                            <input
+                              className="form-control"
+                              onChange={this.handleChange("password")}
+                              value={password}
+                              type="password"
+                            />
+                          </div>
+                        </div>
+                        <div className="row">
+                          <button
+                            onClick={this.clickSubmit}
+                            className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                          >
+                            Login
+                          </button>
+                        </div>
+                        <div className="d-flex justify-content-center">
+                          <GoogleLogin
+                            clientId="11029788971-15i4cq1rn9lijdh2k685to3ri1vtb682.apps.googleusercontent.com"
+                            buttonText="Login"
+                            onSuccess={this.loginGoogle}
+                            onFailure={this.loginGoogleFailed}
+                            cookiePolicy={"single_host_origin"}
+                          />
+                        </div>
+                      </div>
+                    </form>
+                    <p className="text-muted text-center mt-5">
+                      Want to join the community?
+                      <ModalButton />
+                    </p>
+                  </div>
                 </div>
-
-                {loading ? (
-                  <div className="jumbotron text-center">
-                    <h2>Loading...</h2>
-                  </div>
-                ) : (
-                  ""
-                )}
-                <h1 className="text-center">Let's get back to work!</h1>
-
-                <form className="mt-5">
-                  <div className="form-group">
-                    <div className="row">
-                      <div className="col-sm-10 offset-1">
-                        <label>
-                          <big>Email</big>
-                        </label>
-                        <input
-                          className="form-control"
-                          onChange={this.handleChange("email")}
-                          value={email}
-                          type="email"
-                        />
-                      </div>
-                    </div>
-                    <div className="row mt-3">
-                      <div className="col-sm-10 offset-1">
-                        <label>
-                          <big>Password</big>
-                        </label>
-                        <input
-                          className="form-control"
-                          onChange={this.handleChange("password")}
-                          value={password}
-                          type="password"
-                        />
-                      </div>
-                    </div>
-                    <div className="row">
-                      <button
-                        onClick={this.clickSubmit}
-                        className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                      >
-                        Login
-                      </button>
-                    </div>
-                    <div className="d-flex justify-content-center">
-                      <GoogleLogin
-                        clientId="11029788971-15i4cq1rn9lijdh2k685to3ri1vtb682.apps.googleusercontent.com"
-                        buttonText="Login"
-                        onSuccess={this.loginGoogle}
-                        onFailure={this.loginGoogleFailed}
-                        cookiePolicy={"single_host_origin"}
-                      />
-                    </div>
-                  </div>
-                </form>
-                <p className="text-muted text-center mt-5">
-                  Want to join the community?
-                  <ModalButton />
-                </p>
               </div>
             </div>
           </div>
