@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DropzoneDialogBase } from "material-ui-dropzone";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { uploadPicture } from "./apiPosts";
+import { Modal } from "react-bootstrap";
+import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
+import DragDropImages from "./DragDropImages";
+
 export default function PostImage() {
   const [open, setOpen] = React.useState(false);
   const [fileObjects, setFileObjects] = React.useState([]);
@@ -19,13 +23,24 @@ export default function PostImage() {
       </IconButton>
     </>
   );
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
     <div>
       <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
         Add Image
       </Button>
+      <Modal show={open} onHide={handleClose}>
+        <Modal.Header closeButton />
+        <Modal.Body>
+          <h4 className="text-center mb-3">Lets post pics!</h4>
+          <DragDropImages />
+        </Modal.Body>
+      </Modal>
 
-      <DropzoneDialogBase
+      {/* <DropzoneDialogBase
         dialogTitle={dialogTitle()}
         acceptedFiles={["image/*"]}
         fileObjects={fileObjects}
@@ -61,7 +76,7 @@ export default function PostImage() {
         }}
         showPreviews={true}
         showFileNamesInPreview={true}
-      />
+      /> */}
     </div>
   );
 }
