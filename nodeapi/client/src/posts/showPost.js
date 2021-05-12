@@ -6,29 +6,44 @@ import { getCurrentUser } from "./../user/apiUser";
 import { likepost, dislikepost, addcomment, getpost } from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
-import { FacebookSelector, GithubSelector } from "react-reactions";
 import { Accordion, Button, Card } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
-import { Link } from "react-router-dom";
-class Post extends Component {
+import { isAuthenticated } from "../auth";
+
+class showPost extends Component {
   state = {
     isClick: false,
     comment: "",
-    id: getCurrentUser()._id,
+    id: String,
+    post: {},
+    loggedin: false,
+    post_id: String,
   };
 
   componentDidMount() {
-    let users = this.props.liked_by;
-    if (users !== undefined && users !== null && users !== [])
-      if (users.indexOf(getCurrentUser()._id) > -1)
-        this.setState({ isClick: true });
+    let post_id = this.props.match.params.postId;
+    getpost(post_id).then((data) => {
+      this.setState({
+        post: data,
+        post_id: post_id,
+      });
+      if (isAuthenticated()) {
+        this.setState({ loggedin: true, id: getCurrentUser()._id });
+        let users = [...this.state.post.post.liked_by];
+        if (users !== undefined && users !== null && users !== [])
+          if (users.indexOf(getCurrentUser()._id) > -1)
+            this.setState({ isClick: true });
+      }
+    });
   }
 
   postliked = () => {
-    this.setState({ isClick: !this.state.isClick });
-    if (this.state.isClick)
-      dislikepost(this.props._id).then((data) => console.log(data));
-    else likepost(this.props._id).then((data) => console.log(data));
+    if (this.state.loggedin) {
+      this.setState({ isClick: !this.state.isClick });
+      if (this.state.isClick)
+        dislikepost(this.state.post_id).then((data) => console.log(data));
+      else likepost(this.state.post_id).then((data) => console.log(data));
+    } else return toast.error("Please login-In");
   };
 
   select = (e) => {
@@ -40,37 +55,25 @@ class Post extends Component {
   };
 
   submitcomment = () => {
-    console.log(this.state.comment);
-    addcomment(this.props._id, this.state.comment).then((data) =>
-      console.log(data)
-    );
+    if (this.state.loggedin) {
+      addcomment(this.state.post_id, this.state.comment).then((data) =>
+        console.log(data)
+      );
+    } else return toast.error("Please login-In ");
   };
 
   render() {
-    const {
-      headerText,
-      footerText,
-      imageUrl,
-      liked_by,
-      _id,
-      tags,
-      comments,
-    } = this.props;
-    let counts = collect(liked_by).count();
-
+    let post = this.state.post.post;
+    const current_post = { ...post };
+    const posted_by = { ...current_post.postedBy };
+    let counts = collect(current_post.liked_by).count();
+    console.log(current_post.photo);
+    if (current_post === undefined) return null;
     return (
       <>
         <ToastContainer />
         <Card className="m-5">
-          <Card.Header>
-            <Link
-              to={{
-                pathname: `/post/${this.props._id}`,
-              }}
-            >
-              {headerText}
-            </Link>
-          </Card.Header>
+          <Card.Header>{current_post.title}</Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
             <Card.Img
@@ -80,7 +83,7 @@ class Post extends Component {
                 "object-fit": "cover",
               }}
               variant="top"
-              src={imageUrl}
+              src={current_post.photo}
             />
             {/* </Col>
                         <Col> */}
@@ -89,7 +92,7 @@ class Post extends Component {
           <Card.Body>
             <button
               onClick={() => {
-                getpost(_id).then((data) => {
+                getpost(current_post._id).then((data) => {
                   console.log(data);
                   let link = `http://localhost:3000/post/${data.post._id}`;
                   navigator.clipboard.writeText(link);
@@ -127,15 +130,12 @@ class Post extends Component {
                 </Accordion.Collapse>
               </Card>
             </Accordion>
-
-            {/* <FacebookSelector onSelect={this.select} />
-            <GithubSelector onSelect={this.select} /> */}
           </Card.Body>
-          <Card.Footer>{footerText}</Card.Footer>
+          <Card.Footer>{posted_by.name}</Card.Footer>
         </Card>
       </>
     );
   }
 }
 
-export default Post;
+export default showPost;

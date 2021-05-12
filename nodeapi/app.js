@@ -11,7 +11,7 @@ const dotenv = require("dotenv");
 var socket = require("socket.io");
 dotenv.config();
 const { getChat, addFeedbackNotification } = require("./controllers/project");
-const { getPersonalChat } = require("./controllers/user");
+const { getPersonalChat, getBlockedUsers } = require("./controllers/user");
 
 // "mongodb://localhost/nodeapi"
 // process.env.MONGO_URI
@@ -139,15 +139,18 @@ sio.on("connection", (socket) => {
 
   socket.on(
     "personal_message",
-    ({ from_name, toname, message, created, touser_id, fromuser }) => {
-      sio.emit("personal_message" + touser_id.toString(), {
-        from_name,
-        toname,
-        message,
-        created,
-        touser_id,
-        fromuser,
-      });
+    async ({ from_name, toname, message, created, touser_id, fromuser }) => {
+      let blocked_users = await getBlockedUsers(touser_id.toString());
+      if (blocked_users.indexOf(fromuser.toString()) < 0) {
+        sio.emit("personal_message" + touser_id.toString(), {
+          from_name,
+          toname,
+          message,
+          created,
+          touser_id,
+          fromuser,
+        });
+      }
       sio.emit("personal_message" + fromuser.toString(), {
         from_name,
         toname,

@@ -13,7 +13,6 @@ import ProjectRecommendation from "./ProjectRecommendation";
 import { getProject } from "../project/apiProject";
 import { listmyprojects } from "./../project/apiProject";
 import { Modal, Button } from "react-bootstrap";
-import RatingComponent from "../project/RatingComponent";
 import PostImage from "./../posts/PostImage";
 import { getAllPosts } from "./../posts/apiPosts";
 import Post from "../posts/Post";
@@ -131,21 +130,23 @@ class Home extends Component {
                 <div className="card-body">
                   <PostImage />
                 </div>
+                {posts.map((post) => (
+                  <Post
+                    headerText={post.title}
+                    footerText={"by " + post.postedBy.name}
+                    cardText={post.photo}
+                    imageUrl={post.photo}
+                    liked_by={post.liked_by}
+                    _id={post._id}
+                    comments={post.comments}
+                    tags={post.tags}
+                  />
+                  ))}
+                  <ProjectRecommendation />
               </div>
-              {posts.map((post) => (
-                <Post
-                  headerText={" Blehhhhh "}
-                  footerText={"by " + post.postedBy.name}
-                  cardText={post.photo}
-                  imageUrl={post.photo}
-                />
-              ))}
-            </div>
-            <div className="col-md-4">
-              <ProjectRecommendation />
             </div>
           </div>
-        </div>
+        </div>  
       </>
     );
   }

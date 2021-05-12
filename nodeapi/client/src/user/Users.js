@@ -5,6 +5,7 @@ import {
   followUser,
   unfollowUser,
   getUserById,
+  unblockUser,
 } from "./apiUser";
 import DefaultProfile from "../images/avatar.png";
 import { Link } from "react-router-dom";
@@ -16,14 +17,27 @@ import LiveClock from "react-live-clock";
 import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
 import SearchTwoToneIcon from "@material-ui/icons/SearchTwoTone";
+import { isAuthenticated } from "../auth";
+import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
+
+const onUnBlockUser = (e, user) => {
+  let current_user_id = getCurrentUser()._id;
+  let client_user_id = user._id;
+  console.log(user);
+  unblockUser(current_user_id, client_user_id).then((data) => {
+    console.log(data);
+  });
+  e.preventDefault();
+};
+
 class Users extends Component {
   constructor() {
     super();
     this.state = {
       users: [],
+      blocked_users: [],
     };
   }
-
   componentDidMount() {
     list().then((data) => {
       if (data.error) {
@@ -36,14 +50,16 @@ class Users extends Component {
       this.props.updateFollowing({
         following: data.user.following,
       });
-      // console.log(curUser);
+      this.setState({
+        blocked_users: data.user.blocked_users,
+      });
     });
-    // console.log(this.state.following);
   }
   componentDidUpdate(prevState, prevProps) {
     console.log(prevState);
     console.log(prevProps);
   }
+
   renderUsers = (users) => (
     <div className="row row-cols-1 row-cols-md-4">
       {users.map((user, i) => (
@@ -72,7 +88,10 @@ class Users extends Component {
               </div>
               <div className="pt-3">
                 <div className="d-flex align-items-center justify-content-between mb-2">
-                  <Link to="#" className="btn btn-outline-primary">
+                  <Link
+                    to={`/mychats/${isAuthenticated().user._id}`}
+                    className="btn btn-outline-primary"
+                  >
                     Message
                   </Link>
                   {this.props.following.includes(user._id) ? (
@@ -117,11 +136,51 @@ class Users extends Component {
     </div>
   );
 
+  renderBlockedUsers = (users) => (
+    <div className="row row-cols-1 row-cols-md-4">
+      {users.map((user, i) => (
+        <div className="col mb-4" key={i}>
+          <div className="card card-custom card-stretch">
+            <div className="card-body pt-4">
+              <div className="d-flex align-items-center">
+                <img
+                  src={DefaultProfile}
+                  alt={user.name}
+                  className="symbol symbol-60 symbol-xxl-100 mr-3 align-self-start align-self-xxl-center"
+                  style={{ width: "55px" }}
+                />
+                <div>
+                  <h5 className="font-weight-bolder text-dark-75 text-hover-primary">
+                    {user.name}
+                  </h5>
+                  <div className="text-muted pb-3">@{user.username}</div>
+                  <button
+                    className="btn btn-primary"
+                    onClick={(e) => onUnBlockUser(e, user)}
+                  >
+                    UnBlock
+                    <CheckCircleOutlineIcon />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   render() {
     let users = this.state.users;
-    // console.log(users);
-    // console.log(this.props);
     users = users.filter((x) => x._id !== getCurrentUser()._id);
+    let final_users = users.filter(
+      (x) => !this.state.blocked_users.includes(x._id)
+    );
+
+    let final_blocked = users.filter((x) =>
+      this.state.blocked_users.includes(x._id)
+    );
+    console.log(final_blocked);
     return (
       <>
         <div
@@ -168,8 +227,13 @@ class Users extends Component {
               </Badge>
             </div>
           </div>
-        </div>
-        <div className="container">{this.renderUsers(users)}</div>
+        </div><div className="container">
+        <h2 className="mt-5 mb-5">Users</h2>
+        {this.renderUsers(final_users)}
+
+        <h2 className="mt-5 mb-5">Blocked Users</h2>
+        {this.renderBlockedUsers(final_blocked)}
+      </div>
       </>
     );
   }

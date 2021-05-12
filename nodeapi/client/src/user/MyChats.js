@@ -4,6 +4,9 @@ import {
   getfriends,
   getUserById,
   updatePersonalChat,
+  clearChat,
+  blockUser,
+  unblockUser,
 } from "./apiUser";
 import DefaultProfile from "./../images/avatar.png";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +17,9 @@ import SendIcon from "@material-ui/icons/Send";
 import io from "socket.io-client";
 import moment from "moment";
 import { isAuthenticated } from "../auth";
+import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
+import BlockIcon from "@material-ui/icons/Block";
+import ClearAllIcon from "@material-ui/icons/ClearAll";
 
 var options = {
   rememberUpgrade: true,
@@ -33,8 +39,12 @@ const MyChats = () => {
     from_name: getCurrentUser().name,
     created: new Date(),
   });
+  const [blocked_users, set_blocked_user] = useState([]);
+  const [isblocked, set_isblocked] = useState(Boolean);
+  const [blocked_by, set_blocked_by] = useState([]);
+  const [isblocked_by, set_isblocked_by] = useState(Boolean);
   const [chat, setChat] = useState([]);
-  
+
   const divRef = useRef(null);
   const messagesEndRef = useRef(null);
   const socketRef = useRef();
@@ -42,25 +52,23 @@ const MyChats = () => {
   useEffect(async () => {
     dispatch(clearFriends());
     await getfriends(getCurrentUser()._id).then(async (data) => {
-      console.log("id : ",data)
       await data.map(async (userid) => {
         await getUserById(userid).then((u) => {
-          console.log("u.user : ", u.user.name)
-          if(u.user._id !== getCurrentUser()._id)
+          if (u.user._id !== getCurrentUser()._id)
             dispatch(friendAdded({ user: u.user }));
         });
       });
     });
   }, []);
 
-  console.log(friends);
+  // console.log(friends);
 
-  function fun (user){
+  function fun(user) {
     let userid = getCurrentUser()._id;
     socketRef.current = io.connect("http://localhost:8081", options);
     socketRef.current.emit("getPersonalChat", {
       userid,
-      touser : user._id,
+      touser: user._id,
       client_chat_length: chat.length,
     });
     socketRef.current.on("personalchat" + userid, (data) => {
@@ -70,29 +78,42 @@ const MyChats = () => {
 
   useEffect(() => {
     let userid = getCurrentUser()._id;
+
+    getUserById(userid).then((data) => {
+      set_blocked_user(data.user.blocked_users);
+      set_blocked_by(data.user.blocked_by);
+    });
+
     socketRef.current = io.connect("http://localhost:8081", options);
     socketRef.current.emit("getPersonalChat", {
       userid,
-      touser : user._id,
+      touser: user._id,
       client_chat_length: chat.length,
     });
 
     socketRef.current.on(
       "personal_message" + userid,
-      ({ from_name, toname, message, created, touser_id, fromuser}) => {
-        let chats = [... chat];
-        chats.push({ from_name, toname, message, created, touser_id, fromuser})
+      ({ from_name, toname, message, created, touser_id, fromuser }) => {
+        let chats = [...chat];
+        chats.push({
+          from_name,
+          toname,
+          message,
+          created,
+          touser_id,
+          fromuser,
+        });
         setChat(chats);
       }
     );
-  },[]);
+  }, []);
 
   useEffect(() => {
     let userid = getCurrentUser()._id;
     socketRef.current = io.connect("http://localhost:8081", options);
     socketRef.current.emit("getPersonalChat", {
       userid,
-      touser : user._id,
+      touser: user._id,
       client_chat_length: chat.length,
     });
     socketRef.current.on("personalchat" + userid, (data) => {
@@ -100,9 +121,16 @@ const MyChats = () => {
     });
     socketRef.current.on(
       "personal_message" + userid,
-      ({ from_name, toname, message, created, touser_id, fromuser}) => {
-        let chats = [... chat];
-        chats.push({ from_name, toname, message, created, touser_id, fromuser})
+      ({ from_name, toname, message, created, touser_id, fromuser }) => {
+        let chats = [...chat];
+        chats.push({
+          from_name,
+          toname,
+          message,
+          created,
+          touser_id,
+          fromuser,
+        });
         setChat(chats);
       }
     );
@@ -121,10 +149,17 @@ const MyChats = () => {
         touser_id,
         fromuser,
       });
-      let chat_msg = { from_name, toname, message, created, touser_id, fromuser };
-      updatePersonalChat(chat_msg).then((data) => { 
+      let chat_msg = {
+        from_name,
+        toname,
+        message,
+        created,
+        touser_id,
+        fromuser,
+      };
+      updatePersonalChat(chat_msg).then((data) => {
         let chats = [...chat];
-        chats.push(chat_msg);  
+        chats.push(chat_msg);
         setChat(chats);
       });
     }
@@ -134,6 +169,35 @@ const MyChats = () => {
 
   const onTextChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
+  };
+
+  const onClearChat = (e) => {
+    let current_user_id = getCurrentUser()._id;
+    let client_user_id = user._id;
+    clearChat(current_user_id, client_user_id).then((data) => {
+      let chats = [];
+      setChat(chats);
+      console.log(data);
+    });
+    e.preventDefault();
+  };
+
+  const onBlockUser = (e) => {
+    let current_user_id = getCurrentUser()._id;
+    let client_user_id = user._id;
+    blockUser(current_user_id, client_user_id).then((data) => {
+      console.log(data);
+    });
+    e.preventDefault();
+  };
+
+  const onUnBlockUser = (e) => {
+    let current_user_id = getCurrentUser()._id;
+    let client_user_id = user._id;
+    unblockUser(current_user_id, client_user_id).then((data) => {
+      console.log(data);
+    });
+    e.preventDefault();
   };
 
   var d = new Date();
@@ -147,7 +211,7 @@ const MyChats = () => {
     f = 1;
   }
   const renderChat = () => {
-    f=0;
+    f = 0;
     return chat.map(({ from_name, message, created }, index) => (
       <div>
         <div className="d-flex flex-column m-3 align-items-center">
@@ -207,103 +271,148 @@ const MyChats = () => {
   };
 
   return (
-      <div className="pt-5">
-        <Tab.Container id="left-tabs-example" defaultActiveKey="empty">
-          <Row>
-            <Col sm={2}>
-              <div className="card card-custom card-stretch">
-                <div className="card-body pt-4">
-                  <Nav variant="pills" className="flex-column mt-3">
-                    {friends.map((user, i) => (
-                      <Nav.Item>
-                        {console.log(user)}
-                        <Nav.Link
-                          eventKey={i}
-                          onClick={() => {
-                            setUser(user);
-                            settouser_id(user._id);
-                            settoname(user.name);
-                            fun(user)
-                          }}
-                        >
-                          <div className="d-flex align-items-center">
-                            <div className="mr-3">
-                              <img src={DefaultProfile} style={{ width: "40px" }} />
-                            </div>
-                            <div>{user.name}</div>
+    <div className="pt-5">
+      <Tab.Container id="left-tabs-example" defaultActiveKey="empty">
+        <Row>
+          <Col sm={2}>
+            <div className="card card-custom card-stretch">
+              <div className="card-body pt-4">
+                <Nav variant="pills" className="flex-column mt-3">
+                  {friends.map((user, i) => (
+                    <Nav.Item>
+                      {/* {console.log(user)} */}
+
+                      <Nav.Link
+                        eventKey={i}
+                        onClick={() => {
+                          setUser(user);
+                          settouser_id(user._id);
+                          settoname(user.name);
+                          fun(user);
+                          set_isblocked(blocked_users.indexOf(user._id) > -1);
+                          set_isblocked_by(blocked_by.indexOf(user._id) > -1);
+                        }}
+                      >
+                        <div className="d-flex align-items-center">
+                          <div className="mr-3">
+                            <img
+                              src={DefaultProfile}
+                              style={{ width: "40px" }}
+                            />
                           </div>
-                        </Nav.Link>
-                      </Nav.Item>
-                    ))}
-                  </Nav>
-                </div>
+                          <div>{user.name}</div>
+                        </div>
+                      </Nav.Link>
+                    </Nav.Item>
+                  ))}
+                </Nav>
               </div>
-            </Col>
-            <Col sm={10}>
-              <Tab.Content>
-                <Tab.Pane eventKey="empty">
-                  <div className="card card-stretch">
-                    <div className="card-header">
-                      <div className="card-title align-items-start flex-column">
-                        <h4 className="card-label font-weight-bolder text-dark">
-                          Click on a chat.
-                        </h4>
-                      </div>
+            </div>
+          </Col>
+          <Col sm={10}>
+            <Tab.Content>
+              <Tab.Pane eventKey="empty">
+                <div className="card card-stretch">
+                  <div className="card-header">
+                    <div className="card-title align-items-start flex-column">
+                      <h4 className="card-label font-weight-bolder text-dark">
+                        Click on a chat.
+                      </h4>
                     </div>
                   </div>
-                </Tab.Pane>
-                {friends.map((user, i) => {
-                  let comp = [];
-                  comp.push(
-                    <Tab.Pane eventKey={i}>
-                      <div className="card card-stretch">
-                        <div className="card-header">
-                          <div className="card-title align-items-start flex-column">
-                            <h4 className="card-label font-weight-bolder text-dark">
-                              {user.name}
-                            </h4>
-                          </div>
-                        </div>
-                        <div className="card-body">
-                          <div>
-                            <div ref={divRef} className="render-chat">
-                                {renderChat()}
-                              <div ref={messagesEndRef} />
-                            </div>
-                            <form onSubmit={onMessageSubmit}>
-                              <div className="row pt-5">
-                                <Col sm={10}>
-                                  <TextField
-                                    name="message"
-                                    onChange={(e) => {
-                                      onTextChange(e);
-                                    }}
-                                    value={state.message}
-                                    id="outlined-multiline-static"
-                                    variant="outlined"
-                                    label="Message"
-                                    fullWidth
-                                  />
-                                </Col>
-                                <Col>
-                                  <button className="btn btn-primary">
-                                    Send Message <SendIcon />
-                                  </button>
-                                </Col>
-                              </div>
-                            </form>
-                          </div>
+                </div>
+              </Tab.Pane>
+              {friends.map((user, i) => {
+                let comp = [];
+                comp.push(
+                  <Tab.Pane eventKey={i}>
+                    <div className="card card-stretch">
+                      <div className="card-header">
+                        <div className="card-title align-items-start flex-column">
+                          <h4 className="card-label font-weight-bolder text-dark">
+                            {user.name}
+                            <button
+                              className="btn btn-primary"
+                              onClick={onClearChat}
+                            >
+                              Clear
+                              <ClearAllIcon />
+                            </button>
+
+                            {!isblocked ? (
+                              <button
+                                className="btn btn-primary"
+                                onClick={onBlockUser}
+                              >
+                                Block
+                                <BlockIcon />
+                              </button>
+                            ) : (
+                              <button
+                                className="btn btn-primary"
+                                onClick={onUnBlockUser}
+                              >
+                                UnBlock
+                                <CheckCircleOutlineIcon />
+                              </button>
+                            )}
+                          </h4>
                         </div>
                       </div>
-                    </Tab.Pane>
-                  );
-                  return comp;
-                })}
-              </Tab.Content>
-            </Col>
-          </Row>
-        </Tab.Container>
-      </div>
+                      <div className="card-body">
+                        <div>
+                          <div ref={divRef} className="render-chat">
+                            {renderChat()}
+                            <div ref={messagesEndRef} />
+                          </div>
+
+                          {!isblocked ? (
+                            !isblocked_by ? (
+                              <form onSubmit={onMessageSubmit}>
+                                <div className="row pt-5">
+                                  <Col sm={10}>
+                                    <TextField
+                                      name="message"
+                                      onChange={(e) => {
+                                        onTextChange(e);
+                                      }}
+                                      value={state.message}
+                                      id="outlined-multiline-static"
+                                      variant="outlined"
+                                      label="Message"
+                                      fullWidth
+                                    />
+                                  </Col>
+                                  <Col>
+                                    <button className="btn btn-primary">
+                                      Send Message <SendIcon />
+                                    </button>
+                                  </Col>
+                                </div>
+                              </form>
+                            ) : (
+                              <h4 className="card-label font-weight-bolder text-dark">
+                                You have been blocked by the user
+                              </h4>
+                            )
+                          ) : (
+                            <h4 className="card-label font-weight-bolder text-dark">
+                              You won't recieve any messages unless you unblock
+                              the user
+                            </h4>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Tab.Pane>
+                );
+                return comp;
+              })}
+            </Tab.Content>
+          </Col>
+        </Row>
+      </Tab.Container>
+    </div>
   );
 };
 

@@ -13,6 +13,9 @@ const {
   getfollowing,
   getfriends,
   updatePersonalChat,
+  clearchat,
+  blockuser,
+  unblockuser,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const bodyParser = require("body-parser");
@@ -32,6 +35,9 @@ router.put("/updatechat", updatePersonalChat);
 router.get("/followers/:userId", requireSignin, getfollowers);
 router.get("/following/:userId", requireSignin, getfollowing);
 router.get("/friends/:userId", requireSignin, getfriends);
+router.put("/clearchat", requireSignin, clearchat);
+router.put("/blockuser", requireSignin, blockuser);
+router.put("/unblockuser", requireSignin, unblockuser);
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 

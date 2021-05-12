@@ -28,7 +28,7 @@ exports.postById = (req, res, next, id) => {
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")
-    .select("_id photo")
+    .select("_id photo title liked_by comments tags")
     .then((posts) => {
       res.json({ posts });
     })
@@ -36,7 +36,7 @@ exports.getPosts = (req, res) => {
 };
 
 exports.createPost = (req, res) => {
-  const { pic } = req.body;
+  const { pic, title, tags } = req.body;
   let user = req.profile;
   if (!pic) {
     return res
@@ -46,6 +46,8 @@ exports.createPost = (req, res) => {
   const post = new Post({
     photo: pic,
     postedBy: user._id,
+    title: title,
+    tags: tags,
   });
   post
     .save()
@@ -155,20 +157,73 @@ exports.convertToWebp = async (req, res) => {
         });
       }
     });
-  // let buf = Buffer.from(data);
-  // let dataBase64 = Buffer.from(buf).toString("base64");
-  // base64str of image
-  // base64str image type jpg,png ...
-  //option: options and quality,it should be given between 0 to 100
-  // console.log(__dirname);
-  // fs.writeFile("../temp/", "tempFile." + type, () => {
-  //   console.log("created at", __dirname, __filename);
-  // });
-  // let result = webp.str2webpstr(dataBase64, type, "-q 80");
-  // result.then(function (result) {
-  //   // you access the value from the promise here
-  //   console.log(result);
-  // });
-  // console.log(result);
-  // return res.status(200).json({ msg: "done" });
+};
+// let buf = Buffer.from(data);
+// let dataBase64 = Buffer.from(buf).toString("base64");
+// base64str of image
+// base64str image type jpg,png ...
+//option: options and quality,it should be given between 0 to 100
+// console.log(__dirname);
+// fs.writeFile("../temp/", "tempFile." + type, () => {
+//   console.log("created at", __dirname, __filename);
+// });
+// let result = webp.str2webpstr(dataBase64, type, "-q 80");
+// result.then(function (result) {
+//   // you access the value from the promise here
+//   console.log(result);
+// });
+// console.log(result);
+// return res.status(200).json({ msg: "done" });
+
+exports.likePost = (req, res) => {
+  Post.findById(req.body.postId).exec((err, post) => {
+    if (err || !post) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    post.liked_by.push(req.body.userId);
+    post.save();
+    res.status(200).json({ message: "Post liked" });
+  });
+};
+
+exports.dislikePost = (req, res) => {
+  Post.findById(req.body.postId).exec((err, post) => {
+    if (err || !post) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    post.liked_by.pull(req.body.userId);
+    post.save();
+    res.status(200).json({ message: "Post Disliked" });
+  });
+};
+
+exports.addcomment = (req, res) => {
+  Post.findById(req.body.postId).exec((err, post) => {
+    if (err || !post) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    let comment = {
+      comment: req.body.comment,
+      userId: req.body.userId,
+    };
+    post.comments.push(comment);
+    post.save();
+    res.status(200).json({ message: "New Comment posted" });
+  });
+};
+
+exports.getPost = (req, res) => {
+  Post.findById(req.post._id)
+    .populate("postedBy", "_id name")
+    .select("_id photo title likes liked_by comments")
+    .then((post) => {
+      res.json({ post });
+    })
+    .catch((err) => console.log(err));
 };

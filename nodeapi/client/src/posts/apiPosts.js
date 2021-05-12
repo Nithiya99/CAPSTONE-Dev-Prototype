@@ -78,7 +78,7 @@ export const uploadPicture = async (base64Data, fileName) => {
       }
     });
 };
-export const createPost = (image) => {
+export const createPost = (image,title,tags) => {
   const data = new FormData();
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
@@ -102,6 +102,8 @@ export const createPost = (image) => {
           },
           body: JSON.stringify({
             pic: url,
+            title: title,
+            tags: tags,
           }),
         })
           .then((res) => res.json())
@@ -116,4 +118,89 @@ export const createPost = (image) => {
     .catch((err) => {
       console.log(err);
     });
+};
+
+export const likepost = (post_id) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let obj = {
+    userId: userId,
+    postId: post_id,
+  };
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(obj),
+  };
+  // console.log(settings.body);
+  return fetch(`http://localhost:3000/post/like/${post_id}`, settings)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const dislikepost = (post_id) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let obj = {
+    userId: userId,
+    postId: post_id,
+  };
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(obj),
+  };
+  // console.log(settings.body);
+  return fetch(`http://localhost:3000/post/dislike/${post_id}`, settings)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const addcomment = (post_id, comment) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let obj = {
+    userId: userId,
+    postId: post_id,
+    comment: comment,
+  };
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(obj),
+  };
+  // console.log(settings.body);
+  return fetch(`http://localhost:3000/post/addcomment/${post_id}`, settings)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const getpost = (post_id) => {
+  let settings = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  // console.log(settings.body);
+  return fetch(`http://localhost:3000/post/${post_id}`, settings)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
 };

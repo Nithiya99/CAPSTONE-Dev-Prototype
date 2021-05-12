@@ -215,3 +215,60 @@ export const updatePersonalChat = (chat) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const clearChat = (current_user_id, client_user_id) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch("http://localhost:8081/clearchat/", {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      current_user_id: current_user_id,
+      client_user_id: client_user_id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const blockUser = (current_user_id, client_user_id) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch("http://localhost:8081/blockuser/", {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      current_user_id: current_user_id,
+      client_user_id: client_user_id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const unblockUser = (current_user_id, client_user_id) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch("http://localhost:8081/unblockuser/", {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      current_user_id: current_user_id,
+      client_user_id: client_user_id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

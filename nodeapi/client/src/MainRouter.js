@@ -21,6 +21,7 @@ import Landing from "./core/Landing";
 import LiveClock from "react-live-clock";
 import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
+import showPost from "./posts/showPost";
 
 const MainRouter = () => {
   const dispatch = useDispatch();
@@ -57,6 +58,7 @@ const MainRouter = () => {
               <Route path="/mychats/:userId" component={MyChats}></Route>
               <Route path="/user/edit/:userId" component={EditProfile}></Route>
               <Route path="/user/:userId" component={Profile}></Route>
+              <Route path="/post/:postId" component={showPost}></Route>
             </Switch>
           </div>
         </div>

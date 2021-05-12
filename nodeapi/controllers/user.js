@@ -174,18 +174,16 @@ exports.updatePersonalChat = (req, res) => {
   let chat_msg = req.body.chat;
   console.log(chat_msg);
   User.findById(req.body.chat.touser_id).exec((err, user) => {
-    if (err || !user)
-      console.log("user not found");
-    else
-    {
-      user.chat.push(chat_msg);
+    if (err || !user) console.log("user not found");
+    else {
+      if (user.blocked_users.indexOf(req.body.chat.fromuser) < 0)
+        user.chat.push(chat_msg);
       user.save();
     }
   });
   User.findById(req.body.chat.fromuser).exec((err, user) => {
-    if (err || !user)
-      console.log("user not found");
-    else{
+    if (err || !user) console.log("user not found");
+    else {
       user.chat.push(chat_msg);
       user.save();
     }
@@ -196,4 +194,65 @@ exports.updatePersonalChat = (req, res) => {
 exports.getPersonalChat = async (id) => {
   const { chat } = await User.findById(id).exec();
   return chat;
+};
+
+exports.clearchat = async (req, res) => {
+  User.findById(req.body.current_user_id).exec((err, user) => {
+    if (err || !user) console.log("user not found");
+    else {
+      let chat = user.chat;
+      let new_chats = [];
+      chat.map((c) => {
+        if (
+          c.touser_id.toString() !== req.body.client_user_id.toString() &&
+          c.fromuser.toString() !== req.body.client_user_id.toString()
+        )
+          new_chats.push(c);
+      });
+      user.chat = new_chats;
+      user.save();
+    }
+  });
+  return res.status(200).json("chat cleared");
+};
+
+exports.blockuser = (req, res) => {
+  User.findById(req.body.current_user_id).exec((err, user) => {
+    if (err || !user) console.log("user not found");
+    else {
+      user.blocked_users.push(req.body.client_user_id);
+      user.save();
+    }
+  });
+  User.findById(req.body.client_user_id).exec((err, user) => {
+    if (err || !user) console.log("user not found");
+    else {
+      user.blocked_by.push(req.body.current_user_id);
+      user.save();
+    }
+  });
+  return res.status(200).json("User blocked");
+};
+
+exports.unblockuser = (req, res) => {
+  User.findById(req.body.current_user_id).exec((err, user) => {
+    if (err || !user) console.log("user not found");
+    else {
+      user.blocked_users.pull(req.body.client_user_id);
+      user.save();
+    }
+  });
+  User.findById(req.body.client_user_id).exec((err, user) => {
+    if (err || !user) console.log("user not found");
+    else {
+      user.blocked_by.pull(req.body.current_user_id);
+      user.save();
+    }
+  });
+  return res.status(200).json("User unBlocked");
+};
+
+exports.getBlockedUsers = async (id) => {
+  const { blocked_users } = await User.findById(id).exec();
+  return blocked_users;
 };

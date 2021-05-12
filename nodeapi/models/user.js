@@ -71,6 +71,18 @@ var userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  blocked_users: [
+    {
+      type: ObjectId,
+      ref: "User",
+    },
+  ],
+  blocked_by: [
+    {
+      type: ObjectId,
+      ref: "User",
+    },
+  ],
   chat: [
     {
       from_name: {
