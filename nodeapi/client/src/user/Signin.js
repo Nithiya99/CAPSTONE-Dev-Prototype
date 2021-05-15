@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { signin, authenticate, isAuthenticated } from "../auth/index";
 import "../styles.css";
 import ModalButton from "./../utils/signupbutton/ModalButton";
 import { GoogleLogin } from "react-google-login";
-import socket from "./../utils/Socket";
+import socket from "./../utils/Socket"
+import LoginImg from "../images/login.png";
+
 class Signin extends Component {
   constructor() {
     super();
@@ -95,13 +97,22 @@ class Signin extends Component {
     return (
       <div className=" h-100 signin-wrapper">
         <div className="row signin-content justify-content-center align-items-center">
-          <div className="col-md-8">
-            <div className="row">
-              <div className="col-md-7"></div>
-              <div className="signin-form col-md-4 p-4">
-                <div className="d-flex align-items-center bd-highlight h-100">
-                  <div className="box w-100">
-                    <div
+          <div className="login-aside d-flex flex-column flex-row-auto">
+            <img src={LoginImg} />
+          </div>
+          <div className="login-content flex-row-fluid d-flex flex-column justify-content-center position-relative overflow-hidden p-17 mx-auto">
+            <div className="d-flex flex-column-fluid flex-center">
+              <div className="login-form login-signin">
+                <form className="form fv-plugins-bootstrap fv-plugins-framework" id="kt_login_signin_form">
+                  <div className="pb-13 pt-lg-0 pt-5">
+                    <h3 className="font-weight-bolder text-dark font-size-h4 font-size-h1-lg">
+                      Welcome to Workshake
+                    </h3>
+                    <span className="text-muted font-weight-bold font-size-h4">
+                    New Here? <ModalButton />
+                    </span>
+                  </div>
+                  <div
                       className="alert alert-danger mb-5 col-sm-8 offset-2"
                       style={{ display: error ? "" : "none" }}
                     >
@@ -115,63 +126,32 @@ class Signin extends Component {
                     ) : (
                       ""
                     )}
-                    <h1 className="text-center text-white">
-                      Let's get back to work!
-                    </h1>
-
-                    <form className="mt-5">
-                      <div className="form-group">
-                        <div className="row">
-                          <div className="col-sm-10 offset-1">
-                            <label className="text-white">
-                              <big>Email</big>
-                            </label>
-                            <input
-                              className="form-control"
-                              onChange={this.handleChange("email")}
-                              value={email}
-                              type="email"
-                            />
-                          </div>
-                        </div>
-                        <div className="row mt-3">
-                          <div className="col-sm-10 offset-1">
-                            <label className="text-white">
-                              <big>Password</big>
-                            </label>
-                            <input
-                              className="form-control"
-                              onChange={this.handleChange("password")}
-                              value={password}
-                              type="password"
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <button
-                            onClick={this.clickSubmit}
-                            className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                          >
-                            Login
-                          </button>
-                        </div>
-                        <div className="d-flex justify-content-center">
-                          <GoogleLogin
-                            clientId="11029788971-15i4cq1rn9lijdh2k685to3ri1vtb682.apps.googleusercontent.com"
-                            buttonText="Login"
-                            onSuccess={this.loginGoogle}
-                            onFailure={this.loginGoogleFailed}
-                            cookiePolicy={"single_host_origin"}
-                          />
-                        </div>
-                      </div>
-                    </form>
-                    <p className="text-muted text-center mt-5">
-                      Want to join the community?
-                      <ModalButton />
-                    </p>
+                  <div className="form-group fv-plugins-icon-container">
+                    <label className="font-size-h6 font-weight-bolder text-dark">Email</label>
+                    <input className="login-control form-control form-control-solid h-auto py-6 px-6 rounded-lg" onChange={this.handleChange("email")} value={email} type="email" />
                   </div>
-                </div>
+                  <div className="form-group fv-plugins-icon-container pt-5">
+                    <div className="d-flex justify-content-between mt-n5">
+                        <label className="font-size-h6 font-weight-bolder text-dark">Password</label>
+                        <Link to="#" className="text-primary font-size-h6 font-weight-bolder text-hover-primary" id="kt_login_forgot">
+                          Forgot Password
+                        </Link>
+                    </div>
+                    <input className="login-control form-control form-control-solid h-auto py-6 px-6 rounded-lg" onChange={this.handleChange("password")} value={password} type="password" />
+                  </div>
+                  <div className="pb-lg-0 pb-5">
+                    <button type="button" id="kt_login_signin_submit" onClick={this.clickSubmit} className="btn btn-primary font-weight-bolder font-size-h6 px-8 py-4 my-3 mr-3">
+                      Sign In
+                    </button>
+                    <GoogleLogin
+                      clientId="11029788971-15i4cq1rn9lijdh2k685to3ri1vtb682.apps.googleusercontent.com"
+                      buttonText="Sign in with Google"
+                      onSuccess={this.loginGoogle}
+                      onFailure={this.loginGoogleFailed}
+                      cookiePolicy={"single_host_origin"}
+                    />
+                  </div>
+                </form>
               </div>
             </div>
           </div>

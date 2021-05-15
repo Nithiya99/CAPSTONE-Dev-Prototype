@@ -9,7 +9,7 @@ const ModalButton = () => {
     <>
       {" "}
       <Button variant="outline-primary" size="sm" onClick={handleShow}>
-        Signup
+        Create an Account
       </Button>
       <Modal
         show={show}
