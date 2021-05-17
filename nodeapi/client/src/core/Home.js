@@ -34,6 +34,7 @@ class Home extends Component {
     getAllPosts()
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         this.setState({ posts: data.posts });
       });
   }

@@ -17,14 +17,23 @@ const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
 const multer = require("multer");
 const router = express.Router();
-
-const upload = multer();
+const path = require("path");
+const storage = multer.diskStorage({
+  destination: "./public/uploads/",
+  filename: function (req, file, cb) {
+    cb(null, "IMAGE-" + Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10000000 },
+}).single("myImage");
 router.get("/posts", getPosts);
 router.post("/post/new/:userId", requireSignin, createPost);
 router.get("/posts/by/:userId", requireSignin, postsByUser);
 router.put("/post/:postId", requireSignin, isPoster, updatePost);
 router.delete("/post/:postId", requireSignin, isPoster, deletePost);
-router.post("/convertToWebp", convertToWebp);
+router.post("/convertToWebp", upload, convertToWebp);
 router.put("/post/like/:postId", requireSignin, likePost);
 router.put("/post/dislike/:postId", requireSignin, dislikePost);
 router.put("/post/addcomment/:postId", requireSignin, addcomment);

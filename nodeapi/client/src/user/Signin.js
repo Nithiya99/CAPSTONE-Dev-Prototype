@@ -4,7 +4,7 @@ import { signin, authenticate, isAuthenticated } from "../auth/index";
 import "../styles.css";
 import ModalButton from "./../utils/signupbutton/ModalButton";
 import { GoogleLogin } from "react-google-login";
-import socket from "./../utils/Socket"
+import socket from "./../utils/Socket";
 import LoginImg from "../images/login.png";
 
 class Signin extends Component {
@@ -68,6 +68,7 @@ class Signin extends Component {
     signin(user)
       .then((data) => {
         console.log("HI FROM MAIN ROUTE");
+        console.log(data);
         if (data.error) {
           this.setState({ error: data.error, loading: false });
         } else {
@@ -103,44 +104,70 @@ class Signin extends Component {
           <div className="login-content flex-row-fluid d-flex flex-column justify-content-center position-relative overflow-hidden p-17 mx-auto">
             <div className="d-flex flex-column-fluid flex-center">
               <div className="login-form login-signin">
-                <form className="form fv-plugins-bootstrap fv-plugins-framework" id="kt_login_signin_form">
+                <form
+                  className="form fv-plugins-bootstrap fv-plugins-framework"
+                  id="kt_login_signin_form"
+                >
                   <div className="pb-13 pt-lg-0 pt-5">
                     <h3 className="font-weight-bolder text-dark font-size-h4 font-size-h1-lg">
                       Welcome to Workshake
                     </h3>
                     <span className="text-muted font-weight-bold font-size-h4">
-                    New Here? <ModalButton />
+                      New Here? <ModalButton />
                     </span>
                   </div>
                   <div
-                      className="alert alert-danger mb-5 col-sm-8 offset-2"
-                      style={{ display: error ? "" : "none" }}
-                    >
-                      {error}
-                    </div>
+                    className="alert alert-danger mb-5 col-sm-8 offset-2"
+                    style={{ display: error ? "" : "none" }}
+                  >
+                    {error}
+                  </div>
 
-                    {loading ? (
-                      <div className="jumbotron text-center">
-                        <h2>Loading...</h2>
-                      </div>
-                    ) : (
-                      ""
-                    )}
+                  {loading ? (
+                    <div className="jumbotron text-center">
+                      <h2>Loading...</h2>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                   <div className="form-group fv-plugins-icon-container">
-                    <label className="font-size-h6 font-weight-bolder text-dark">Email</label>
-                    <input className="login-control form-control form-control-solid h-auto py-6 px-6 rounded-lg" onChange={this.handleChange("email")} value={email} type="email" />
+                    <label className="font-size-h6 font-weight-bolder text-dark">
+                      Email
+                    </label>
+                    <input
+                      className="login-control form-control form-control-solid h-auto py-6 px-6 rounded-lg"
+                      onChange={this.handleChange("email")}
+                      value={email}
+                      type="email"
+                    />
                   </div>
                   <div className="form-group fv-plugins-icon-container pt-5">
                     <div className="d-flex justify-content-between mt-n5">
-                        <label className="font-size-h6 font-weight-bolder text-dark">Password</label>
-                        <Link to="#" className="text-primary font-size-h6 font-weight-bolder text-hover-primary" id="kt_login_forgot">
-                          Forgot Password
-                        </Link>
+                      <label className="font-size-h6 font-weight-bolder text-dark">
+                        Password
+                      </label>
+                      <Link
+                        to="#"
+                        className="text-primary font-size-h6 font-weight-bolder text-hover-primary"
+                        id="kt_login_forgot"
+                      >
+                        Forgot Password
+                      </Link>
                     </div>
-                    <input className="login-control form-control form-control-solid h-auto py-6 px-6 rounded-lg" onChange={this.handleChange("password")} value={password} type="password" />
+                    <input
+                      className="login-control form-control form-control-solid h-auto py-6 px-6 rounded-lg"
+                      onChange={this.handleChange("password")}
+                      value={password}
+                      type="password"
+                    />
                   </div>
                   <div className="pb-lg-0 pb-5">
-                    <button type="button" id="kt_login_signin_submit" onClick={this.clickSubmit} className="btn btn-primary font-weight-bolder font-size-h6 px-8 py-4 my-3 mr-3">
+                    <button
+                      type="button"
+                      id="kt_login_signin_submit"
+                      onClick={this.clickSubmit}
+                      className="btn btn-primary font-weight-bolder font-size-h6 px-8 py-4 my-3 mr-3"
+                    >
                       Sign In
                     </button>
                     <GoogleLogin

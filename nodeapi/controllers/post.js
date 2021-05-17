@@ -8,17 +8,6 @@ const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const path = require("path");
 webp.grant_permission();
-const storage = multer.diskStorage({
-  destination: "./public/uploads/",
-  filename: function (req, file, cb) {
-    cb(null, "IMAGE-" + Date.now() + path.extname(file.originalname));
-  },
-});
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1000000 },
-}).single("myImage");
-
 cloudinary.config({
   cloud_name: "workshaketrial",
   api_key: "141328859214936",
@@ -69,7 +58,7 @@ exports.createPost = (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      res.status(402).json({ err: "could not save" });
+      res.status(402).json({ error: "could not save" });
     });
 };
 
@@ -142,12 +131,40 @@ function decodeBase64Image(dataString) {
   return response;
 }
 exports.convertToWebp = (req, res) => {
-  upload(req, res, (err) => {
-    console.log("Request ---", req.body);
-    console.log("Request file ---", req.file); //Here you get file.
-    /*Now do where ever you want to do*/
-    // if (!err) return res.send(200).end();
-  });
+  // upload(req, res, (err) => {
+  //   console.log("Request ---", req.body);
+  //   console.log("Request file ---", req.file); //Here you get file.
+  //   /*Now do where ever you want to do*/
+  //   // if (!err) return res.send(200).end();
+  // });
+  let file = req.file;
+  // console.log(req.file);
+  console.log("path:", file.destination + file.filename);
+  sharp(file.destination + file.filename)
+    .resize(1000, 1000)
+    .webp()
+    .toFile(file.destination + file.filename + " edited.webp", (err, info) => {
+      if (err) console.log(err);
+      else {
+        console.log(info);
+        cloudinary.uploader.upload(
+          file.destination + file.filename + " edited.webp",
+          (err, result) => {
+            if (err) {
+              console.log("error:", err);
+              return res.status(400).json({ err });
+            }
+            console.log("result:", result);
+            return res.status(200).json({ result });
+          }
+        );
+        // fs.unlink(file.destination + file.filename);
+        // fs.unlink(file.destination + file.filename + " edited.webp");
+      }
+    });
+
+  // console.log(req.body.title);
+  // console.log(req.body.tags);
   // let data = req.body.baseData;
   // console.log("base64data:", req.body);
   // const data = req.body.data;
@@ -157,6 +174,7 @@ exports.convertToWebp = (req, res) => {
   // var imageBuffer = decodeBase64Image(data);
   // // console.log(imageBuffer);
   // let name = Date.now();
+
   // sharp(imageBuffer.data)
   //   .resize(500, 500)
   //   .toFile(`./uploads/${name}.webp`, (err, info) => {
@@ -166,14 +184,14 @@ exports.convertToWebp = (req, res) => {
   //       // fs.readFile(`./uploads/${name}.webp`, (err, data) => {
   //       //   console.log(data);
   //       // });
-  //       cloudinary.uploader.upload(`./uploads/${name}.webp`, (err, result) => {
-  //         if (err) {
-  //           console.log("error:", err);
-  //           return res.status(400).json({ err });
-  //         }
-  //         console.log("result:", result);
-  //         return res.status(200).json({ result });
-  //       });
+  // cloudinary.uploader.upload(`./uploads/${name}.webp`, (err, result) => {
+  //   if (err) {
+  //     console.log("error:", err);
+  //     return res.status(400).json({ err });
+  //   }
+  //   console.log("result:", result);
+  //   return res.status(200).json({ result });
+  // });
   //     }
   //   });
 };

@@ -84,17 +84,48 @@ export const uploadPicture = async (base64Data, fileName) => {
       }
     });
 };
-export const createPost = (image, title, tags) => {
+export const createPost = async (image, title, tags) => {
   const data = new FormData();
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  data.append("title", title);
+  data.append("tags", tags);
   data.append("myImage", image);
   let settings = {
     headers: {
       "content-type": "multipart/form-data",
     },
   };
-  axios.post(`http://localhost:3000/convertToWebp`, data, settings);
+  let response = await axios.post(
+    `http://localhost:3000/convertToWebp`,
+    data,
+    settings
+  );
+
+  let result = response.data.result;
+  if (result.url) {
+    let url = result.url;
+    return fetch(`/post/new/${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token.toString(),
+      },
+      body: JSON.stringify({
+        pic: url,
+        title: title,
+        tags: tags,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        return data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   // data.append("file", image);
   // data.append("upload_preset", "workshaketrial");
   // data.append("cloud_name", "workshaketrial");
@@ -107,26 +138,7 @@ export const createPost = (image, title, tags) => {
   //     //   setUrl(data.url);
   //     if (data.url) {
   //       let url = data.url;
-  //       return fetch(`/post/new/${userId}`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: "Bearer " + token.toString(),
-  //         },
-  //         body: JSON.stringify({
-  //           pic: url,
-  //           title: title,
-  //           tags: tags,
-  //         }),
-  //       })
-  //         .then((res) => res.json())
-  //         .then((data) => {
-  //           return data;
-  //         })
-  //         .catch((err) => {
-  //           console.log(err);
-  //         });
-  //     }
+
   //   })
   //   .catch((err) => {
   //     console.log(err);

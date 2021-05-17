@@ -116,7 +116,7 @@ function DragDropImages(props) {
     if (title === "") toast.warning("Please enter the Title");
     else {
       createPost(image, title, tags).then((data) => {
-        console.log(data);
+        // console.log(data);
         if (data.error) {
           toast.warning(data.error);
         } else {
@@ -157,6 +157,7 @@ function DragDropImages(props) {
       <div className="text-center mt-2">
         <Button
           onClick={() => {
+            files.map((file) => console.log(file));
             files.map((file) => postDetails(file, title, tags));
           }}
         >
