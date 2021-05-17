@@ -15,9 +15,10 @@ const {
 } = require("../controllers/post");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
-
+const multer = require("multer");
 const router = express.Router();
 
+const upload = multer();
 router.get("/posts", getPosts);
 router.post("/post/new/:userId", requireSignin, createPost);
 router.get("/posts/by/:userId", requireSignin, postsByUser);

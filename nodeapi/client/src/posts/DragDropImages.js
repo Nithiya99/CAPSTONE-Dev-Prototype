@@ -157,7 +157,7 @@ function DragDropImages(props) {
       <div className="text-center mt-2">
         <Button
           onClick={() => {
-            files.map((file) => postDetails(file));
+            files.map((file) => postDetails(file, title, tags));
           }}
         >
           Post

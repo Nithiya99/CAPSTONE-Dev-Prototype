@@ -1,3 +1,4 @@
+import axios from "axios";
 export const getAllPosts = () => {
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
   let token = JSON.parse(localStorage.getItem("jwt")).token;
@@ -21,7 +22,12 @@ export const getPostsOfUser = (userId) => {
   };
   return fetch(`http://localhost:3000/posts/by/${userId}`, requestObj);
 };
-
+export const uploadPicture2 = (data) => {
+  axios.post(`http://localhost:3000/convertToWebp`, data);
+};
+export const uploadVideo = (data) => {
+  console.log(data);
+};
 export const uploadPicture = async (base64Data, fileName) => {
   // var imageBuffer = new Buffer(base64Data, "base64"); //console = <Buffer 75 ab 5a 8a ...
   // fs.writeFile("test.jpg", imageBuffer, function (err) {
@@ -78,46 +84,53 @@ export const uploadPicture = async (base64Data, fileName) => {
       }
     });
 };
-export const createPost = (image,title,tags) => {
+export const createPost = (image, title, tags) => {
   const data = new FormData();
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
-  data.append("file", image);
-  data.append("upload_preset", "workshaketrial");
-  data.append("cloud_name", "workshaketrial");
-  return fetch("https://api.cloudinary.com/v1_1/workshaketrial/image/upload", {
-    method: "post",
-    body: data,
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      //   setUrl(data.url);
-      if (data.url) {
-        let url = data.url;
-        return fetch(`/post/new/${userId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token.toString(),
-          },
-          body: JSON.stringify({
-            pic: url,
-            title: title,
-            tags: tags,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            return data;
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  data.append("myImage", image);
+  let settings = {
+    headers: {
+      "content-type": "multipart/form-data",
+    },
+  };
+  axios.post(`http://localhost:3000/convertToWebp`, data, settings);
+  // data.append("file", image);
+  // data.append("upload_preset", "workshaketrial");
+  // data.append("cloud_name", "workshaketrial");
+  // return fetch("https://api.cloudinary.com/v1_1/workshaketrial/image/upload", {
+  //   method: "post",
+  //   body: data,
+  // })
+  //   .then((res) => res.json())
+  //   .then((data) => {
+  //     //   setUrl(data.url);
+  //     if (data.url) {
+  //       let url = data.url;
+  //       return fetch(`/post/new/${userId}`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: "Bearer " + token.toString(),
+  //         },
+  //         body: JSON.stringify({
+  //           pic: url,
+  //           title: title,
+  //           tags: tags,
+  //         }),
+  //       })
+  //         .then((res) => res.json())
+  //         .then((data) => {
+  //           return data;
+  //         })
+  //         .catch((err) => {
+  //           console.log(err);
+  //         });
+  //     }
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 };
 
 export const likepost = (post_id) => {

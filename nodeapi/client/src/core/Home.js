@@ -14,6 +14,7 @@ import { getProject } from "../project/apiProject";
 import { listmyprojects } from "./../project/apiProject";
 import { Modal, Button } from "react-bootstrap";
 import PostImage from "./../posts/PostImage";
+import PostVideo from "./../posts/PostVideo";
 import { getAllPosts } from "./../posts/apiPosts";
 import Post from "../posts/Post";
 import LiveClock from "react-live-clock";
@@ -141,12 +142,12 @@ class Home extends Component {
                     comments={post.comments}
                     tags={post.tags}
                   />
-                  ))}
-                  <ProjectRecommendation />
+                ))}
+                <ProjectRecommendation />
               </div>
             </div>
           </div>
-        </div>  
+        </div>
       </>
     );
   }

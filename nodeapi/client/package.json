@@ -11,6 +11,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@yaireo/tagify": "^3.22.3",
+    "axios": "^0.21.1",
     "b64-to-file": "^1.0.4",
     "bootstrap": "^4.6.0",
     "compress-base64": "^1.0.2",

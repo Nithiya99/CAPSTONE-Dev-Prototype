@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { DropzoneDialogBase } from "material-ui-dropzone";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import { uploadPicture } from "./apiPosts";
-import { Modal } from "react-bootstrap";
-import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
-import DragDropImages from "./DragDropImages";
-
-export default function PostImage() {
+import { uploadVideo } from "./apiPosts";
+export default function PostVideo() {
   const [open, setOpen] = React.useState(false);
   const [fileObjects, setFileObjects] = React.useState([]);
 
@@ -23,30 +19,19 @@ export default function PostImage() {
       </IconButton>
     </>
   );
-
-  const handleClose = () => {
-    setOpen(false);
-  };
   return (
     <div>
       <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-        Add Image
+        Add Video
       </Button>
-      <Modal show={open} onHide={handleClose}>
-        <Modal.Header closeButton />
-        <Modal.Body>
-          <h4 className="text-center mb-3">Lets post pics!</h4>
-          <DragDropImages />
-        </Modal.Body>
-      </Modal>
 
-      {/* <DropzoneDialogBase
+      <DropzoneDialogBase
         dialogTitle={dialogTitle()}
-        acceptedFiles={["image/*"]}
+        acceptedFiles={["video/*"]}
         fileObjects={fileObjects}
         cancelButtonText={"cancel"}
         submitButtonText={"submit"}
-        maxFileSize={10485760}
+        maxFileSize={52428800}
         open={open}
         onAdd={(newFileObjs) => {
           console.log("onAdd", newFileObjs);
@@ -67,11 +52,7 @@ export default function PostImage() {
         onSave={() => {
           console.log("onSave", fileObjects);
           fileObjects.map((file) => {
-            const data = new FormData();
-            // data.append("name", file.file.name);
-            data.append("image", file);
-            console.log("file data (base64):", file.data);
-            uploadPicture2(data);
+            uploadVideo(file);
             // .then((data) =>
             //   console.log("data:", data)
             // );
@@ -80,7 +61,7 @@ export default function PostImage() {
         }}
         showPreviews={true}
         showFileNamesInPreview={true}
-      /> */}
+      />
     </div>
   );
 }
