@@ -6,7 +6,7 @@ import { getCurrentUser } from "./../user/apiUser";
 import { likepost, dislikepost, addcomment, getpost } from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
-import { FacebookSelector, GithubSelector } from "react-reactions";
+import moment from "moment";
 import { Accordion, Button, Card } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
@@ -31,26 +31,33 @@ class Post extends Component {
     else likepost(this.props._id).then((data) => console.log(data));
   };
 
-  select = (e) => {
-    console.log(e);
-  };
-
   onTextChange = (e) => {
     this.setState({ comment: e.target.value });
   };
 
   submitcomment = () => {
-    console.log(this.state.comment);
     addcomment(this.props._id, this.state.comment).then((data) =>
       console.log(data)
     );
+  };
+
+  rendercomments = (comments) => {
+    return comments.map(({ PostedOn, comment, userName }, index) => (
+      <div>
+        <div>
+          <span className="font-weight-bold font-size-lg ">{userName}</span>
+        </div>
+        <div className="text-muted font-size-sm">
+          {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+        </div>
+      </div>
+    ));
   };
 
   render() {
     const { headerText, footerText, imageUrl, liked_by, _id, tags, comments } =
       this.props;
     let counts = collect(liked_by).count();
-
     return (
       <>
         <ToastContainer />
@@ -88,7 +95,6 @@ class Post extends Component {
             <button
               onClick={() => {
                 getpost(_id).then((data) => {
-                  console.log(data);
                   let link = `http://localhost:3000/post/${data.post._id}`;
                   navigator.clipboard.writeText(link);
                   toast.success("Link copied to clipboard");
@@ -121,13 +127,15 @@ class Post extends Component {
                     >
                       Submit
                     </button>
+                    {comments.length > 0 ? (
+                      this.rendercomments(comments)
+                    ) : (
+                      <p>No Comments</p>
+                    )}
                   </Card.Body>
                 </Accordion.Collapse>
               </Card>
             </Accordion>
-
-            {/* <FacebookSelector onSelect={this.select} />
-            <GithubSelector onSelect={this.select} /> */}
           </Card.Body>
           <Card.Footer>{footerText}</Card.Footer>
         </Card>
