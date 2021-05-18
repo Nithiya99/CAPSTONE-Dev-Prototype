@@ -84,7 +84,7 @@ export const uploadPicture = async (base64Data, fileName) => {
       }
     });
 };
-export const createPost = async (image, title, tags) => {
+export const createPost = async (image, title, tags, project) => {
   const data = new FormData();
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
@@ -101,7 +101,7 @@ export const createPost = async (image, title, tags) => {
     data,
     settings
   );
-
+  // console.log(project);
   let result = response.data.result;
   if (result.url) {
     let url = result.url;
@@ -115,6 +115,7 @@ export const createPost = async (image, title, tags) => {
         pic: url,
         title: title,
         tags: tags,
+        project: project,
       }),
     })
       .then((res) => res.json())

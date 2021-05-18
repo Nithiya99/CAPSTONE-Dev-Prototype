@@ -131,6 +131,7 @@ class Home extends Component {
               <div className="card p-2">
                 <div className="card-body">
                   <PostImage />
+                  <PostVideo />
                 </div>
                 {posts.map((post) => (
                   <Post

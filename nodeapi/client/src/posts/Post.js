@@ -47,15 +47,8 @@ class Post extends Component {
   };
 
   render() {
-    const {
-      headerText,
-      footerText,
-      imageUrl,
-      liked_by,
-      _id,
-      tags,
-      comments,
-    } = this.props;
+    const { headerText, footerText, imageUrl, liked_by, _id, tags, comments } =
+      this.props;
     let counts = collect(liked_by).count();
 
     return (
@@ -70,13 +63,18 @@ class Post extends Component {
             >
               {headerText}
             </Link>
+            {/* <div>
+              {tags.map((tag) => (
+                <>{tag}</>
+              ))}
+            </div> */}
           </Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
             <Card.Img
               style={{
-                width: "30vw",
-                height: "25vw",
+                width: "45vw",
+                height: "30vw",
                 "object-fit": "cover",
               }}
               variant="top"

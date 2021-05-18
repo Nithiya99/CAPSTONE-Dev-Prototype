@@ -38,18 +38,20 @@ exports.getPosts = (req, res) => {
 };
 
 exports.createPost = (req, res) => {
-  const { pic, title, tags } = req.body;
+  const { pic, title, tags, project } = req.body;
   let user = req.profile;
   if (!pic) {
     return res
       .status(403)
       .json({ error: "add suitable photo to add to server" });
   }
+  console.log(project);
   const post = new Post({
     photo: pic,
     postedBy: user._id,
     title: title,
     tags: tags,
+    project,
   });
   post
     .save()

@@ -22,6 +22,10 @@ const postSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  project: {
+    type: ObjectId,
+    ref: "Project",
+  },
   tags: [String],
   comments: [
     {
