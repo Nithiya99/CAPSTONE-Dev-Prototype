@@ -381,6 +381,10 @@ class Profile extends Component {
                         footerText={"by " + post.postedBy.name}
                         cardText={post.photo}
                         imageUrl={post.photo}
+                        comments={post.comments}
+                        liked_by={post.liked_by}
+                        tags={post.tags}
+                        _id={post._id}
                       />
                     ))}
                   </div>
