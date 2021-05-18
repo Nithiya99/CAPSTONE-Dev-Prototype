@@ -248,6 +248,7 @@ exports.addcomment = (req, res) => {
     let comment = {
       comment: req.body.comment,
       userId: req.body.userId,
+      userName: req.body.userName,
     };
     post.comments.push(comment);
     post.save();

@@ -6,6 +6,7 @@ import { getCurrentUser } from "./../user/apiUser";
 import { likepost, dislikepost, addcomment, getpost } from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
+import moment from "moment";
 import { Accordion, Button, Card } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { isAuthenticated } from "../auth";
@@ -46,10 +47,6 @@ class showPost extends Component {
     } else return toast.error("Please login-In");
   };
 
-  select = (e) => {
-    console.log(e);
-  };
-
   onTextChange = (e) => {
     this.setState({ comment: e.target.value });
   };
@@ -62,12 +59,24 @@ class showPost extends Component {
     } else return toast.error("Please login-In ");
   };
 
+  rendercomments = (comments) => {
+    return comments.map(({ PostedOn, comment, userName }, index) => (
+      <div>
+        <div>
+          <span className="font-weight-bold font-size-lg ">{userName}</span>
+        </div>
+        <div className="text-muted font-size-sm">
+          {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+        </div>
+      </div>
+    ));
+  };
+
   render() {
     let post = this.state.post.post;
     const current_post = { ...post };
     const posted_by = { ...current_post.postedBy };
     let counts = collect(current_post.liked_by).count();
-    console.log(current_post.photo);
     if (current_post === undefined) return null;
     return (
       <>
@@ -93,7 +102,6 @@ class showPost extends Component {
             <button
               onClick={() => {
                 getpost(current_post._id).then((data) => {
-                  console.log(data);
                   let link = `http://localhost:3000/post/${data.post._id}`;
                   navigator.clipboard.writeText(link);
                   toast.success("Link copied to clipboard");
@@ -126,6 +134,11 @@ class showPost extends Component {
                     >
                       Submit
                     </button>
+                    {collect(current_post.comments).count() > 0 ? (
+                      this.rendercomments(current_post.comments)
+                    ) : (
+                      <p>No Comments</p>
+                    )}
                   </Card.Body>
                 </Accordion.Collapse>
               </Card>

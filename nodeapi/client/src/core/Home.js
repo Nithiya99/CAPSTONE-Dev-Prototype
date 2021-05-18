@@ -108,7 +108,7 @@ class Home extends Component {
                 </div>
               </span>
             </div>
-            <div class="d-flex align-items-center flex-wrap">
+            <div className="d-flex align-items-center flex-wrap">
               <Badge variant="primary">
                 <div className="d-flex align-items-center flex-wrap mr-2">
                   <h6>{dayjs().format("DD MMMM, dddd")}</h6>

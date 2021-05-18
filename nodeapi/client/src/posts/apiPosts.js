@@ -193,9 +193,11 @@ export const dislikepost = (post_id) => {
 
 export const addcomment = (post_id, comment) => {
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let userName = JSON.parse(localStorage.getItem("jwt")).user.name;
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let obj = {
     userId: userId,
+    userName: userName,
     postId: post_id,
     comment: comment,
   };
