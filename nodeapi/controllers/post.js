@@ -36,7 +36,7 @@ exports.postById = (req, res, next, id) => {
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")
-    .select("_id photo video postType title liked_by comments tags")
+    .select("_id photo video postType title liked_by comments tags project")
     .then((posts) => {
       res.json({ posts });
     })
@@ -207,6 +207,7 @@ function decodeBase64Image(dataString) {
   return response;
 }
 exports.convertToWebp = (req, res) => {
+  console.log("file: ", req.file);
   // upload(req, res, (err) => {
   //   console.log("Request ---", req.body);
   //   console.log("Request file ---", req.file); //Here you get file.

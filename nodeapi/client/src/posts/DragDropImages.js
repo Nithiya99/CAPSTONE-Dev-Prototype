@@ -121,12 +121,12 @@ function DragDropImages(props) {
     else {
       createPost(image, title, tags, project).then((data) => {
         // console.log(data);
-        if (data.error) {
-          toast.warning(data.error);
-        } else {
-          toast.success("Created post Successfully");
-          history.push("/home");
-        }
+        // if (data.error) {
+        //   toast.warning(data.error);
+        // } else {
+        toast.success("Created post Successfully");
+        history.push("/home");
+        // }
       });
     }
   };
@@ -175,8 +175,7 @@ function DragDropImages(props) {
       <div className="text-center mt-2">
         <Button
           onClick={() => {
-            files.map((file) => console.log(file));
-            files.map((file) => postDetails(file, title, tags, project));
+            postDetails(files, title, tags, project);
             // console.log(project);
           }}
         >

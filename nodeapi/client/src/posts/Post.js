@@ -90,15 +90,20 @@ class Post extends Component {
           </Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
-            <Card.Img
-              style={{
-                width: "45vw",
-                height: "30vw",
-                "object-fit": "cover",
-              }}
-              variant="top"
-              src={imageUrl}
-            />
+            {imageUrl.map((url, i) => {
+              console.log(url, i);
+              return (
+                <Card.Img
+                  style={{
+                    width: "45vw",
+                    height: "30vw",
+                    "object-fit": "cover",
+                  }}
+                  variant="top"
+                  src={url}
+                />
+              );
+            })}
             {/* </Col>
                         <Col> */}
             {/* </Col> */}

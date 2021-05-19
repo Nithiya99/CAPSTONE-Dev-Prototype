@@ -125,64 +125,75 @@ export const createVideoPost = async (video, title, tags, project) => {
       });
   }
 };
-export const createPost = async (image, title, tags, project) => {
-  const data = new FormData();
+const functioncall = (final_url, title, tags, project, token, userId) => {
+  console.log(final_url);
+  let settings =
+    project !== "Personal"
+      ? {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token.toString(),
+          },
+          body: JSON.stringify({
+            pic: final_url,
+            title: title,
+            tags: tags,
+            project,
+          }),
+        }
+      : {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token.toString(),
+          },
+          body: JSON.stringify({
+            pic: final_url,
+            title: title,
+            tags: tags,
+          }),
+        };
+  return fetch(`/post/new/${userId}`, settings)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      return data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+export const createPost = async (images, title, tags, project) => {
+  console.log(images);
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
-  data.append("title", title);
-  data.append("tags", tags);
-  data.append("myImage", image);
-  let settings = {
-    headers: {
-      "content-type": "multipart/form-data",
-    },
-  };
-  let response = await axios.post(
-    `http://localhost:3000/convertToWebp`,
-    data,
-    settings
-  );
-  // console.log(project);
-  let result = response.data.result;
-  if (result.url) {
-    let url = result.url;
-    let settings =
-      project !== "Personal"
-        ? {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token.toString(),
-            },
-            body: JSON.stringify({
-              pic: url,
-              title: title,
-              tags: tags,
-              project,
-            }),
-          }
-        : {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token.toString(),
-            },
-            body: JSON.stringify({
-              pic: url,
-              title: title,
-              tags: tags,
-            }),
-          };
-    return fetch(`/post/new/${userId}`, settings)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        return data;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+
+  let final_url = [];
+  await images.map(async (image) => {
+    const data = new FormData();
+    data.append("title", title);
+    data.append("tags", tags);
+    data.append("myImage", image);
+    let settings = {
+      headers: {
+        "content-type": "multipart/form-data",
+      },
+    };
+    let response = await axios.post(
+      `http://localhost:3000/convertToWebp`,
+      data,
+      settings
+    );
+    let result = await response.data.result;
+    if (result.url) {
+      let url = result.url;
+      final_url.push(url);
+    }
+    if (final_url.length === images.length)
+      return functioncall(final_url, title, tags, project, token, userId);
+  });
+
   // data.append("file", image);
   // data.append("upload_preset", "workshaketrial");
   // data.append("cloud_name", "workshaketrial");
