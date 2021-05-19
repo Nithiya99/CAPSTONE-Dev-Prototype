@@ -5,6 +5,7 @@ const _ = require("lodash");
 const webp = require("webp-converter");
 const sharp = require("sharp");
 const cloudinary = require("cloudinary").v2;
+const cloudinaryVideo = require("cloudinary").v2;
 const multer = require("multer");
 const path = require("path");
 webp.grant_permission();
@@ -12,6 +13,11 @@ cloudinary.config({
   cloud_name: "workshaketrial",
   api_key: "141328859214936",
   api_secret: "ped5_kvwuwzIV2YJxxkFkDKmKHw",
+});
+cloudinaryVideo.config({
+  cloud_name: "workshake-video-trial",
+  api_key: "436795657912165",
+  api_secret: "txbBMuRIGHQbmTYulTp7lXhHecA",
 });
 exports.postById = (req, res, next, id) => {
   Post.findById(id)
@@ -30,13 +36,69 @@ exports.postById = (req, res, next, id) => {
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")
-    .select("_id photo title liked_by comments tags")
+    .select("_id photo video postType title liked_by comments tags")
     .then((posts) => {
       res.json({ posts });
     })
     .catch((err) => console.log(err));
 };
-
+exports.postVideo = (req, res) => {
+  console.log(req.file);
+  console.log(req.body);
+  let file = req.file;
+  let path = file.destination + file.filename;
+  cloudinaryVideo.uploader.upload(
+    path,
+    {
+      resource_type: "video",
+      chunk_size: 6000000,
+    },
+    (err, result) => {
+      if (err) {
+        console.log("error:", err);
+        return res.status(400).json({ err });
+      }
+      console.log("result:", result);
+      return res.status(200).json({ result });
+    }
+  );
+};
+exports.videoPostMongo = (req, res) => {
+  // console.log(req.body);
+  const { video, title, tags, project } = req.body;
+  let user = req.profile;
+  if (!video) {
+    return res
+      .status(403)
+      .json({ error: "add suitable video to add to server" });
+  }
+  const post =
+    project !== undefined
+      ? new Post({
+          video: video,
+          postedBy: user._id,
+          title: title,
+          tags: tags,
+          project,
+          postType: "video",
+        })
+      : new Post({
+          video: video,
+          postedBy: user._id,
+          title: title,
+          tags: tags,
+          postType: "video",
+        });
+  post
+    .save()
+    .then((result) => {
+      res.status(200).json({ post: result });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(402).json({ error: "could not save" });
+    });
+};
 exports.createPost = (req, res) => {
   const { pic, title, tags, project } = req.body;
   let user = req.profile;
@@ -55,13 +117,16 @@ exports.createPost = (req, res) => {
           title: title,
           tags: tags,
           project,
+          postType: "image",
         })
       : new Post({
           photo: pic,
           postedBy: user._id,
           title: title,
           tags: tags,
+          postType: "image",
         });
+  // console.log(project);
   post
     .save()
     .then((result) => {

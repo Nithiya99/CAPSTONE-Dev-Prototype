@@ -84,6 +84,47 @@ export const uploadPicture = async (base64Data, fileName) => {
       }
     });
 };
+export const createVideoPost = async (video, title, tags, project) => {
+  const data = new FormData();
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  data.append("myVideo", video);
+  let settings = {
+    headers: {
+      "content-type": "multipart/form-data",
+    },
+  };
+  let response = await axios.post(
+    `http://localhost:3000/postVideo`,
+    data,
+    settings
+  );
+  let result = response.data.result;
+  if (result.url) {
+    let url = result.url;
+    return fetch(`/post/new/video/${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token.toString(),
+      },
+      body: JSON.stringify({
+        video: url,
+        title: title,
+        tags: tags,
+        project: project,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        return data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+};
 export const createPost = async (image, title, tags, project) => {
   const data = new FormData();
   let token = JSON.parse(localStorage.getItem("jwt")).token;

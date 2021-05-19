@@ -1,28 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { DropzoneDialogBase } from "material-ui-dropzone";
+import React from "react";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import { uploadPicture } from "./apiPosts";
 import { Modal } from "react-bootstrap";
-import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
 import DragDropImages from "./DragDropImages";
-
 export default function PostImage() {
   const [open, setOpen] = React.useState(false);
-  const [fileObjects, setFileObjects] = React.useState([]);
-
-  const dialogTitle = () => (
-    <>
-      <span>Upload file</span>
-      <IconButton
-        style={{ right: "12px", top: "8px", position: "absolute" }}
-        onClick={() => setOpen(false)}
-      >
-        <CloseIcon />
-      </IconButton>
-    </>
-  );
 
   const handleClose = () => {
     setOpen(false);

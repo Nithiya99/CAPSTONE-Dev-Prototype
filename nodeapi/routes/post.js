@@ -12,6 +12,8 @@ const {
   dislikePost,
   addcomment,
   getPost,
+  postVideo,
+  videoPostMongo,
 } = require("../controllers/post");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -24,16 +26,28 @@ const storage = multer.diskStorage({
     cb(null, "IMAGE-" + Date.now() + path.extname(file.originalname));
   },
 });
+const storageVideo = multer.diskStorage({
+  destination: "./public/uploadVideos/",
+  filename: function (req, file, cb) {
+    cb(null, "VIDEO-" + Date.now() + path.extname(file.originalname));
+  },
+});
 const upload = multer({
   storage: storage,
   limits: { fileSize: 10000000 },
 }).single("myImage");
+const uploadVideo = multer({
+  storage: storageVideo,
+  limits: { size: 524288000 },
+}).single("myVideo");
 router.get("/posts", getPosts);
 router.post("/post/new/:userId", requireSignin, createPost);
+router.post("/post/new/video/:userId", requireSignin, videoPostMongo);
 router.get("/posts/by/:userId", requireSignin, postsByUser);
 router.put("/post/:postId", requireSignin, isPoster, updatePost);
 router.delete("/post/:postId", requireSignin, isPoster, deletePost);
 router.post("/convertToWebp", upload, convertToWebp);
+router.post("/postVideo", uploadVideo, postVideo);
 router.put("/post/like/:postId", requireSignin, likePost);
 router.put("/post/dislike/:postId", requireSignin, dislikePost);
 router.put("/post/addcomment/:postId", requireSignin, addcomment);

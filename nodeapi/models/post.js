@@ -8,6 +8,9 @@ const postSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
+  video: {
+    type: String,
+  },
   postedBy: {
     type: ObjectId,
     ref: "User",
@@ -25,6 +28,10 @@ const postSchema = new mongoose.Schema({
   project: {
     type: ObjectId,
     ref: "Project",
+  },
+  postType: {
+    type: String,
+    default: "text",
   },
   tags: [String],
   comments: [

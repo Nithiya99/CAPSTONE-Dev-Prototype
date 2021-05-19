@@ -21,6 +21,7 @@ import LiveClock from "react-live-clock";
 import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
 import SearchTwoToneIcon from "@material-ui/icons/SearchTwoTone";
+import VideoPost from "./../posts/VideoPost";
 
 class Home extends Component {
   state = {
@@ -133,18 +134,34 @@ class Home extends Component {
                   <PostImage />
                   <PostVideo />
                 </div>
-                {posts.map((post) => (
-                  <Post
-                    headerText={post.title}
-                    footerText={"by " + post.postedBy.name}
-                    cardText={post.photo}
-                    imageUrl={post.photo}
-                    liked_by={post.liked_by}
-                    _id={post._id}
-                    comments={post.comments}
-                    tags={post.tags}
-                  />
-                ))}
+                {posts.map((post) => {
+                  if (post.postType === "video")
+                    return (
+                      <VideoPost
+                        headerText={post.title}
+                        footerText={"by " + post.postedBy.name}
+                        cardText={post.video}
+                        videoUrl={post.video}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        comments={post.comments}
+                        tags={post.tags}
+                      />
+                    );
+                  if (post.postType === "image")
+                    return (
+                      <Post
+                        headerText={post.title}
+                        footerText={"by " + post.postedBy.name}
+                        cardText={post.photo}
+                        imageUrl={post.photo}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        comments={post.comments}
+                        tags={post.tags}
+                      />
+                    );
+                })}
                 <ProjectRecommendation />
               </div>
             </div>
