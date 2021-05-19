@@ -46,13 +46,22 @@ exports.createPost = (req, res) => {
       .json({ error: "add suitable photo to add to server" });
   }
   console.log(project);
-  const post = new Post({
-    photo: pic,
-    postedBy: user._id,
-    title: title,
-    tags: tags,
-    project,
-  });
+
+  const post =
+    project !== undefined
+      ? new Post({
+          photo: pic,
+          postedBy: user._id,
+          title: title,
+          tags: tags,
+          project,
+        })
+      : new Post({
+          photo: pic,
+          postedBy: user._id,
+          title: title,
+          tags: tags,
+        });
   post
     .save()
     .then((result) => {

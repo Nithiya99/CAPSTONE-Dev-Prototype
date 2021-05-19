@@ -105,19 +105,34 @@ export const createPost = async (image, title, tags, project) => {
   let result = response.data.result;
   if (result.url) {
     let url = result.url;
-    return fetch(`/post/new/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token.toString(),
-      },
-      body: JSON.stringify({
-        pic: url,
-        title: title,
-        tags: tags,
-        project: project,
-      }),
-    })
+    let settings =
+      project !== "Personal"
+        ? {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token.toString(),
+            },
+            body: JSON.stringify({
+              pic: url,
+              title: title,
+              tags: tags,
+              project,
+            }),
+          }
+        : {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token.toString(),
+            },
+            body: JSON.stringify({
+              pic: url,
+              title: title,
+              tags: tags,
+            }),
+          };
+    return fetch(`/post/new/${userId}`, settings)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
