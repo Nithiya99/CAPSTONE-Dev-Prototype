@@ -10,6 +10,8 @@ import moment from "moment";
 import { Accordion, Button, Card } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { isAuthenticated } from "../auth";
+import { Carousel } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.css";
 
 class showPost extends Component {
   state = {
@@ -90,19 +92,36 @@ class showPost extends Component {
           <Card.Header>{current_post.title}</Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
-            {imageUrl.map((url) => {
-              return (
-                <Card.Img
-                  style={{
-                    width: "45vw",
-                    height: "30vw",
-                    "object-fit": "cover",
-                  }}
-                  variant="top"
-                  src={url}
-                />
-              );
-            })}
+            {imageUrl !== "undefined" && imageUrl.length > 1 ? (
+              <Carousel>
+                {imageUrl.map((url, i) => {
+                  return (
+                    <Carousel.Item>
+                      <img
+                        className="d-block w-100"
+                        style={{
+                          width: "45vw",
+                          height: "30vw",
+                          "object-fit": "cover",
+                        }}
+                        src={url}
+                        alt={url}
+                      />
+                    </Carousel.Item>
+                  );
+                })}
+              </Carousel>
+            ) : (
+              <Card.Img
+                style={{
+                  width: "45vw",
+                  height: "30vw",
+                  "object-fit": "cover",
+                }}
+                variant="top"
+                src={imageUrl[0]}
+              />
+            )}
             {/* </Col>
                         <Col> */}
             {/* </Col> */}

@@ -12,6 +12,8 @@ import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import DeletePost from "./DeletePost";
 import Sentiment from "sentiment";
+import { Carousel } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.css";
 const sentiment = new Sentiment();
 
 class Post extends Component {
@@ -103,19 +105,36 @@ class Post extends Component {
           </Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
-            {imageUrl.map((url, i) => {
-              return (
-                <Card.Img
-                  style={{
-                    width: "45vw",
-                    height: "30vw",
-                    "object-fit": "cover",
-                  }}
-                  variant="top"
-                  src={url}
-                />
-              );
-            })}
+            {imageUrl !== "undefined" && imageUrl.length > 1 ? (
+              <Carousel>
+                {imageUrl.map((url, i) => {
+                  return (
+                    <Carousel.Item>
+                      <img
+                        className="d-block w-100"
+                        style={{
+                          width: "45vw",
+                          height: "30vw",
+                          "object-fit": "cover",
+                        }}
+                        src={url}
+                        alt={url}
+                      />
+                    </Carousel.Item>
+                  );
+                })}
+              </Carousel>
+            ) : (
+              <Card.Img
+                style={{
+                  width: "45vw",
+                  height: "30vw",
+                  "object-fit": "cover",
+                }}
+                variant="top"
+                src={imageUrl[0]}
+              />
+            )}
             {/* </Col>
                         <Col> */}
             {/* </Col> */}
