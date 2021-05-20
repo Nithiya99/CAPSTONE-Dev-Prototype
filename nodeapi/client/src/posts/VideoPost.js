@@ -11,11 +11,14 @@ import { Accordion, Button, Card } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import ReactPlayer from "react-player";
+import Sentiment from "sentiment";
+const sentiment = new Sentiment();
 class VideoPost extends Component {
   state = {
     isClick: false,
     comment: "",
     id: getCurrentUser()._id,
+    sentimentScore: null,
   };
 
   componentDidMount() {
@@ -34,6 +37,7 @@ class VideoPost extends Component {
 
   onTextChange = (e) => {
     this.setState({ comment: e.target.value });
+    this.findSentiment(e.target.value);
   };
 
   submitcomment = () => {
@@ -41,6 +45,13 @@ class VideoPost extends Component {
       console.log(data)
     );
   };
+
+  findSentiment(comment) {
+    const result = sentiment.analyze(comment);
+    this.setState({
+      sentimentScore: result.score,
+    });
+  }
 
   rendercomments = (comments) => {
     return comments.map(({ PostedOn, comment, userName }, index) => (
@@ -128,12 +139,14 @@ class VideoPost extends Component {
                       label="Add a Comment"
                       fullWidth
                     />
-                    <button
-                      onClick={this.submitcomment}
-                      className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                    >
-                      Submit
-                    </button>
+                    {this.state.sentimentScore >= -3 && (
+                      <button
+                        onClick={this.submitcomment}
+                        className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                      >
+                        Submit
+                      </button>
+                    )}
                     {comments.length > 0 ? (
                       this.rendercomments(comments)
                     ) : (

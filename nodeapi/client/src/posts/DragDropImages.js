@@ -7,6 +7,8 @@ import { createPost } from "./apiPosts";
 import { TextField } from "@material-ui/core";
 import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
 import { listmyprojects } from "./../project/apiProject";
+import Sentiment from "sentiment";
+const sentiment = new Sentiment();
 
 const thumbsContainer = {
   display: "flex",
@@ -46,6 +48,7 @@ function DragDropImages(props) {
   const [tags, setTags] = useState([]);
   const [project, setProject] = useState("Personal");
   const [projects, setProjects] = useState([]);
+  let [sentimentScore, setsentimentScore] = useState([]);
   // const { getRootProps, getInputProps } = useDropzone({
   //   accept: "image/*",
   //   onDrop: (acceptedFiles) => {
@@ -133,6 +136,12 @@ function DragDropImages(props) {
 
   const onTextChange = (e) => {
     set_title(e.target.value);
+    findSentiment(e.target.value);
+  };
+
+  const findSentiment = (title) => {
+    const result = sentiment.analyze(title);
+    sentimentScore = setsentimentScore(result.score);
   };
 
   const handleTags = (newSkills) => {
@@ -173,14 +182,16 @@ function DragDropImages(props) {
         maxFileSize={10485760}
       />
       <div className="text-center mt-2">
-        <Button
-          onClick={() => {
-            postDetails(files, title, tags, project);
-            // console.log(project);
-          }}
-        >
-          Post
-        </Button>
+        {sentimentScore >= -3 && (
+          <Button
+            onClick={() => {
+              postDetails(files, title, tags, project);
+              // console.log(project);
+            }}
+          >
+            Post
+          </Button>
+        )}
       </div>
     </>
   );

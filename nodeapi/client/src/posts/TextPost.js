@@ -6,11 +6,14 @@ import YouTubeIcon from "@material-ui/icons/YouTube";
 import * as youtubeMeta from "youtube-metadata-from-url";
 import { createTextPost, createYoutubePost } from "./apiPosts";
 import { toast } from "react-toastify";
+import Sentiment from "sentiment";
+const sentiment = new Sentiment();
 const TextPost = (props) => {
   const [open, setOpen] = useState(false);
   const [metadata, setMetadata] = useState({});
   const [title, setTitle] = useState("");
   const [type, setType] = useState("text");
+  let [sentimentScore, setsentimentScore] = useState([]);
   useEffect(() => {
     if (validateYouTubeUrl(props.text)) {
       youtubeMeta.metadata(props.text).then(
@@ -44,8 +47,13 @@ const TextPost = (props) => {
   }
   function titleChange(e) {
     setTitle(e.target.value);
+    findSentiment(e.target.value);
     console.log(title);
   }
+  const findSentiment = (title) => {
+    const result = sentiment.analyze(title);
+    sentimentScore = setsentimentScore(result.score);
+  };
   const { text } = props;
   //   console.log(text);
   return (
@@ -57,7 +65,6 @@ const TextPost = (props) => {
       >
         Text/Youtube Link
       </Button>
-
       <Modal show={open} onHide={handleClose}>
         <Modal.Header>
           <Modal.Title>Your thoughts here...</Modal.Title>
@@ -89,21 +96,23 @@ const TextPost = (props) => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            onClick={() => {
-              if (type === "text") {
-                createTextPost(text);
-              }
-              if (type === "youtube") {
-                if (title !== "") createYoutubePost(text, title, metadata);
-                else {
-                  toast.warning("Enter caption for the post!");
+          {sentimentScore >= -3 && (
+            <Button
+              onClick={() => {
+                if (type === "text") {
+                  createTextPost(text);
                 }
-              }
-            }}
-          >
-            Sure?
-          </Button>
+                if (type === "youtube") {
+                  if (title !== "") createYoutubePost(text, title, metadata);
+                  else {
+                    toast.warning("Enter caption for the post!");
+                  }
+                }
+              }}
+            >
+              Sure?
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </>

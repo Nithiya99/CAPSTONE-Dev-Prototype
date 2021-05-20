@@ -9,6 +9,9 @@ import { TextField } from "@material-ui/core";
 import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
 import ReactPlayer from "react-player";
 import { createVideoPost } from "./apiPosts";
+import Sentiment from "sentiment";
+const sentiment = new Sentiment();
+
 // import { ReactVideo } from 'reactjs-media';
 const DragDropVideo = () => {
   const history = useHistory();
@@ -17,6 +20,7 @@ const DragDropVideo = () => {
   const [tags, setTags] = useState([]);
   const [project, setProject] = useState("Personal");
   const [projects, setProjects] = useState([]);
+  let [sentimentScore, setsentimentScore] = useState([]);
   useEffect(() => {
     listmyprojects().then((data) => setProjects(data.userProjects));
   }, []);
@@ -43,6 +47,12 @@ const DragDropVideo = () => {
   };
   const onTextChange = (e) => {
     set_title(e.target.value);
+    findSentiment(e.target.value);
+  };
+
+  const findSentiment = (title) => {
+    const result = sentiment.analyze(title);
+    sentimentScore = setsentimentScore(result.score);
   };
 
   const handleTags = (newSkills) => {
@@ -102,15 +112,17 @@ const DragDropVideo = () => {
         </>
       )}
       <div className="text-center mt-2">
-        <Button
-          onClick={() => {
-            files.map((file) => console.log(file));
-            files.map((file) => postDetails(file, title, tags, project));
-            // console.log(project);
-          }}
-        >
-          Post
-        </Button>
+        {sentimentScore >= -3 && (
+          <Button
+            onClick={() => {
+              files.map((file) => console.log(file));
+              files.map((file) => postDetails(file, title, tags, project));
+              // console.log(project);
+            }}
+          >
+            Post
+          </Button>
+        )}
       </div>
     </>
   );

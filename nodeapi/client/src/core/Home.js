@@ -25,6 +25,8 @@ import VideoPost from "./../posts/VideoPost";
 import TextPost from "./../posts/TextPost";
 import TextPostView from "./../posts/TextPostView";
 import YoutubePost from "./../posts/YoutubePost";
+import Sentiment from "sentiment";
+const sentiment = new Sentiment();
 class Home extends Component {
   state = {
     notificationGroupedObject: {},
@@ -54,12 +56,20 @@ class Home extends Component {
 
   textChange = (e) => {
     this.setState({ text: e.target.value });
-
+    this.findSentiment(e.target.value);
     // if (this.validateYouTubeUrl(e.target.value))
     //   this.setState({ youtubeUrl: true });
     // if (!this.validateYouTubeUrl(e.target.value))
     //   this.setState({ youtubeUrl: false });
   };
+
+  findSentiment(text) {
+    const result = sentiment.analyze(text);
+    this.setState({
+      sentimentScore: result.score,
+    });
+  }
+
   render() {
     if (getCurrentUser()._id === undefined) return;
     const { notifications } = this.props;
@@ -161,7 +171,7 @@ class Home extends Component {
                   ) : (
                     <Button>text post</Button>
                   )} */}
-                  <TextPost text={text} />
+                  {this.state.sentimentScore >= -3 && <TextPost text={text} />}
                   <PostImage />
                   <PostVideo />
                 </div>
