@@ -8,8 +8,12 @@ import AccountTreeTwoToneIcon from "@material-ui/icons/AccountTreeTwoTone";
 import TuneTwoToneIcon from "@material-ui/icons/TuneTwoTone";
 import PlaylistAddTwoToneIcon from "@material-ui/icons/PlaylistAddTwoTone";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
+import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import ChatIcon from "@material-ui/icons/Chat";
 import { getCurrentUser } from "../user/apiUser";
+import { getAllPosts } from "./../posts/apiPosts";
+import Post from "../posts/Post";
+import VideoPost from "./../posts/VideoPost";
 import Chat from "./Chat";
 import { getTasks } from "./apiProject";
 import { connect } from "react-redux";
@@ -28,6 +32,12 @@ class ProjectDashboard extends Component {
         tasks: val.tasks,
       });
     });
+    getAllPosts()
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        this.setState({ posts: data.posts });
+      });
   }
   // componentDidUpdate(prevState) {
   //   if (prevState.connections.length !== this.props.connections.length) {
@@ -77,6 +87,7 @@ class ProjectDashboard extends Component {
     let days = parseInt(difference / (1000 * 3600 * 24));
     // console.log(days);
     const { expectedTime, slacks, criticalPath, pert } = this.props;
+    const { posts } = this.state;
     // console.log(slacks);
     // if (slacks === undefined) return ;
     if (expectedTime === undefined) return null;
@@ -154,6 +165,16 @@ class ProjectDashboard extends Component {
                             <ChatIcon />
                           </div>
                           <div>Group Chat</div>
+                        </div>
+                      </Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Nav.Link eventKey="Posts">
+                        <div className="d-flex align-items-center">
+                          <div className="mr-3">
+                            <PhotoLibraryIcon />
+                          </div>
+                          <div>Posts</div>
                         </div>
                       </Nav.Link>
                     </Nav.Item>
@@ -276,6 +297,57 @@ class ProjectDashboard extends Component {
                     </div>
                     <div className="card-body">
                       <Chat projectId={project._id} status={project.status} />
+                    </div>
+                  </div>
+                </Tab.Pane>
+                <Tab.Pane eventKey="Posts">
+                  <div className="card card-stretch">
+                    <div className="card-header">
+                      <div className="card-title align-items-start flex-column">
+                        <h4 className="card-label font-weight-bolder text-dark">
+                          Posts
+                        </h4>
+                        <span className="text-muted font-weight-bold font-size-sm mt-1">
+                          News Feed (Posts) will be here
+                        </span>
+                      </div>
+                    </div>
+                    <div className="card-body">
+                      {posts !== undefined &&
+                        posts.map((post) => {
+                          if (
+                            post.project !== undefined &&
+                            post.project.toString() === project._id.toString()
+                          ) {
+                            console.log(post.project, project._id);
+                            if (post.postType === "video")
+                              return (
+                                <VideoPost
+                                  headerText={post.title}
+                                  footerText={"by " + post.postedBy.name}
+                                  cardText={post.video}
+                                  videoUrl={post.video}
+                                  liked_by={post.liked_by}
+                                  _id={post._id}
+                                  comments={post.comments}
+                                  tags={post.tags}
+                                />
+                              );
+                            if (post.postType === "image")
+                              return (
+                                <Post
+                                  headerText={post.title}
+                                  footerText={"by " + post.postedBy.name}
+                                  cardText={post.photo}
+                                  imageUrl={post.photo}
+                                  liked_by={post.liked_by}
+                                  _id={post._id}
+                                  comments={post.comments}
+                                  tags={post.tags}
+                                />
+                              );
+                          }
+                        })}
                     </div>
                   </div>
                 </Tab.Pane>

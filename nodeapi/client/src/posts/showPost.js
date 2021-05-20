@@ -77,7 +77,12 @@ class showPost extends Component {
     const current_post = { ...post };
     const posted_by = { ...current_post.postedBy };
     let counts = collect(current_post.liked_by).count();
+    let imageUrl = [];
     if (current_post === undefined) return null;
+    if (current_post.photo !== undefined)
+      current_post.photo.map((url) => {
+        imageUrl.push(url);
+      });
     return (
       <>
         <ToastContainer />
@@ -85,15 +90,19 @@ class showPost extends Component {
           <Card.Header>{current_post.title}</Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
-            <Card.Img
-              style={{
-                width: "30vw",
-                height: "25vw",
-                "object-fit": "cover",
-              }}
-              variant="top"
-              src={current_post.photo}
-            />
+            {imageUrl.map((url) => {
+              return (
+                <Card.Img
+                  style={{
+                    width: "45vw",
+                    height: "30vw",
+                    "object-fit": "cover",
+                  }}
+                  variant="top"
+                  src={url}
+                />
+              );
+            })}
             {/* </Col>
                         <Col> */}
             {/* </Col> */}
