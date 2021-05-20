@@ -1,6 +1,5 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import DragDropVideo from "./DragDropVideo";
 export default function PostVideo() {
   const [open, setOpen] = React.useState(false);
@@ -9,9 +8,7 @@ export default function PostVideo() {
   };
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-        Add Video
-      </Button>
+      <Button onClick={() => setOpen(true)}>Add Video</Button>
       <Modal show={open} onHide={handleClose}>
         <Modal.Header closeButton />
         <Modal.Body>

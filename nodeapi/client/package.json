@@ -64,7 +64,8 @@
     "similarity-score": "^1.0.0",
     "socket.io-client": "^4.0.1",
     "web-vitals": "^0.2.4",
-    "webp-converter": "^2.3.3"
+    "webp-converter": "^2.3.3",
+    "youtube-metadata-from-url": "^1.0.3"
   },
   "scripts": {
     "start": "react-scripts start",

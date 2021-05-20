@@ -33,6 +33,12 @@ const postSchema = new mongoose.Schema({
     type: String,
     default: "text",
   },
+  metadataAuthor: {
+    type: String,
+  },
+  metadataTitle: {
+    type: String,
+  },
   tags: [String],
   comments: [
     {

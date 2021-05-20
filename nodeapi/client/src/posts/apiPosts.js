@@ -288,3 +288,60 @@ export const getpost = (post_id) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const createTextPost = (text) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let settings = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ text }),
+  };
+  return fetch(`post/new/text/${userId}`, settings)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      return data;
+    });
+};
+
+export const createYoutubePost = (videolink, title, metadata) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let metadataObj = {
+    title: metadata.title,
+    author_name: metadata.author_name,
+    author_url: metadata.author_url,
+    type: metadata.type,
+    height: metadata.height,
+    width: metadata.width,
+    version: metadata.version,
+    provider_name: metadata.provider_name,
+    provider_url: metadata.provider_url,
+    thumbnail_height: metadata.thumbnail_height,
+    thumbnail_width: metadata.thumbnail_width,
+    thumbnail_url: metadata.thumbnail_url,
+  };
+  let settings = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      videolink,
+      title,
+      metadataAuthor: metadataObj.author_name,
+      metadataTitle: metadataObj.title,
+    }),
+  };
+  return fetch(`post/new/youtube/${userId}`, settings)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      return data;
+    });
+};

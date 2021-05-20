@@ -22,11 +22,15 @@ import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
 import SearchTwoToneIcon from "@material-ui/icons/SearchTwoTone";
 import VideoPost from "./../posts/VideoPost";
-
+import TextPost from "./../posts/TextPost";
+import TextPostView from "./../posts/TextPostView";
+import YoutubePost from "./../posts/YoutubePost";
 class Home extends Component {
   state = {
     notificationGroupedObject: {},
     show: false,
+    text: "",
+    youtubeUrl: false,
   };
   componentDidMount() {
     listmyprojects().then((projects) =>
@@ -48,10 +52,19 @@ class Home extends Component {
     // return undefined;
   };
 
+  textChange = (e) => {
+    this.setState({ text: e.target.value });
+
+    // if (this.validateYouTubeUrl(e.target.value))
+    //   this.setState({ youtubeUrl: true });
+    // if (!this.validateYouTubeUrl(e.target.value))
+    //   this.setState({ youtubeUrl: false });
+  };
   render() {
     if (getCurrentUser()._id === undefined) return;
     const { notifications } = this.props;
-    const { notificationGroupedObject, projects } = this.state;
+    const { notificationGroupedObject, projects, youtubeUrl, text } =
+      this.state;
     // if (this.props.notifications.length > 0) {
     //   console.log("NOTIFICATIONS:");
     //   console.log(this.props.notifications);
@@ -131,10 +144,53 @@ class Home extends Component {
               </div>
               <div className="card p-2">
                 <div className="card-body">
+                  <div class="form-outline">
+                    <label class="form-label" for="typeText">
+                      Let us hear what this hustler did today, we're excited to
+                      know!
+                    </label>
+                    <input
+                      type="text"
+                      id="typeText"
+                      class="form-control"
+                      onChange={(e) => this.textChange(e)}
+                    />
+                  </div>
+                  {/* {youtubeUrl ? (
+                    <Button>youtube post</Button>
+                  ) : (
+                    <Button>text post</Button>
+                  )} */}
+                  <TextPost text={text} />
                   <PostImage />
                   <PostVideo />
                 </div>
                 {posts.map((post) => {
+                  if (post.postType === "text")
+                    return (
+                      <TextPostView
+                        text={post.title}
+                        footerText={"by " + post.postedBy.name}
+                        comments={post.comments}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                      />
+                    );
+                  if (post.postType === "youtubeVideo") {
+                    console.log(post);
+                    return (
+                      <YoutubePost
+                        text={post.title}
+                        comments={post.comments}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        footerText={"by " + post.postedBy.name}
+                        url={post.video}
+                        metadataTitle={post.metadataTitle}
+                        metadataAuthor={post.metadataAuthor}
+                      />
+                    );
+                  }
                   if (post.postType === "video")
                     return (
                       <VideoPost

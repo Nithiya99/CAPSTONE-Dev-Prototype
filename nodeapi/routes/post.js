@@ -14,6 +14,8 @@ const {
   getPost,
   postVideo,
   videoPostMongo,
+  createTextPost,
+  createYoutubePost,
 } = require("../controllers/post");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -42,6 +44,8 @@ const uploadVideo = multer({
 }).single("myVideo");
 router.get("/posts", getPosts);
 router.post("/post/new/:userId", requireSignin, createPost);
+router.post("/post/new/text/:userId", requireSignin, createTextPost);
+router.post("/post/new/youtube/:userId", requireSignin, createYoutubePost);
 router.post("/post/new/video/:userId", requireSignin, videoPostMongo);
 router.get("/posts/by/:userId", requireSignin, postsByUser);
 router.put("/post/:postId", requireSignin, isPoster, updatePost);

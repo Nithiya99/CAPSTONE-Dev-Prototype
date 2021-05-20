@@ -1,6 +1,5 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import DragDropImages from "./DragDropImages";
 export default function PostImage() {
   const [open, setOpen] = React.useState(false);
@@ -10,9 +9,7 @@ export default function PostImage() {
   };
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-        Add Image
-      </Button>
+      <Button onClick={() => setOpen(true)}>Add Image</Button>
       <Modal show={open} onHide={handleClose}>
         <Modal.Header closeButton />
         <Modal.Body>

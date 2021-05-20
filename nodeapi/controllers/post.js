@@ -36,7 +36,9 @@ exports.postById = (req, res, next, id) => {
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")
-    .select("_id photo video postType title liked_by comments tags")
+    .select(
+      "_id photo video postType title liked_by comments tags metadataAuthor metadataTitle"
+    )
     .then((posts) => {
       res.json({ posts });
     })
@@ -340,4 +342,45 @@ exports.getPost = (req, res) => {
       res.json({ post });
     })
     .catch((err) => console.log(err));
+};
+
+exports.createTextPost = (req, res) => {
+  console.log(req.body.text);
+  let user = req.profile;
+  const post = new Post({
+    title: req.body.text,
+    postType: "text",
+    postedBy: user._id,
+  });
+  post
+    .save()
+    .then((result) => {
+      res.status(200).json({ post: result });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(402).json({ error: "could not save" });
+    });
+};
+exports.createYoutubePost = (req, res) => {
+  console.log(req.body);
+  let user = req.profile;
+
+  const post = new Post({
+    video: req.body.videolink,
+    title: req.body.title,
+    postType: "youtubeVideo",
+    metadataTitle: req.body.metadataTitle,
+    metadataAuthor: req.body.metadataAuthor,
+    postedBy: user._id,
+  });
+  post
+    .save()
+    .then((result) => {
+      res.status(200).json({ post: result });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(402).json({ error: "could not save" });
+    });
 };
