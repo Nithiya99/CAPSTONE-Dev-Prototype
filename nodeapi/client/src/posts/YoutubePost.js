@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import Sentiment from "sentiment";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import * as youtubeMeta from "youtube-metadata-from-url";
+import DeletePost from "./DeletePost";
 import ReactPlayer from "react-player/youtube";
 const sentiment = new Sentiment();
 class YoutubePost extends Component {
@@ -90,6 +91,7 @@ class YoutubePost extends Component {
       comments,
       metadataTitle,
       metadataAuthor,
+      delete_button,
     } = this.props;
     // const { metadata } = this.state;
     let counts = collect(liked_by).count();
@@ -98,7 +100,13 @@ class YoutubePost extends Component {
       <>
         <ToastContainer />
         <Card className="m-5">
-          <Card.Header></Card.Header>
+          <Card.Header>
+            {delete_button === "enabled" ? (
+              <DeletePost postId={_id} />
+            ) : (
+              <div></div>
+            )}
+          </Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             <div className="d-flex flex-column bd-highlight mb-3">
               <YouTubeIcon />

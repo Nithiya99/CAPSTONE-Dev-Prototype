@@ -10,6 +10,7 @@ import moment from "moment";
 import { Accordion, Button, Card } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
+import DeletePost from "./DeletePost";
 import Sentiment from "sentiment";
 const sentiment = new Sentiment();
 
@@ -27,7 +28,6 @@ class Post extends Component {
       if (users.indexOf(getCurrentUser()._id) > -1)
         this.setState({ isClick: true });
   }
-
   postliked = () => {
     this.setState({ isClick: !this.state.isClick });
     if (this.state.isClick)
@@ -67,8 +67,16 @@ class Post extends Component {
   };
 
   render() {
-    const { headerText, footerText, imageUrl, liked_by, _id, tags, comments } =
-      this.props;
+    const {
+      headerText,
+      footerText,
+      imageUrl,
+      liked_by,
+      _id,
+      tags,
+      comments,
+      delete_button,
+    } = this.props;
     let counts = collect(liked_by).count();
     return (
       <>
@@ -87,11 +95,15 @@ class Post extends Component {
                 <>{tag}</>
               ))}
             </div> */}
+            {delete_button === "enabled" ? (
+              <DeletePost postId={_id} />
+            ) : (
+              <div></div>
+            )}
           </Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
             {imageUrl.map((url, i) => {
-              console.log(url, i);
               return (
                 <Card.Img
                   style={{

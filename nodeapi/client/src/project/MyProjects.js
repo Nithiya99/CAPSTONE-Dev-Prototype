@@ -356,47 +356,6 @@ class MyProjects extends Component {
                                         <DashboardTwoToneIcon />
                                       </Link>
                                     </OverlayTrigger>
-                                    {getCurrentUser()._id === project.leader ? (
-                                      <div className="d-flex align-items-center justify-content-between">
-                                        <OverlayTrigger
-                                          key="top"
-                                          placement="top"
-                                          overlay={
-                                            <Tooltip id="tooltip-top">
-                                              Edit Project
-                                            </Tooltip>
-                                          }
-                                        >
-                                          <Link
-                                            className="btn btn-warning mr-2"
-                                            to={{
-                                              pathname: `/myprojects/edit/${project._id}`,
-                                              state: { project: project },
-                                            }}
-                                          >
-                                            <EditTwoToneIcon />
-                                          </Link>
-                                        </OverlayTrigger>
-
-                                        <DeleteProject
-                                          projectId={project._id}
-                                        />
-                                        {project.completion_percentage ===
-                                        100 ? (
-                                          <SubmitProject
-                                            projectId={project._id}
-                                            projectTeam={project.team}
-                                            projectLeader={project.leader}
-                                          />
-                                        ) : (
-                                          <div> </div>
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <div>
-                                        <LeaveProject project={project} />
-                                      </div>
-                                    )}
                                   </div>
                                 </div>
                               </div>

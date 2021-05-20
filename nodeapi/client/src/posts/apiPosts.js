@@ -102,19 +102,34 @@ export const createVideoPost = async (video, title, tags, project) => {
   let result = response.data.result;
   if (result.url) {
     let url = result.url;
-    return fetch(`/post/new/video/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token.toString(),
-      },
-      body: JSON.stringify({
-        video: url,
-        title: title,
-        tags: tags,
-        project: project,
-      }),
-    })
+    let settings =
+      project !== "Personal"
+        ? {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token.toString(),
+            },
+            body: JSON.stringify({
+              video: url,
+              title: title,
+              tags: tags,
+              project: project,
+            }),
+          }
+        : {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token.toString(),
+            },
+            body: JSON.stringify({
+              video: url,
+              title: title,
+              tags: tags,
+            }),
+          };
+    return fetch(`/post/new/video/${userId}`, settings)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -355,4 +370,20 @@ export const createYoutubePost = (videolink, title, metadata) => {
       console.log(data);
       return data;
     });
+};
+
+export const deletePost = (postId, token) => {
+  return fetch("http://localhost:3000/post/delete/" + `${postId}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      console.log("done");
+      return response.json();
+    })
+    .catch((err) => console.log(err));
 };

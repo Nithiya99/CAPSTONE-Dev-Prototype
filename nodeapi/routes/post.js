@@ -49,13 +49,13 @@ router.post("/post/new/youtube/:userId", requireSignin, createYoutubePost);
 router.post("/post/new/video/:userId", requireSignin, videoPostMongo);
 router.get("/posts/by/:userId", requireSignin, postsByUser);
 router.put("/post/:postId", requireSignin, isPoster, updatePost);
-router.delete("/post/:postId", requireSignin, isPoster, deletePost);
 router.post("/convertToWebp", upload, convertToWebp);
 router.post("/postVideo", uploadVideo, postVideo);
 router.put("/post/like/:postId", requireSignin, likePost);
 router.put("/post/dislike/:postId", requireSignin, dislikePost);
 router.put("/post/addcomment/:postId", requireSignin, addcomment);
 router.get("/post/:postId", getPost);
+router.delete("/post/delete/:postId", requireSignin, deletePost);
 
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);

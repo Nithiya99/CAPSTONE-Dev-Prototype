@@ -11,6 +11,7 @@ import { Accordion, Button, Card } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Sentiment from "sentiment";
+import DeletePost from "./DeletePost";
 const sentiment = new Sentiment();
 
 class TextPostView extends Component {
@@ -67,13 +68,20 @@ class TextPostView extends Component {
   };
 
   render() {
-    const { footerText, text, liked_by, _id, tags, comments } = this.props;
+    const { footerText, text, liked_by, _id, tags, comments, delete_button } =
+      this.props;
     let counts = collect(liked_by).count();
     return (
       <>
         <ToastContainer />
         <Card className="m-5">
-          <Card.Header></Card.Header>
+          <Card.Header>
+            {delete_button === "enabled" ? (
+              <DeletePost postId={_id} />
+            ) : (
+              <div></div>
+            )}
+          </Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {text}
           </Card.Body>

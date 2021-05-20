@@ -4,21 +4,10 @@ const fs = require("fs");
 const _ = require("lodash");
 const webp = require("webp-converter");
 const sharp = require("sharp");
-const cloudinary = require("cloudinary").v2;
-const cloudinaryVideo = require("cloudinary").v2;
 const multer = require("multer");
 const path = require("path");
 webp.grant_permission();
-cloudinary.config({
-  cloud_name: "workshaketrial",
-  api_key: "141328859214936",
-  api_secret: "ped5_kvwuwzIV2YJxxkFkDKmKHw",
-});
-cloudinaryVideo.config({
-  cloud_name: "workshake-video-trial",
-  api_key: "436795657912165",
-  api_secret: "txbBMuRIGHQbmTYulTp7lXhHecA",
-});
+
 exports.postById = (req, res, next, id) => {
   Post.findById(id)
     .populate("postedBy", "_id name")
@@ -45,6 +34,12 @@ exports.getPosts = (req, res) => {
     .catch((err) => console.log(err));
 };
 exports.postVideo = (req, res) => {
+  const cloudinaryVideo = require("cloudinary").v2;
+  cloudinaryVideo.config({
+    cloud_name: "workshake-video-trial",
+    api_key: "436795657912165",
+    api_secret: "txbBMuRIGHQbmTYulTp7lXhHecA",
+  });
   console.log(req.file);
   console.log(req.body);
   let file = req.file;
@@ -184,6 +179,7 @@ exports.updatePost = (req, res, next) => {
 
 exports.deletePost = (req, res) => {
   let post = req.post;
+  let type = post.postType;
   post.remove((err, post) => {
     if (err) {
       return res.status(400).json({
@@ -209,6 +205,12 @@ function decodeBase64Image(dataString) {
   return response;
 }
 exports.convertToWebp = (req, res) => {
+  const cloudinary = require("cloudinary").v2;
+  cloudinary.config({
+    cloud_name: "workshaketrial",
+    api_key: "141328859214936",
+    api_secret: "ped5_kvwuwzIV2YJxxkFkDKmKHw",
+  });
   console.log("file: ", req.file);
   // upload(req, res, (err) => {
   //   console.log("Request ---", req.body);

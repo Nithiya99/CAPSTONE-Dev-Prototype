@@ -30,6 +30,9 @@ import { listmyprojects } from "./../project/apiProject";
 import { connect } from "react-redux";
 import { updateFollowing } from "../store/user";
 import Post from "./../posts/Post";
+import VideoPost from "./../posts/VideoPost";
+import TextPostView from "./../posts/TextPostView";
+import YoutubePost from "./../posts/YoutubePost";
 import { getPostsOfUser } from "../posts/apiPosts";
 class Profile extends Component {
   constructor() {
@@ -375,18 +378,58 @@ class Profile extends Component {
                 </Tab.Pane>
                 <Tab.Pane eventKey="posts">
                   <div>
-                    {posts.map((post) => (
-                      <Post
-                        headerText={post.title}
-                        footerText={"by " + post.postedBy.name}
-                        cardText={post.photo}
-                        imageUrl={post.photo}
-                        comments={post.comments}
-                        liked_by={post.liked_by}
-                        tags={post.tags}
-                        _id={post._id}
-                      />
-                    ))}
+                    {posts.map(
+                      (post) =>
+                        (post.postType === "video" && (
+                          <VideoPost
+                            headerText={post.title}
+                            footerText={"by " + post.postedBy.name}
+                            cardText={post.video}
+                            videoUrl={post.video}
+                            liked_by={post.liked_by}
+                            _id={post._id}
+                            comments={post.comments}
+                            tags={post.tags}
+                            delete_button="enabled"
+                          />
+                        )) ||
+                        (post.postType === "image" && (
+                          <Post
+                            headerText={post.title}
+                            footerText={"by " + post.postedBy.name}
+                            cardText={post.photo}
+                            imageUrl={post.photo}
+                            liked_by={post.liked_by}
+                            _id={post._id}
+                            comments={post.comments}
+                            tags={post.tags}
+                            delete_button="enabled"
+                          />
+                        )) ||
+                        (post.postType === "text" && (
+                          <TextPostView
+                            text={post.title}
+                            footerText={"by " + post.postedBy.name}
+                            comments={post.comments}
+                            liked_by={post.liked_by}
+                            _id={post._id}
+                            delete_button="enabled"
+                          />
+                        )) ||
+                        (post.postType === "youtubeVideo" && (
+                          <YoutubePost
+                            text={post.title}
+                            comments={post.comments}
+                            liked_by={post.liked_by}
+                            _id={post._id}
+                            footerText={"by " + post.postedBy.name}
+                            url={post.video}
+                            metadataTitle={post.metadataTitle}
+                            metadataAuthor={post.metadataAuthor}
+                            delete_button="enabled"
+                          />
+                        ))
+                    )}
                   </div>
                 </Tab.Pane>
               </Tab.Content>

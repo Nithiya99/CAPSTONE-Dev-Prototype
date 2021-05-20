@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import ReactPlayer from "react-player";
 import Sentiment from "sentiment";
 const sentiment = new Sentiment();
+import DeletePost from "./DeletePost";
 class VideoPost extends Component {
   state = {
     isClick: false,
@@ -67,8 +68,16 @@ class VideoPost extends Component {
   };
 
   render() {
-    const { headerText, footerText, videoUrl, liked_by, _id, tags, comments } =
-      this.props;
+    const {
+      headerText,
+      footerText,
+      videoUrl,
+      liked_by,
+      _id,
+      tags,
+      comments,
+      delete_button,
+    } = this.props;
     let counts = collect(liked_by).count();
     return (
       <>
@@ -87,6 +96,11 @@ class VideoPost extends Component {
                 <>{tag}</>
               ))}
             </div> */}
+            {delete_button === "enabled" ? (
+              <DeletePost postId={_id} />
+            ) : (
+              <div></div>
+            )}
           </Card.Header>
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
