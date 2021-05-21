@@ -15,6 +15,9 @@ import YouTubeIcon from "@material-ui/icons/YouTube";
 import * as youtubeMeta from "youtube-metadata-from-url";
 import DeletePost from "./DeletePost";
 import ReactPlayer from "react-player/youtube";
+import { connect } from "react-redux";
+import { changePosts } from "../store/posts";
+
 const sentiment = new Sentiment();
 class YoutubePost extends Component {
   state = {
@@ -46,8 +49,13 @@ class YoutubePost extends Component {
   postliked = () => {
     this.setState({ isClick: !this.state.isClick });
     if (this.state.isClick)
-      dislikepost(this.props._id).then((data) => console.log(data));
-    else likepost(this.props._id).then((data) => console.log(data));
+      dislikepost(this.props._id)
+        .then((data) => console.log(data))
+        .then(() => this.props.changePosts(this.props._id));
+    else
+      likepost(this.props._id)
+        .then((data) => console.log(data))
+        .then(() => this.props.changePosts(this.props._id));
   };
 
   onTextChange = (e) => {
@@ -56,9 +64,9 @@ class YoutubePost extends Component {
   };
 
   submitcomment = () => {
-    addcomment(this.props._id, this.state.comment).then((data) =>
-      console.log(data)
-    );
+    addcomment(this.props._id, this.state.comment).then((data) => {
+      if (data.message) this.props.changePosts(this.props._id);
+    });
   };
 
   findSentiment(comment) {
@@ -172,5 +180,12 @@ class YoutubePost extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  posts: state.posts.posts,
+});
 
-export default YoutubePost;
+const mapDispatchToProps = (dispatch) => ({
+  changePosts: (params) => dispatch(changePosts(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(YoutubePost);

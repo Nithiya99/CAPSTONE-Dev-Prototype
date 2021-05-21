@@ -7,8 +7,12 @@ import * as youtubeMeta from "youtube-metadata-from-url";
 import { createTextPost, createYoutubePost } from "./apiPosts";
 import { toast } from "react-toastify";
 import Sentiment from "sentiment";
+import { getPosts } from "./../store/posts";
+import { useDispatch } from "react-redux";
+
 const sentiment = new Sentiment();
 const TextPost = (props) => {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [metadata, setMetadata] = useState({});
   const [title, setTitle] = useState("");
@@ -100,10 +104,29 @@ const TextPost = (props) => {
             <Button
               onClick={() => {
                 if (type === "text") {
-                  createTextPost(text);
+                  createTextPost(text).then((data) => {
+                    // console.log(data);
+                    if (data.error) {
+                      toast.warning(data.error);
+                    } else {
+                      toast.success("Created post Successfully");
+                      dispatch(getPosts());
+                      // history.push("/home");
+                    }
+                  });
                 }
                 if (type === "youtube") {
-                  if (title !== "") createYoutubePost(text, title, metadata);
+                  if (title !== "")
+                    createYoutubePost(text, title, metadata).then((data) => {
+                      // console.log(data);
+                      if (data.error) {
+                        toast.warning(data.error);
+                      } else {
+                        toast.success("Created post Successfully");
+                        dispatch(getPosts());
+                        // history.push("/home");
+                      }
+                    });
                   else {
                     toast.warning("Enter caption for the post!");
                   }

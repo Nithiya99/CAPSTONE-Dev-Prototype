@@ -10,10 +10,12 @@ import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
 import ReactPlayer from "react-player";
 import { createVideoPost } from "./apiPosts";
 import Sentiment from "sentiment";
+import { useDispatch } from "react-redux";
+import { getPosts } from "./../store/posts";
 const sentiment = new Sentiment();
-
 // import { ReactVideo } from 'reactjs-media';
 const DragDropVideo = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
   const [files, setFiles] = useState([]);
   const [title, set_title] = useState(String);
@@ -40,6 +42,7 @@ const DragDropVideo = () => {
           toast.warning(data.error);
         } else {
           toast.success("Created post Successfully");
+          dispatch(getPosts());
           history.push("/home");
         }
       });

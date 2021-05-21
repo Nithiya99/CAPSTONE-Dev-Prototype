@@ -387,3 +387,15 @@ export const deletePost = (postId, token) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const getLikesOfPost = (postId) => {
+  let arr = [];
+  return fetch(`http://localhost:3000/post/likes/${postId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      data.liked_by.map((id) => {
+        arr.push(id["_id"]);
+      });
+      return arr;
+    });
+};

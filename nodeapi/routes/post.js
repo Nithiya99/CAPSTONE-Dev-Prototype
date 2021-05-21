@@ -16,6 +16,8 @@ const {
   videoPostMongo,
   createTextPost,
   createYoutubePost,
+  getLikesOfPost,
+  getCommentsOfPost,
 } = require("../controllers/post");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -56,7 +58,8 @@ router.put("/post/dislike/:postId", requireSignin, dislikePost);
 router.put("/post/addcomment/:postId", requireSignin, addcomment);
 router.get("/post/:postId", getPost);
 router.delete("/post/delete/:postId", requireSignin, deletePost);
-
+router.get("/post/likes/:postId", getLikesOfPost);
+router.get("/post/comments/:postId", getCommentsOfPost);
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 // any route containing: postId, our app will first excute postById()

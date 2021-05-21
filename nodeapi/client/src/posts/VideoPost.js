@@ -12,8 +12,10 @@ import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import ReactPlayer from "react-player";
 import Sentiment from "sentiment";
-const sentiment = new Sentiment();
 import DeletePost from "./DeletePost";
+import { connect } from "react-redux";
+import { changePosts } from "../store/posts";
+const sentiment = new Sentiment();
 class VideoPost extends Component {
   state = {
     isClick: false,
@@ -32,8 +34,13 @@ class VideoPost extends Component {
   postliked = () => {
     this.setState({ isClick: !this.state.isClick });
     if (this.state.isClick)
-      dislikepost(this.props._id).then((data) => console.log(data));
-    else likepost(this.props._id).then((data) => console.log(data));
+      dislikepost(this.props._id)
+        .then((data) => console.log(data))
+        .then(() => this.props.changePosts(this.props._id));
+    else
+      likepost(this.props._id)
+        .then((data) => console.log(data))
+        .then(() => this.props.changePosts(this.props._id));
   };
 
   onTextChange = (e) => {
@@ -42,9 +49,10 @@ class VideoPost extends Component {
   };
 
   submitcomment = () => {
-    addcomment(this.props._id, this.state.comment).then((data) =>
-      console.log(data)
-    );
+    addcomment(this.props._id, this.state.comment).then((data) => {
+      // console.log(data);
+      if (data.message) this.props.changePosts(this.props._id);
+    });
   };
 
   findSentiment(comment) {
@@ -177,5 +185,12 @@ class VideoPost extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  posts: state.posts.posts,
+});
 
-export default VideoPost;
+const mapDispatchToProps = (dispatch) => ({
+  changePosts: (params) => dispatch(changePosts(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(VideoPost);

@@ -8,40 +8,11 @@ import { TextField } from "@material-ui/core";
 import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
 import { listmyprojects } from "./../project/apiProject";
 import Sentiment from "sentiment";
+import { useDispatch } from "react-redux";
+import { getPosts } from "./../store/posts";
 const sentiment = new Sentiment();
-
-const thumbsContainer = {
-  display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  marginTop: 16,
-};
-
-const thumb = {
-  display: "inline-flex",
-  borderRadius: 2,
-  border: "1px solid #eaeaea",
-  marginBottom: 8,
-  marginRight: 8,
-  width: 100,
-  height: 100,
-  padding: 4,
-  boxSizing: "border-box",
-};
-
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "100%",
-  height: "100%",
-};
-
 function DragDropImages(props) {
+  const dispatch = useDispatch();
   const history = useHistory();
   const [files, setFiles] = useState([]);
   const [title, set_title] = useState(String);
@@ -129,6 +100,7 @@ function DragDropImages(props) {
         // } else {
         toast.success("Created post Successfully");
         history.push("/home");
+        dispatch(getPosts());
         // }
       });
     }

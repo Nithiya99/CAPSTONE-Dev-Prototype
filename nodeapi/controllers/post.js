@@ -11,6 +11,8 @@ webp.grant_permission();
 exports.postById = (req, res, next, id) => {
   Post.findById(id)
     .populate("postedBy", "_id name")
+    .populate("liked_by", "_id")
+    .populate("comments")
     .exec((err, post) => {
       if (err || !post) {
         return res.status(400).json({
@@ -340,7 +342,7 @@ exports.addcomment = (req, res) => {
 exports.getPost = (req, res) => {
   Post.findById(req.post._id)
     .populate("postedBy", "_id name")
-    .select("_id photo title likes liked_by comments")
+    .select("_id photo title likes liked_by comments postType tags video ")
     .then((post) => {
       res.json({ post });
     })
@@ -386,4 +388,20 @@ exports.createYoutubePost = (req, res) => {
       console.log(err);
       res.status(402).json({ error: "could not save" });
     });
+};
+
+exports.getLikesOfPost = (req, res) => {
+  // console.log(req.post.liked_by);
+  // console.log(req.post.liked_by);
+  if (req.post) {
+    return res.status(200).json({ liked_by: req.post.liked_by });
+  }
+  return res.status(400).json({ error: "not found" });
+};
+exports.getCommentsOfPost = (req, res) => {
+  // console.log(req.post.liked_by);
+  if (req.post) {
+    return res.status(200).json({ comments: req.post.comments });
+  }
+  return res.status(400).json({ error: "not found" });
 };

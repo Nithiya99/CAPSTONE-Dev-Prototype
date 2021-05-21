@@ -26,6 +26,7 @@ import TextPost from "./../posts/TextPost";
 import TextPostView from "./../posts/TextPostView";
 import YoutubePost from "./../posts/YoutubePost";
 import Sentiment from "sentiment";
+import { getPosts } from "../store/posts";
 const sentiment = new Sentiment();
 class Home extends Component {
   state = {
@@ -38,12 +39,13 @@ class Home extends Component {
     listmyprojects().then((projects) =>
       this.setState({ projects: projects.userProjects })
     );
-    getAllPosts()
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        this.setState({ posts: data.posts });
-      });
+    // getAllPosts()
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log(data);
+    //     this.setState({ posts: data.posts });
+    //   });
+    this.props.getPosts();
   }
   getProjectTeamFromState = (projectId) => {
     return this.state.projects.map((project) => {
@@ -72,7 +74,7 @@ class Home extends Component {
 
   render() {
     if (getCurrentUser()._id === undefined) return;
-    const { notifications } = this.props;
+    const { notifications, posts } = this.props;
     const { notificationGroupedObject, projects, youtubeUrl, text } =
       this.state;
     // if (this.props.notifications.length > 0) {
@@ -96,8 +98,6 @@ class Home extends Component {
         console.log(notificationGroupedObject.FeedbackForm);
       }
     }
-    const { posts } = this.state;
-    if (posts === undefined) return null;
     return (
       <>
         <div
@@ -187,7 +187,7 @@ class Home extends Component {
                       />
                     );
                   if (post.postType === "youtubeVideo") {
-                    console.log(post);
+                    // console.log(post);
                     return (
                       <YoutubePost
                         text={post.title}
@@ -239,9 +239,11 @@ class Home extends Component {
 }
 const mapStateToProps = (state) => ({
   notifications: state.notifications.notifications,
+  posts: state.posts.posts,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addNotification: (params) => dispatch(notificationAdded(params)),
+  getPosts: () => dispatch(getPosts()),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

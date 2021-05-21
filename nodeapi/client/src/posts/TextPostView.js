@@ -12,6 +12,8 @@ import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Sentiment from "sentiment";
 import DeletePost from "./DeletePost";
+import { changePosts } from "../store/posts";
+import { connect } from "react-redux";
 const sentiment = new Sentiment();
 
 class TextPostView extends Component {
@@ -32,8 +34,14 @@ class TextPostView extends Component {
   postliked = () => {
     this.setState({ isClick: !this.state.isClick });
     if (this.state.isClick)
-      dislikepost(this.props._id).then((data) => console.log(data));
-    else likepost(this.props._id).then((data) => console.log(data));
+      dislikepost(this.props._id)
+        .then((data) => console.log(data))
+        .then(() => this.props.changePosts(this.props._id));
+    else {
+      likepost(this.props._id)
+        .then((data) => console.log(data))
+        .then(() => this.props.changePosts(this.props._id));
+    }
   };
 
   onTextChange = (e) => {
@@ -42,9 +50,9 @@ class TextPostView extends Component {
   };
 
   submitcomment = () => {
-    addcomment(this.props._id, this.state.comment).then((data) =>
-      console.log(data)
-    );
+    addcomment(this.props._id, this.state.comment).then((data) => {
+      if (data.message) this.props.changePosts(this.props._id);
+    });
   };
 
   findSentiment(comment) {
@@ -140,4 +148,12 @@ class TextPostView extends Component {
   }
 }
 
-export default TextPostView;
+const mapStateToProps = (state) => ({
+  posts: state.posts.posts,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  changePosts: (params) => dispatch(changePosts(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TextPostView);
