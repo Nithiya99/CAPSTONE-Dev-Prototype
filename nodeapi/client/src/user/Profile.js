@@ -418,7 +418,7 @@ class Profile extends Component {
                         )) ||
                         (post.postType === "youtubeVideo" && (
                           <YoutubePost
-                            text={post.title}
+                            headerText={post.title}
                             comments={post.comments}
                             liked_by={post.liked_by}
                             _id={post._id}

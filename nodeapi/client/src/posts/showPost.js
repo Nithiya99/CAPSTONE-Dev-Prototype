@@ -11,6 +11,8 @@ import { Accordion, Button, Card } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { isAuthenticated } from "../auth";
 import { Carousel } from "react-bootstrap";
+import ReactPlayer from "react-player";
+import YouTubeIcon from "@material-ui/icons/YouTube";
 import "bootstrap/dist/css/bootstrap.css";
 
 class showPost extends Component {
@@ -77,6 +79,7 @@ class showPost extends Component {
   render() {
     let post = this.state.post.post;
     const current_post = { ...post };
+    let type = current_post.postType;
     const posted_by = { ...current_post.postedBy };
     let counts = collect(current_post.liked_by).count();
     let imageUrl = [];
@@ -89,39 +92,61 @@ class showPost extends Component {
       <>
         <ToastContainer />
         <Card className="m-5">
-          <Card.Header>{current_post.title}</Card.Header>
+          {type !== "text" && <Card.Header>{current_post.title}</Card.Header>}
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
-            {imageUrl !== "undefined" && imageUrl.length > 1 ? (
-              <Carousel>
-                {imageUrl.map((url, i) => {
-                  return (
-                    <Carousel.Item>
-                      <img
-                        className="d-block w-100"
-                        style={{
-                          width: "45vw",
-                          height: "30vw",
-                          "object-fit": "cover",
-                        }}
-                        src={url}
-                        alt={url}
-                      />
-                    </Carousel.Item>
-                  );
-                })}
-              </Carousel>
-            ) : (
-              <Card.Img
-                style={{
-                  width: "45vw",
-                  height: "30vw",
-                  "object-fit": "cover",
-                }}
-                variant="top"
-                src={imageUrl[0]}
-              />
-            )}
+            {(type === "image" &&
+              (imageUrl !== "undefined" && imageUrl.length > 1 ? (
+                <Carousel interval={null}>
+                  {imageUrl.map((url, i) => {
+                    return (
+                      <Carousel.Item>
+                        <img
+                          className="d-block w-100"
+                          style={{
+                            width: "45vw",
+                            height: "30vw",
+                            "object-fit": "cover",
+                          }}
+                          src={url}
+                          alt={url}
+                        />
+                      </Carousel.Item>
+                    );
+                  })}
+                </Carousel>
+              ) : (
+                <Card.Img
+                  style={{
+                    width: "45vw",
+                    height: "30vw",
+                    "object-fit": "cover",
+                  }}
+                  variant="top"
+                  src={imageUrl[0]}
+                />
+              ))) ||
+              (type === "video" && (
+                <ReactPlayer
+                  url={current_post.video}
+                  controls={true}
+                  volume={1}
+                  muted={false}
+                />
+              )) ||
+              (type === "text" && current_post.title) ||
+              (type === "youtubeVideo" && (
+                <>
+                  <YouTubeIcon />
+                  <div>{current_post.metadataTitle}</div>
+                  <ReactPlayer
+                    url={current_post.video}
+                    controls={true}
+                    width={window.width}
+                  />
+                  <div>By {current_post.metadataAuthor}</div>
+                </>
+              ))}
             {/* </Col>
                         <Col> */}
             {/* </Col> */}

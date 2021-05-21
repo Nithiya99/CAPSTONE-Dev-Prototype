@@ -340,7 +340,6 @@ exports.addcomment = (req, res) => {
 exports.getPost = (req, res) => {
   Post.findById(req.post._id)
     .populate("postedBy", "_id name")
-    .select("_id photo title likes liked_by comments")
     .then((post) => {
       res.json({ post });
     })

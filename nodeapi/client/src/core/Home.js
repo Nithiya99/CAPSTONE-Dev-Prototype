@@ -187,10 +187,10 @@ class Home extends Component {
                       />
                     );
                   if (post.postType === "youtubeVideo") {
-                    console.log(post);
+                    // console.log(post);
                     return (
                       <YoutubePost
-                        text={post.title}
+                        headerText={post.title}
                         comments={post.comments}
                         liked_by={post.liked_by}
                         _id={post._id}
