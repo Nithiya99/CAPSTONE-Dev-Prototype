@@ -12,8 +12,9 @@ import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import ReactPlayer from "react-player";
 import Sentiment from "sentiment";
-const sentiment = new Sentiment();
 import DeletePost from "./DeletePost";
+
+const sentiment = new Sentiment();
 class VideoPost extends Component {
   state = {
     isClick: false,
