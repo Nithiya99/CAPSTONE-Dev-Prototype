@@ -51,8 +51,8 @@ class Post extends Component {
   };
 
   submitcomment = () => {
-    addcomment(this.props._id, this.state.comment).then((data) => {
-      if (data.message) this.props.changePosts(this.props._id);
+    addcomment(this.props._id, this.state.comment).then(async (data) => {
+      await this.props.changePosts(this.props._id);
     });
   };
 
@@ -64,7 +64,8 @@ class Post extends Component {
   }
 
   rendercomments = (comments) => {
-    return comments.map(({ PostedOn, comment, userName }, index) => (
+    let reverseComments = [...comments].reverse();
+    return reverseComments.map(({ PostedOn, comment, userName }, index) => (
       <div>
         <div>
           <span className="font-weight-bold font-size-lg ">{userName}</span>

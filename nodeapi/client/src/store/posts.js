@@ -6,7 +6,7 @@ export const getPosts = createAsyncThunk("posts/getPosts", async () => {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
-      return data.posts;
+      return data.posts.reverse();
     });
 });
 const replace = async (posts, postId, newPost) => {

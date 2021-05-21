@@ -29,6 +29,7 @@ import TextPostView from "./../posts/TextPostView";
 import YoutubePost from "./../posts/YoutubePost";
 import Sentiment from "sentiment";
 import { getPosts } from "../store/posts";
+import YoutubeURLPost from "../posts/YoutubeURLPost";
 const sentiment = new Sentiment();
 class Home extends Component {
   state = {
@@ -36,6 +37,7 @@ class Home extends Component {
     show: false,
     text: "",
     youtubeUrl: false,
+    sentimentScore: 0,
   };
   componentDidMount() {
     listmyprojects().then((projects) =>
@@ -57,14 +59,25 @@ class Home extends Component {
     });
     // return undefined;
   };
-
+  validateYouTubeUrl = (urlToParse) => {
+    if (urlToParse) {
+      var regExp =
+        /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+      if (urlToParse.match(regExp)) {
+        // if (type !== "youtube") setType("youtube");
+        return true;
+      }
+    }
+    // if (type !== "text") setType("text");
+    return false;
+  };
   textChange = (e) => {
     this.setState({ text: e.target.value });
     this.findSentiment(e.target.value);
-    // if (this.validateYouTubeUrl(e.target.value))
-    //   this.setState({ youtubeUrl: true });
-    // if (!this.validateYouTubeUrl(e.target.value))
-    //   this.setState({ youtubeUrl: false });
+    if (this.validateYouTubeUrl(e.target.value))
+      this.setState({ youtubeUrl: true });
+    if (!this.validateYouTubeUrl(e.target.value))
+      this.setState({ youtubeUrl: false });
   };
 
   findSentiment(text) {
@@ -189,67 +202,75 @@ class Home extends Component {
                       <PostVideo />
                     </div>
                     <div>
-                      {" "}
-                      {this.state.sentimentScore >= -3 && (
-                        <TextPost text={text} />
-                      )}{" "}
+                      {this.state.sentimentScore >= -3 ? (
+                        <TextPost text={text} disabled={false} />
+                      ) : (
+                        <TextPost text={text} disabled={true} />
+                      )}
+                    </div>
+                    <div>
+                      {this.state.youtubeUrl ? (
+                        <YoutubeURLPost text={text} disabled={false} />
+                      ) : (
+                        <YoutubeURLPost text={text} disabled={true} />
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
               {posts.map((post) => {
-                  if (post.postType === "text")
-                    return (
-                      <TextPostView
-                        text={post.title}
-                        footerText={"by " + post.postedBy.name}
-                        comments={post.comments}
-                        liked_by={post.liked_by}
-                        _id={post._id}
-                      />
-                    );
-                  if (post.postType === "youtubeVideo") {
-                    // console.log(post);
-                    return (
-                      <YoutubePost
-                        headerText={post.title}
-                        comments={post.comments}
-                        liked_by={post.liked_by}
-                        _id={post._id}
-                        footerText={"by " + post.postedBy.name}
-                        url={post.video}
-                        metadataTitle={post.metadataTitle}
-                        metadataAuthor={post.metadataAuthor}
-                      />
-                    );
-                  }
-                  if (post.postType === "video")
-                    return (
-                      <VideoPost
-                        headerText={post.title}
-                        footerText={"by " + post.postedBy.name}
-                        cardText={post.video}
-                        videoUrl={post.video}
-                        liked_by={post.liked_by}
-                        _id={post._id}
-                        comments={post.comments}
-                        tags={post.tags}
-                      />
-                    );
-                  if (post.postType === "image")
-                    return (
-                      <Post
-                        headerText={post.title}
-                        footerText={"by " + post.postedBy.name}
-                        cardText={post.photo}
-                        imageUrl={post.photo}
-                        liked_by={post.liked_by}
-                        _id={post._id}
-                        comments={post.comments}
-                        tags={post.tags}
-                      />
-                    );
-                })}
+                if (post.postType === "text")
+                  return (
+                    <TextPostView
+                      text={post.title}
+                      footerText={"by " + post.postedBy.name}
+                      comments={post.comments}
+                      liked_by={post.liked_by}
+                      _id={post._id}
+                    />
+                  );
+                if (post.postType === "youtubeVideo") {
+                  // console.log(post);
+                  return (
+                    <YoutubePost
+                      headerText={post.title}
+                      comments={post.comments}
+                      liked_by={post.liked_by}
+                      _id={post._id}
+                      footerText={"by " + post.postedBy.name}
+                      url={post.video}
+                      metadataTitle={post.metadataTitle}
+                      metadataAuthor={post.metadataAuthor}
+                    />
+                  );
+                }
+                if (post.postType === "video")
+                  return (
+                    <VideoPost
+                      headerText={post.title}
+                      footerText={"by " + post.postedBy.name}
+                      cardText={post.video}
+                      videoUrl={post.video}
+                      liked_by={post.liked_by}
+                      _id={post._id}
+                      comments={post.comments}
+                      tags={post.tags}
+                    />
+                  );
+                if (post.postType === "image")
+                  return (
+                    <Post
+                      headerText={post.title}
+                      footerText={"by " + post.postedBy.name}
+                      cardText={post.photo}
+                      imageUrl={post.photo}
+                      liked_by={post.liked_by}
+                      _id={post._id}
+                      comments={post.comments}
+                      tags={post.tags}
+                    />
+                  );
+              })}
             </div>
             <div className="col-md-4">
               <ProjectRecommendation />

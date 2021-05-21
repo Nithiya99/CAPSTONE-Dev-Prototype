@@ -51,8 +51,8 @@ class TextPostView extends Component {
   };
 
   submitcomment = () => {
-    addcomment(this.props._id, this.state.comment).then((data) => {
-      if (data.message) this.props.changePosts(this.props._id);
+    addcomment(this.props._id, this.state.comment).then(async () => {
+      await this.props.changePosts(this.props._id);
     });
   };
 
@@ -64,7 +64,8 @@ class TextPostView extends Component {
   }
 
   rendercomments = (comments) => {
-    return comments.map(({ PostedOn, comment, userName }, index) => (
+    let reverseComments = [...comments].reverse();
+    return reverseComments.map(({ PostedOn, comment, userName }, index) => (
       <div className="d-flex py-5">
         <div className="symbol symbol-40 symbol-light-warning mr-5">
           <span className="symbol-label">

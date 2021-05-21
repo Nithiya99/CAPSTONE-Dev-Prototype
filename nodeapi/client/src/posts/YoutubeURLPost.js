@@ -11,7 +11,7 @@ import { getPosts } from "./../store/posts";
 import { useDispatch } from "react-redux";
 
 const sentiment = new Sentiment();
-const TextPost = (props) => {
+const YoutubeURLPost = (props) => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [metadata, setMetadata] = useState({});
@@ -59,6 +59,7 @@ const TextPost = (props) => {
     sentimentScore = setsentimentScore(result.score);
   };
   const { text, disabled } = props;
+  if (disabled === undefined) return null;
   //   console.log(text);
   return (
     <>
@@ -68,7 +69,7 @@ const TextPost = (props) => {
         }}
         disabled={disabled}
       >
-        Text
+        Youtube Link
       </Button>
       <Modal show={open} onHide={handleClose}>
         <Modal.Header>
@@ -104,17 +105,23 @@ const TextPost = (props) => {
           {sentimentScore >= -3 && (
             <Button
               onClick={() => {
-                if (type === "text") {
-                  createTextPost(text).then((data) => {
-                    // console.log(data);
-                    if (data.error) {
-                      toast.warning(data.error);
-                    } else {
-                      toast.success("Created post Successfully");
-                      dispatch(getPosts());
-                      // history.push("/home");
-                    }
-                  });
+                if (type === "youtube") {
+                  if (title !== "")
+                    createYoutubePost(text, title, metadata).then((data) => {
+                      // console.log(data);
+                      if (data.error) {
+                        toast.warning(data.error);
+                      } else {
+                        toast.success("Created post Successfully");
+                        dispatch(getPosts());
+                        // history.push("/home");
+                      }
+                    });
+                  else {
+                    toast.warning("Enter caption for the post!");
+                  }
+                } else {
+                  toast.warning("Please enter a valid Youtube URL");
                 }
               }}
             >
@@ -127,4 +134,4 @@ const TextPost = (props) => {
   );
 };
 
-export default TextPost;
+export default YoutubeURLPost;
