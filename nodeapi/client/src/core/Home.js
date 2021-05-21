@@ -196,60 +196,6 @@ class Home extends Component {
                     </div>
                   </div>
                 </div>
-                {posts.map((post) => {
-                  if (post.postType === "text")
-                    return (
-                      <TextPostView
-                        text={post.title}
-                        footerText={"by " + post.postedBy.name}
-                        comments={post.comments}
-                        liked_by={post.liked_by}
-                        _id={post._id}
-                      />
-                    );
-                  if (post.postType === "youtubeVideo") {
-                    // console.log(post);
-                    return (
-                      <YoutubePost
-                        headerText={post.title}
-                        comments={post.comments}
-                        liked_by={post.liked_by}
-                        _id={post._id}
-                        footerText={"by " + post.postedBy.name}
-                        url={post.video}
-                        metadataTitle={post.metadataTitle}
-                        metadataAuthor={post.metadataAuthor}
-                      />
-                    );
-                  }
-                  if (post.postType === "video")
-                    return (
-                      <VideoPost
-                        headerText={post.title}
-                        footerText={"by " + post.postedBy.name}
-                        cardText={post.video}
-                        videoUrl={post.video}
-                        liked_by={post.liked_by}
-                        _id={post._id}
-                        comments={post.comments}
-                        tags={post.tags}
-                      />
-                    );
-                  if (post.postType === "image")
-                    return (
-                      <Post
-                        headerText={post.title}
-                        footerText={"by " + post.postedBy.name}
-                        cardText={post.photo}
-                        imageUrl={post.photo}
-                        liked_by={post.liked_by}
-                        _id={post._id}
-                        comments={post.comments}
-                        tags={post.tags}
-                      />
-                    );
-                })}
-                <ProjectRecommendation />
               </div>
               {posts.map((post) => {
                   if (post.postType === "text")
