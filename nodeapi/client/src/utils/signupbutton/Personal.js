@@ -16,20 +16,26 @@ class Personal extends Component {
       <div className="form-container p-5">
         <h1 className="mb-5">Personal Details</h1>
 
-        <div className="form-group">
-          <label>Name</label>
-          <input
-            name="Name"
-            value={values.name}
-            onChange={inputChange("name")}
-            className="form-control"
-          ></input>
-        </div>
-        <div className="form-group">
-          <label>When was this legend born on?</label>
-          {/* <DatePicker value={values.dob} onChange={inputChange("dob")} /> */}
-          <div>
-            <DatePicker selected={values.dob} onChange={inputChange("dob")} />
+        <div className="row">
+          <div className="col">
+            <div className="form-group">
+              <label>Name</label>
+              <input
+                name="Name"
+                value={values.name}
+                onChange={inputChange("name")}
+                className="form-control"
+              ></input>
+            </div>
+          </div>
+          <div className="col">
+            <div className="form-group">
+              <label>Your Birthday?</label>
+              {/* <DatePicker value={values.dob} onChange={inputChange("dob")} /> */}
+              <div>
+                <DatePicker selected={values.dob} onChange={inputChange("dob")} />
+              </div>
+            </div>
           </div>
         </div>
 

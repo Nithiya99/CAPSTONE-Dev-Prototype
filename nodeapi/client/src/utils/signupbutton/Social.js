@@ -25,60 +25,80 @@ class Social extends Component {
               className="form-control"
             ></input>
           </div>
-          <div className="form-group">
-            <label for="Github">Github</label>
-            <input
-              name="Github"
-              value={values.github}
-              onChange={inputChange("github")}
-              className="form-control"
-            ></input>
+          <div className="row">
+            <div className="col">
+              <div className="form-group">
+                <label for="Github">Github</label>
+                <input
+                  name="Github"
+                  value={values.github}
+                  onChange={inputChange("github")}
+                  className="form-control"
+                ></input>
+              </div>
+            </div>
+            <div className="col">
+              <div className="form-group">
+                <label for="Youtube">Youtube</label>
+                <input
+                  name="Youtube"
+                  value={values.youtube}
+                  onChange={inputChange("youtube")}
+                  className="form-control"
+                ></input>
+              </div>
+            </div>
           </div>
-          <div className="form-group">
-            <label for="Youtube">Youtube</label>
-            <input
-              name="Youtube"
-              value={values.youtube}
-              onChange={inputChange("youtube")}
-              className="form-control"
-            ></input>
+          <div className="row">
+            <div className="col">
+              <div className="form-group">
+                <label for="Twitter">Twitter</label>
+                <input
+                  name="Twitter"
+                  value={values.twitter}
+                  onChange={inputChange("twitter")}
+                  className="form-control"
+                ></input>
+              </div>
+            </div>
+            <div className="col">
+              <div className="form-group">
+                <label for="Facebook">Facebook</label>
+                <input
+                  name="Facebook"
+                  value={values.facebook}
+                  onChange={inputChange("facebook")}
+                  className="form-control"
+                ></input>
+              </div>
+            </div>
           </div>
-          <div className="form-group">
-            <label for="Twitter">Twitter</label>
-            <input
-              name="Twitter"
-              value={values.twitter}
-              onChange={inputChange("twitter")}
-              className="form-control"
-            ></input>
+          <div className="row">
+            <div className="col">
+              <div className="form-group">
+                <label for="LinkedIn">LinkedIn</label>
+                <input
+                  name="LinkedIn"
+                  value={values.linkedin}
+                  onChange={inputChange("linkedin")}
+                  className="form-control"
+                ></input>
+              </div>
+            </div>
+            <div className="col">
+              <div className="form-group">
+                <label for="Instagram">Instagram</label>
+                <input
+                  name="Instagram"
+                  value={values.instagram}
+                  onChange={inputChange("instagram")}
+                  className="form-control"
+                ></input>
+              </div>
+            </div>
           </div>
-          <div className="form-group">
-            <label for="Facebook">Facebook</label>
-            <input
-              name="Facebook"
-              value={values.facebook}
-              onChange={inputChange("facebook")}
-              className="form-control"
-            ></input>
-          </div>
-          <div className="form-group">
-            <label for="LinkedIn">LinkedIn</label>
-            <input
-              name="LinkedIn"
-              value={values.linkedin}
-              onChange={inputChange("linkedin")}
-              className="form-control"
-            ></input>
-          </div>
-          <div className="form-group">
-            <label for="Instagram">Instagram</label>
-            <input
-              name="Instagram"
-              value={values.instagram}
-              onChange={inputChange("instagram")}
-              className="form-control"
-            ></input>
-          </div>
+
+
           <div className="row">
             <div className="col-sm-2">
               <div className=" text-left ">

@@ -72,8 +72,9 @@ class User extends Component {
                 </button>
               </div>
             </div>
-            <div className="col-md-6- offset-md3 text-center">
+            <div className="col-md-10 offset-md-1 text-center pt-3">
               Or would you like to Sign up with your Google Account?
+              <div className="mt-3">
               <GoogleLogin
                 clientId="11029788971-15i4cq1rn9lijdh2k685to3ri1vtb682.apps.googleusercontent.com"
                 buttonText="Login"
@@ -81,6 +82,7 @@ class User extends Component {
                 onFailure={responseErrorGoogle}
                 cookiePolicy={"single_host_origin"}
               />
+              </div>
             </div>
           </div>
         </div>
