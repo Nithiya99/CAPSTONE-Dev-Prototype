@@ -166,7 +166,8 @@ class Home extends Component {
                       </span>
                     </div>
                     <span className="text-dark font-weight-bold font-size-lg">
-                      Hi {`${isAuthenticated().user.name}`}! Let us hear what this hustler did today, we're excited to know!
+                      Hi {`${isAuthenticated().user.name}`}! Let us hear what
+                      this hustler did today, we're excited to know!
                     </span>
                   </div>
                   <input
@@ -181,11 +182,74 @@ class Home extends Component {
                     <Button>text post</Button>
                   )} */}
                   <div className="postOptions d-flex align-items-center flex-wrap mr-2 mt-3">
-                    <div><PostImage /></div>
-                    <div><PostVideo /></div>
-                    <div> {this.state.sentimentScore >= -3 && <TextPost text={text} />} </div>
+                    <div>
+                      <PostImage />
+                    </div>
+                    <div>
+                      <PostVideo />
+                    </div>
+                    <div>
+                      {" "}
+                      {this.state.sentimentScore >= -3 && (
+                        <TextPost text={text} />
+                      )}{" "}
+                    </div>
                   </div>
                 </div>
+                {posts.map((post) => {
+                  if (post.postType === "text")
+                    return (
+                      <TextPostView
+                        text={post.title}
+                        footerText={"by " + post.postedBy.name}
+                        comments={post.comments}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                      />
+                    );
+                  if (post.postType === "youtubeVideo") {
+                    // console.log(post);
+                    return (
+                      <YoutubePost
+                        headerText={post.title}
+                        comments={post.comments}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        footerText={"by " + post.postedBy.name}
+                        url={post.video}
+                        metadataTitle={post.metadataTitle}
+                        metadataAuthor={post.metadataAuthor}
+                      />
+                    );
+                  }
+                  if (post.postType === "video")
+                    return (
+                      <VideoPost
+                        headerText={post.title}
+                        footerText={"by " + post.postedBy.name}
+                        cardText={post.video}
+                        videoUrl={post.video}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        comments={post.comments}
+                        tags={post.tags}
+                      />
+                    );
+                  if (post.postType === "image")
+                    return (
+                      <Post
+                        headerText={post.title}
+                        footerText={"by " + post.postedBy.name}
+                        cardText={post.photo}
+                        imageUrl={post.photo}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        comments={post.comments}
+                        tags={post.tags}
+                      />
+                    );
+                })}
+                <ProjectRecommendation />
               </div>
               {posts.map((post) => {
                   if (post.postType === "text")

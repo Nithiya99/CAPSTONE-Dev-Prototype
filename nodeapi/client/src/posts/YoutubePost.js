@@ -83,6 +83,7 @@ class YoutubePost extends Component {
 
   render() {
     const {
+      headerText,
       footerText,
       url,
       liked_by,
@@ -101,6 +102,13 @@ class YoutubePost extends Component {
         <ToastContainer />
         <Card className="m-5">
           <Card.Header>
+            <Link
+              to={{
+                pathname: `/post/${this.props._id}`,
+              }}
+            >
+              {headerText}
+            </Link>
             {delete_button === "enabled" ? (
               <DeletePost postId={_id} />
             ) : (

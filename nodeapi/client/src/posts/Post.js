@@ -106,7 +106,7 @@ class Post extends Component {
           <Card.Body className="col d-flex justify-content-center">
             {/* <Col> */}
             {imageUrl !== "undefined" && imageUrl.length > 1 ? (
-              <Carousel>
+              <Carousel interval={null}>
                 {imageUrl.map((url, i) => {
                   return (
                     <Carousel.Item>
