@@ -41,6 +41,7 @@ class Profile extends Component {
       user: "",
       redirectToSignin: false,
       posts: [],
+      delete_button: "",
     };
   }
 
@@ -73,6 +74,9 @@ class Profile extends Component {
       .then((data) => {
         this.setState({ posts: data });
       });
+
+    if (getCurrentUser()._id.toString() === userId.toString())
+      this.setState({ delete_button: "enabled" });
   }
   // this.setState({ projects });
 
@@ -390,7 +394,7 @@ class Profile extends Component {
                             _id={post._id}
                             comments={post.comments}
                             tags={post.tags}
-                            delete_button="enabled"
+                            delete_button={this.state.delete_button}
                           />
                         )) ||
                         (post.postType === "image" && (
@@ -403,7 +407,7 @@ class Profile extends Component {
                             _id={post._id}
                             comments={post.comments}
                             tags={post.tags}
-                            delete_button="enabled"
+                            delete_button={this.state.delete_button}
                           />
                         )) ||
                         (post.postType === "text" && (
@@ -413,12 +417,12 @@ class Profile extends Component {
                             comments={post.comments}
                             liked_by={post.liked_by}
                             _id={post._id}
-                            delete_button="enabled"
+                            delete_button={this.state.delete_button}
                           />
                         )) ||
                         (post.postType === "youtubeVideo" && (
                           <YoutubePost
-                            text={post.title}
+                            headerText={post.title}
                             comments={post.comments}
                             liked_by={post.liked_by}
                             _id={post._id}
@@ -426,7 +430,7 @@ class Profile extends Component {
                             url={post.video}
                             metadataTitle={post.metadataTitle}
                             metadataAuthor={post.metadataAuthor}
-                            delete_button="enabled"
+                            delete_button={this.state.delete_button}
                           />
                         ))
                     )}

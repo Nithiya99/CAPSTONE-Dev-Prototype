@@ -182,6 +182,50 @@ exports.updatePost = (req, res, next) => {
 exports.deletePost = (req, res) => {
   let post = req.post;
   let type = post.postType;
+  console.log(post);
+  let cloudinary_id = "";
+  if (type === "image") {
+    const cloudinary = require("cloudinary").v2;
+    cloudinary.config({
+      cloud_name: "workshaketrial",
+      api_key: "141328859214936",
+      api_secret: "ped5_kvwuwzIV2YJxxkFkDKmKHw",
+    });
+
+    let photo_url = post.photo;
+    photo_url.map((url) => {
+      url = url.split("/");
+      let str = url[url.length - 1];
+      str = str.split(".")[0];
+      cloudinary_id = str.toString();
+      console.log(cloudinary_id);
+      cloudinary.uploader.destroy(cloudinary_id, function (error, result) {
+        console.log(result, error);
+      });
+    });
+  }
+  if (type === "video") {
+    const cloudinaryVideo = require("cloudinary").v2;
+    cloudinaryVideo.config({
+      cloud_name: "workshake-video-trial",
+      api_key: "436795657912165",
+      api_secret: "txbBMuRIGHQbmTYulTp7lXhHecA",
+    });
+
+    let url = post.video;
+    url = url.split("/");
+    let str = url[url.length - 1];
+    str = str.split(".")[0];
+    cloudinary_id = str.toString();
+    console.log(cloudinary_id);
+    cloudinaryVideo.uploader.destroy(
+      cloudinary_id,
+      { resource_type: "video" },
+      function (error, result) {
+        console.log(result, error);
+      }
+    );
+  }
   post.remove((err, post) => {
     if (err) {
       return res.status(400).json({

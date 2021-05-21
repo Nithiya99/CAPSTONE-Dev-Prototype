@@ -184,6 +184,24 @@ class ProjectDashboard extends Component {
             </Col>
             <Col sm={10}>
               <Tab.Content>
+                <Tab.Pane eventKey="teamInfo">
+                  <div className="card card-stretch">
+                    <div className="card-header">
+                      <div className="card-title align-items-start flex-column">
+                        <h4 className="card-label font-weight-bolder text-dark">
+                          Team Information
+                        </h4>
+                        <span className="text-muted font-weight-bold font-size-sm mt-1">
+                          Analysis of the tasks and time required displayed
+                          here.
+                        </span>
+                      </div>
+                    </div>
+                    <div className="card-body">
+                      <h4> Lalalaa </h4>
+                    </div>
+                  </div>
+                </Tab.Pane>
                 <Tab.Pane eventKey="projStats">
                   <div className="card card-stretch">
                     <div className="card-header">

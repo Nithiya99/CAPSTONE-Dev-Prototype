@@ -16,6 +16,7 @@ const ModalButton = () => {
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
+        size="lg"
       >
         <Modal.Header closeButton>
           <Modal.Title>Join the Community</Modal.Title>
@@ -23,6 +24,11 @@ const ModalButton = () => {
         <Modal.Body scrollable="true">
           <Form />
         </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );

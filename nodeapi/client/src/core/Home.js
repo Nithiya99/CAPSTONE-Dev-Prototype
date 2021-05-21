@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { getNotifications } from "../apiNotifications";
+import { isAuthenticated } from "../auth";
+import DefaultProfile from "../images/avatar.png";
 import {
   notificationAdded,
   getNotified,
@@ -152,30 +154,50 @@ class Home extends Component {
                 <h2>Home</h2>
                 <p className="lead">News Feed (Posts) will be here</p>
               </div>
-              <div className="card p-2">
+              <div className="card card-custom gutter-b">
                 <div className="card-body">
-                  <div class="form-outline">
-                    <label class="form-label" for="typeText">
-                      Let us hear what this hustler did today, we're excited to
-                      know!
-                    </label>
-                    <input
-                      type="text"
-                      id="typeText"
-                      class="form-control"
-                      onChange={(e) => this.textChange(e)}
-                    />
+                  <div className="d-flex align-items-center">
+                    <div className="symbol symbol-40 symbol-light-warning mr-5">
+                      <span className="symbol-label">
+                        <img
+                          src={DefaultProfile}
+                          className="h-75 align-self-end"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-dark font-weight-bold font-size-lg">
+                      Hi {`${isAuthenticated().user.name}`}! Let us hear what
+                      this hustler did today, we're excited to know!
+                    </span>
                   </div>
+                  <input
+                    type="text"
+                    id="typeText"
+                    className="form-control mt-3"
+                    onChange={(e) => this.textChange(e)}
+                  />
                   {/* {youtubeUrl ? (
                     <Button>youtube post</Button>
                   ) : (
                     <Button>text post</Button>
                   )} */}
-                  {this.state.sentimentScore >= -3 && <TextPost text={text} />}
-                  <PostImage />
-                  <PostVideo />
+                  <div className="postOptions d-flex align-items-center flex-wrap mr-2 mt-3">
+                    <div>
+                      <PostImage />
+                    </div>
+                    <div>
+                      <PostVideo />
+                    </div>
+                    <div>
+                      {" "}
+                      {this.state.sentimentScore >= -3 && (
+                        <TextPost text={text} />
+                      )}{" "}
+                    </div>
+                  </div>
                 </div>
-                {posts.map((post) => {
+              </div>
+              {posts.map((post) => {
                   if (post.postType === "text")
                     return (
                       <TextPostView
@@ -190,7 +212,7 @@ class Home extends Component {
                     // console.log(post);
                     return (
                       <YoutubePost
-                        text={post.title}
+                        headerText={post.title}
                         comments={post.comments}
                         liked_by={post.liked_by}
                         _id={post._id}
@@ -228,8 +250,9 @@ class Home extends Component {
                       />
                     );
                 })}
-                <ProjectRecommendation />
-              </div>
+            </div>
+            <div className="col-md-4">
+              <ProjectRecommendation />
             </div>
           </div>
         </div>

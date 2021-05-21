@@ -15,6 +15,7 @@ import Sentiment from "sentiment";
 import DeletePost from "./DeletePost";
 import { connect } from "react-redux";
 import { changePosts } from "../store/posts";
+
 const sentiment = new Sentiment();
 class VideoPost extends Component {
   state = {
