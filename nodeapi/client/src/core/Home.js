@@ -212,7 +212,7 @@ class Home extends Component {
                     console.log(post);
                     return (
                       <YoutubePost
-                        text={post.title}
+                        headerText={post.title}
                         comments={post.comments}
                         liked_by={post.liked_by}
                         _id={post._id}

@@ -12,6 +12,7 @@ import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Sentiment from "sentiment";
 import DeletePost from "./DeletePost";
+import DefaultProfile from "../images/avatar.png";
 const sentiment = new Sentiment();
 
 class TextPostView extends Component {
@@ -56,12 +57,27 @@ class TextPostView extends Component {
 
   rendercomments = (comments) => {
     return comments.map(({ PostedOn, comment, userName }, index) => (
-      <div>
-        <div>
-          <span className="font-weight-bold font-size-lg ">{userName}</span>
+      <div className="d-flex py-5">
+        <div className="symbol symbol-40 symbol-light-warning mr-5">
+          <span className="symbol-label">
+            <img
+              src={DefaultProfile}
+              className="h-75 align-self-end"
+            />
+          </span>
         </div>
-        <div className="text-muted font-size-sm">
-          {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+        <div className="d-flex flex-column flex-row-fluid">
+          <div className="d-flex align-items-center flex-wrap">
+            <Link to="#" className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder pr-6">
+              {userName}
+            </Link>
+            <span className="text-muted font-weight-normal flex-grow-1 font-size-sm">
+              {moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+            </span>
+          </div>
+          <span className="text-dark-75 font-size-sm font-weight-normal pt-1">
+            {comment}
+          </span>
         </div>
       </div>
     ));
@@ -74,67 +90,73 @@ class TextPostView extends Component {
     return (
       <>
         <ToastContainer />
-        <Card className="m-5">
-          <Card.Header>
-            {delete_button === "enabled" ? (
-              <DeletePost postId={_id} />
-            ) : (
-              <div></div>
-            )}
-          </Card.Header>
-          <Card.Body className="col d-flex justify-content-center">
-            {text}
-          </Card.Body>
-          <Card.Body>
-            <button
-              onClick={() => {
-                getpost(_id).then((data) => {
-                  let link = `http://localhost:3000/post/${data.post._id}`;
-                  navigator.clipboard.writeText(link);
-                  toast.success("Link copied to clipboard");
-                });
-              }}
-            >
-              <ShareIcon />
-            </button>
-            <Heart isClick={this.state.isClick} onClick={this.postliked} />
-            {counts + " likes"}
-            <Accordion>
-              <Card>
-                <Card.Header>
-                  <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                    Comment <CommentIcon />
-                  </Accordion.Toggle>
-                </Card.Header>
-                <Accordion.Collapse eventKey="1">
-                  <Card.Body>
-                    <TextField
-                      name="comment"
-                      onChange={(e) => this.onTextChange(e)}
-                      variant="outlined"
-                      label="Add a Comment"
-                      fullWidth
-                    />
-                    {this.state.sentimentScore >= -3 && (
-                      <button
-                        onClick={this.submitcomment}
-                        className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                      >
-                        Submit
-                      </button>
-                    )}
-                    {comments.length > 0 ? (
-                      this.rendercomments(comments)
-                    ) : (
-                      <p>No Comments</p>
-                    )}
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
-          </Card.Body>
-          <Card.Footer>{footerText}</Card.Footer>
-        </Card>
+        <div className="card card-custom gutter-b">
+          <div className="card-body">
+            <div className="d-flex align-items-center pb-4">
+              <div className="symbol symbol-40 symbol-light-warning mr-5">
+                <span className="symbol-label">
+                  <img
+                    src={DefaultProfile}
+                    className="h-75 align-self-end"
+                  />
+                </span>
+              </div>
+              <div className="d-flex flex-column flex-grow-1">
+                <Link to="#" className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder">
+                  {footerText}
+                </Link>
+                <span className="text-muted font-weight-bold">
+                  [Load Date and time posted here]
+                </span>
+              </div>
+            </div>
+            <div>
+              <p className="text-dark-75 font-size-lg font-weight-normal">
+                {text}
+              </p>
+              <div className="d-flex align-items-center">
+                <button
+                  onClick={() => {
+                    getpost(_id).then((data) => {
+                      let link = `http://localhost:3000/post/${data.post._id}`;
+                      navigator.clipboard.writeText(link);
+                      toast.success("Link copied to clipboard");
+                    });
+                  }}
+                >
+                  <ShareIcon />
+                </button>
+                <Heart isClick={this.state.isClick} onClick={this.postliked} />
+                {counts + " likes"}
+                {delete_button === "enabled" ? (
+                  <DeletePost postId={_id} />
+                  ) : (
+                    <div></div>
+                )}
+              </div>
+              <TextField
+                name="comment"
+                onChange={(e) => this.onTextChange(e)}
+                variant="outlined"
+                label="Add a Comment"
+                fullWidth
+              />
+              {this.state.sentimentScore >= -3 && (
+                <button
+                  onClick={this.submitcomment}
+                  className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                >
+                  Submit
+                </button>
+              )}
+              {comments.length > 0 ? (
+                this.rendercomments(comments)
+              ) : (
+                <p>No Comments</p>
+              )}
+            </div>
+          </div>
+        </div>
       </>
     );
   }

@@ -13,7 +13,6 @@ class UserRecommendation extends Component {
     };
   }
 
-
   componentDidMount() {
     list().then((data) => {
       if (data.error) {
