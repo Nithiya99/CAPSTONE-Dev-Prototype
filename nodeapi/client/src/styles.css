@@ -131,3 +131,7 @@ body {
   color: rgb(29, 26, 26);
   word-wrap: break-word;
 }
+
+.postOptions {
+  justify-content: space-around;
+}
