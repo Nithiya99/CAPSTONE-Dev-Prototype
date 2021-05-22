@@ -3,7 +3,13 @@ import { isAuthenticated } from "../auth";
 import { read, update } from "./apiUser";
 import { Redirect } from "react-router-dom";
 import SkillsInput from "../utils/signupbutton/Tagify/SkillsInput";
-
+import DefaultProfile from "../images/avatar.png";
+import { Modal, Button } from "react-bootstrap";
+import DragDropProfilePic from "./../posts/DragDropProfilePic";
+import { postProfilePic } from "../posts/apiPosts";
+import { toast, ToastContainer } from "react-toastify";
+import { setProfilePic } from "../store/user";
+import { connect } from "react-redux";
 class EditProfile extends Component {
   constructor() {
     super();
@@ -14,6 +20,8 @@ class EditProfile extends Component {
       password: "",
       redirectToProfile: false,
       error: "",
+      initialName: "",
+      open: false,
     };
   }
 
@@ -42,6 +50,7 @@ class EditProfile extends Component {
         });
         str = str.slice(0, -1);
         this.setState({ skillstr: str });
+        this.setState({ initialName: data.name });
       }
     });
   };
@@ -64,16 +73,8 @@ class EditProfile extends Component {
   };
   clickSubmit = (event) => {
     event.preventDefault();
-    const {
-      name,
-      username,
-      email,
-      password,
-      location,
-      bio,
-      social,
-      skills,
-    } = this.state;
+    const { name, username, email, password, location, bio, social, skills } =
+      this.state;
     const user = {
       name,
       username,
@@ -96,7 +97,16 @@ class EditProfile extends Component {
     });
     // console.log(user);
   };
-
+  handleOpen = () => {
+    this.setState({ open: true });
+  };
+  handleClose = () => {
+    this.setState({ open: false });
+  };
+  setImage = (image) => {
+    console.log(image);
+    this.setState({ image });
+  };
   render() {
     const {
       id,
@@ -110,14 +120,23 @@ class EditProfile extends Component {
       redirectToProfile,
       error,
       skillstr,
+      initialName,
+      open,
+      image,
     } = this.state;
-
     if (redirectToProfile) {
       return <Redirect to={`/user/${id}`} />;
     }
     if (social === undefined) return null;
+    const { profilePic } = this.props;
+    let dp =
+      profilePic === "" || profilePic === undefined
+        ? DefaultProfile
+        : profilePic;
+    console.log("dp:", dp);
     return (
       <div className="container">
+        <ToastContainer />
         <h2 className="mt-5 mb-5">Edit Profile</h2>
         <div
           className="alert alert-danger"
@@ -125,7 +144,57 @@ class EditProfile extends Component {
         >
           {error}
         </div>
+        <div>
+          <Modal show={open} onHide={this.handleChange}>
+            <Modal.Header>
+              <Modal.Title>Let's change your Display Picture</Modal.Title>
+            </Modal.Header>
 
+            <Modal.Body>
+              {image !== undefined ? (
+                <img src={URL.createObjectURL(image)} width={"450px"} />
+              ) : (
+                <DragDropProfilePic setImage={this.setImage} />
+              )}
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => this.handleClose}>
+                Close
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (image !== undefined) {
+                    postProfilePic(image).then((url) => {
+                      if (url) {
+                        toast.success("profile picture updated");
+                        this.props.setProfilePic({ profilePic: url });
+                        this.handleClose();
+                      }
+                    });
+                  }
+                }}
+              >
+                Save changes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <img
+            src={dp}
+            alt={initialName}
+            className="symbol symbol-60 symbol-xxl-100 mr-3 align-self-start align-self-xxl-center"
+            style={{ width: "55px" }}
+          />
+          <Button
+            onClick={() => {
+              this.handleOpen();
+            }}
+          >
+            Edit DP
+          </Button>
+          <Button onClick={() => console.log("Delete DP")}>Delete DP</Button>
+        </div>
         <form>
           <div className="form-group">
             <label>Username</label>
@@ -255,5 +324,11 @@ class EditProfile extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  profilePic: state.user.profilePic,
+});
 
-export default EditProfile;
+const mapDispatchToProps = (dispatch) => ({
+  setProfilePic: (params) => dispatch(setProfilePic(params)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);

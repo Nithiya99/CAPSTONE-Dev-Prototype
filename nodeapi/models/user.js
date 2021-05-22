@@ -160,6 +160,7 @@ var userSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  profilePictures: [String],
 });
 
 userSchema

@@ -44,6 +44,20 @@ class Users extends Component {
         console.log(data.error);
       } else {
         this.setState({ users: data });
+        let othersProfilePics = {};
+        data.map((user) => {
+          getUserById(user._id).then((data) => {
+            const profilePic =
+              data.user.profilePictures.length !== 0
+                ? data.user.profilePictures[
+                    data.user.profilePictures.length - 1
+                  ]
+                : DefaultProfile;
+            othersProfilePics[user._id] = profilePic;
+            this.setState({ othersProfilePics });
+            // this.props.setProfilePic({ profilePic });
+          });
+        });
       }
     });
     getUserById(getCurrentUser()._id).then((data) => {
@@ -60,7 +74,7 @@ class Users extends Component {
     console.log(prevProps);
   }
 
-  renderUsers = (users) => (
+  renderUsers = (users, othersProfilePics) => (
     <div className="row row-cols-1 row-cols-md-4">
       {users.map((user, i) => (
         <div className="col mb-4" key={i}>
@@ -68,7 +82,7 @@ class Users extends Component {
             <div className="card-body pt-4">
               <div className="d-flex align-items-center">
                 <img
-                  src={DefaultProfile}
+                  src={othersProfilePics[user._id]}
                   alt={user.name}
                   className="symbol symbol-60 symbol-xxl-100 mr-3 align-self-start align-self-xxl-center"
                   style={{ width: "55px" }}
@@ -136,7 +150,7 @@ class Users extends Component {
     </div>
   );
 
-  renderBlockedUsers = (users) => (
+  renderBlockedUsers = (users, othersProfilePics) => (
     <div className="row row-cols-1 row-cols-md-4">
       {users.map((user, i) => (
         <div className="col mb-4" key={i}>
@@ -144,7 +158,7 @@ class Users extends Component {
             <div className="card-body pt-4">
               <div className="d-flex align-items-center">
                 <img
-                  src={DefaultProfile}
+                  src={othersProfilePics[user._id]}
                   alt={user.name}
                   className="symbol symbol-60 symbol-xxl-100 mr-3 align-self-start align-self-xxl-center"
                   style={{ width: "55px" }}
@@ -176,7 +190,8 @@ class Users extends Component {
     let final_users = users.filter(
       (x) => !this.state.blocked_users.includes(x._id)
     );
-
+    const { othersProfilePics } = this.state;
+    if (othersProfilePics === undefined) return null;
     let final_blocked = users.filter((x) =>
       this.state.blocked_users.includes(x._id)
     );
@@ -227,13 +242,14 @@ class Users extends Component {
               </Badge>
             </div>
           </div>
-        </div><div className="container">
-        <h2 className="mt-5 mb-5">Users</h2>
-        {this.renderUsers(final_users)}
+        </div>
+        <div className="container">
+          <h2 className="mt-5 mb-5">Users</h2>
+          {this.renderUsers(final_users, othersProfilePics)}
 
-        <h2 className="mt-5 mb-5">Blocked Users</h2>
-        {this.renderBlockedUsers(final_blocked)}
-      </div>
+          <h2 className="mt-5 mb-5">Blocked Users</h2>
+          {this.renderBlockedUsers(final_blocked, othersProfilePics)}
+        </div>
       </>
     );
   }

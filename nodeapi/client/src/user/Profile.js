@@ -111,7 +111,13 @@ class Profile extends Component {
                 <div className="card-body pt-4">
                   <div className="d-flex align-items-center">
                     <img
-                      src={DefaultProfile}
+                      src={
+                        user.profilePictures.length !== 0
+                          ? user.profilePictures[
+                              user.profilePictures.length - 1
+                            ]
+                          : DefaultProfile
+                      }
                       alt={user.name}
                       className="symbol symbol-60 symbol-xxl-100 mr-3 align-self-start align-self-xxl-center"
                       style={{ width: "55px" }}

@@ -443,3 +443,23 @@ export const deleteComment = (commentId, postId) => {
     })
     .catch((err) => console.log(err));
 };
+export const postProfilePic = async (image) => {
+  console.log(image);
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  const data = new FormData();
+  data.append("myProfilePicture", image);
+  let settings = {
+    headers: {
+      "content-type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  let response = await axios.put(
+    `http://localhost:3000/user/profilePicture/${userId}`,
+    data,
+    settings
+  );
+  let profilePictures = response.data.user.profilePictures;
+  return profilePictures[profilePictures.length - 1];
+};

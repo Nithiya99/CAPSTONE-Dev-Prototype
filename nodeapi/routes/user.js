@@ -16,11 +16,23 @@ const {
   clearchat,
   blockuser,
   unblockuser,
+  addProfilePic,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const bodyParser = require("body-parser");
-
+const multer = require("multer");
+const path = require("path");
 const router = express.Router();
+const storage = multer.diskStorage({
+  destination: "./public/uploads/",
+  filename: function (req, file, cb) {
+    cb(null, "IMAGE-" + Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10000000 },
+}).single("myProfilePicture");
 router.use(bodyParser.json());
 
 router.get("/users", allUsers);
@@ -38,6 +50,12 @@ router.get("/friends/:userId", requireSignin, getfriends);
 router.put("/clearchat", requireSignin, clearchat);
 router.put("/blockuser", requireSignin, blockuser);
 router.put("/unblockuser", requireSignin, unblockuser);
+router.put(
+  "/user/profilePicture/:userId",
+  requireSignin,
+  upload,
+  addProfilePic
+);
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 

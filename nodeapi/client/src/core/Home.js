@@ -10,7 +10,7 @@ import {
   setSegregatedNotifications,
 } from "../store/notifications";
 import * as _ from "lodash";
-import { getCurrentUser } from "../user/apiUser";
+import { getCurrentUser, getUserById } from "../user/apiUser";
 import ProjectRecommendation from "./ProjectRecommendation";
 import { getProject } from "../project/apiProject";
 import { listmyprojects } from "./../project/apiProject";
@@ -30,6 +30,7 @@ import YoutubePost from "./../posts/YoutubePost";
 import Sentiment from "sentiment";
 import { getPosts } from "../store/posts";
 import YoutubeURLPost from "../posts/YoutubeURLPost";
+import { setProfilePic } from "../store/user";
 const sentiment = new Sentiment();
 class Home extends Component {
   state = {
@@ -49,6 +50,11 @@ class Home extends Component {
     //     console.log(data);
     //     this.setState({ posts: data.posts });
     //   });
+    getUserById(getCurrentUser()._id).then((data) => {
+      const profilePic =
+        data.user.profilePictures[data.user.profilePictures.length - 1];
+      this.props.setProfilePic({ profilePic });
+    });
     this.props.getPosts();
   }
   getProjectTeamFromState = (projectId) => {
@@ -99,7 +105,8 @@ class Home extends Component {
     // notifications.map((notif) => {
     //   console.log(notif);
     // });
-
+    const { profilePic } = this.props;
+    console.log(profilePic);
     Object.keys(notificationGroupedObject).length > 0 &&
       console.log(Object.keys(notificationGroupedObject));
     // console.log(projects);
@@ -173,7 +180,7 @@ class Home extends Component {
                     <div className="symbol symbol-40 symbol-light-warning mr-5">
                       <span className="symbol-label">
                         <img
-                          src={DefaultProfile}
+                          src={profilePic ? profilePic : DefaultProfile}
                           className="h-75 align-self-end"
                         />
                       </span>
@@ -284,10 +291,12 @@ class Home extends Component {
 const mapStateToProps = (state) => ({
   notifications: state.notifications.notifications,
   posts: state.posts.posts,
+  profilePic: state.user.profilePic,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addNotification: (params) => dispatch(notificationAdded(params)),
   getPosts: () => dispatch(getPosts()),
+  setProfilePic: (params) => dispatch(setProfilePic(params)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

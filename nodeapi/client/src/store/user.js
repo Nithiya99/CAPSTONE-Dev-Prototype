@@ -5,6 +5,7 @@ const slice = createSlice({
   initialState: {
     following: [],
     friends: [],
+    profilePic: "",
   },
   reducers: {
     updateFollowing: (state, action) => {
@@ -25,10 +26,15 @@ const slice = createSlice({
       });
       if (canAdd) state.friends.push(user);
     },
-    clearFriends : (state, action) =>{
+    clearFriends: (state, action) => {
       void (state.friends = []);
-    }
+    },
+    setProfilePic: (state, action) => {
+      const profilePic = action.payload.profilePic;
+      void (state.profilePic = profilePic);
+    },
   },
 });
-export const { updateFollowing, friendAdded, clearFriends } = slice.actions;
+export const { updateFollowing, friendAdded, clearFriends, setProfilePic } =
+  slice.actions;
 export default slice.reducer;
