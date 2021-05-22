@@ -150,14 +150,13 @@ class TextPostView extends Component {
                 label="Add a Comment"
                 fullWidth
               />
-              {this.state.sentimentScore >= -3 && (
-                <button
-                  onClick={this.submitcomment}
-                  className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                >
-                  Submit
-                </button>
-              )}
+              <button
+                onClick={this.submitcomment}
+                className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                disabled={this.state.sentimentScore < -3 ? true : false}
+              >
+                Submit
+              </button>
               {comments.length > 0 ? (
                 this.rendercomments(comments)
               ) : (

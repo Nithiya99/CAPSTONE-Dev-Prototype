@@ -18,6 +18,8 @@ const {
   createYoutubePost,
   getLikesOfPost,
   getCommentsOfPost,
+  editPost,
+  deleteComment,
 } = require("../controllers/post");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -54,6 +56,8 @@ router.put("/post/:postId", requireSignin, isPoster, updatePost);
 router.post("/convertToWebp", upload, convertToWebp);
 router.post("/postVideo", uploadVideo, postVideo);
 router.put("/post/like/:postId", requireSignin, likePost);
+router.put("/post/edit/:postId", requireSignin, editPost);
+router.put("/post/deleteComment/:postId", requireSignin, deleteComment);
 router.put("/post/dislike/:postId", requireSignin, dislikePost);
 router.put("/post/addcomment/:postId", requireSignin, addcomment);
 router.get("/post/:postId", getPost);

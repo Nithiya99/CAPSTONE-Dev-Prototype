@@ -3,11 +3,18 @@ import ShareIcon from "@material-ui/icons/Share";
 import { ToastContainer, toast } from "react-toastify";
 import Heart from "react-animated-heart";
 import { getCurrentUser } from "./../user/apiUser";
-import { likepost, dislikepost, addcomment, getpost } from "./apiPosts";
+import {
+  likepost,
+  dislikepost,
+  addcomment,
+  getpost,
+  deleteComment,
+} from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
 import moment from "moment";
 import { Accordion, Button, Card } from "react-bootstrap";
+import Dropdown from "react-bootstrap/Dropdown";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Sentiment from "sentiment";
@@ -76,18 +83,38 @@ class YoutubePost extends Component {
     });
   }
 
+  deletecomment(e, commentId) {
+    e.preventDefault();
+    deleteComment(commentId, this.props._id).then((data) => console.log(data));
+  }
+
   rendercomments = (comments) => {
     let reverseComments = [...comments].reverse();
-    return reverseComments.map(({ PostedOn, comment, userName }, index) => (
-      <div>
+    return reverseComments.map(
+      ({ PostedOn, comment, userName, _id, userId }, index) => (
         <div>
-          <span className="font-weight-bold font-size-lg ">{userName}</span>
+          <div>
+            <span className="font-weight-bold font-size-lg ">{userName}</span>
+          </div>
+          <div className="text-muted font-size-sm">
+            {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+          </div>
+          {this.state.id === userId && (
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                ...
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={(e) => this.deletecomment(e, _id)}>
+                  delete
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
         </div>
-        <div className="text-muted font-size-sm">
-          {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
-        </div>
-      </div>
-    ));
+      )
+    );
   };
 
   render() {
@@ -165,14 +192,13 @@ class YoutubePost extends Component {
                       label="Add a Comment"
                       fullWidth
                     />
-                    {this.state.sentimentScore >= -3 && (
-                      <button
-                        onClick={this.submitcomment}
-                        className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                      >
-                        Submit
-                      </button>
-                    )}
+                    <button
+                      onClick={this.submitcomment}
+                      className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                      disabled={this.state.sentimentScore < -3 ? true : false}
+                    >
+                      Submit
+                    </button>
                     {comments.length > 0 ? (
                       this.rendercomments(comments)
                     ) : (

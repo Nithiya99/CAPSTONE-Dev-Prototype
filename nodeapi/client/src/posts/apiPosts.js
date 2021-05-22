@@ -399,3 +399,47 @@ export const getLikesOfPost = (postId) => {
       return arr;
     });
 };
+
+export const editPost = (postId, title) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let obj = {
+    postId: postId,
+    title: title,
+  };
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(obj),
+  };
+  // console.log(settings.body);
+  return fetch(`http://localhost:3000/post/edit/${postId}`, settings)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const deleteComment = (commentId, postId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let obj = {
+    postId: postId,
+    commentId: commentId,
+  };
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(obj),
+  };
+  // console.log(settings.body);
+  return fetch(`http://localhost:3000/post/deleteComment/${postId}`, settings)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

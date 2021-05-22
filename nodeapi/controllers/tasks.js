@@ -216,7 +216,7 @@ exports.updateTasks = async (request, res) => {
       task.taskName = request.body.taskName;
       task.taskDescription = request.body.taskDescription;
       task.pessimisticTime = request.body.pessimisticTime;
-      task.optimisiticTime = request.body.optimisiticTime;
+      task.optimisticTime = request.body.optimisticTime;
       task.mostLikelyTime = request.body.mostLikelyTime;
       task.status = request.body.status;
       task.assignedTo = request.body.assignedTo;
@@ -277,26 +277,24 @@ exports.deleteConnections = (req, res) => {
   let newcons = [];
   let tasks = project.tasks;
   // console.log(req.body.Id);
-  let to = "", from = "";
+  let to = "",
+    from = "";
   cons.forEach((con) => {
     if (con._id.toString() !== req.body.Id.toString()) {
       newcons.push(con);
-    }
-    else
-    {
+    } else {
       to = con.to;
       from = con.from;
     }
   });
-  tasks.map((task) =>{
-    if(task._id.toString() === to.toString())
-    {
+  tasks.map((task) => {
+    if (task._id.toString() === to.toString()) {
       const index = task.predecessors.indexOf(from.toString());
       if (index > -1) {
         task.predecessors.splice(index, 1);
       }
     }
-  })
+  });
   console.log(newcons);
   project.connections = newcons;
   project.save();

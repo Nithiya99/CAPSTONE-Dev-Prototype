@@ -486,3 +486,30 @@ exports.getCommentsOfPost = (req, res) => {
   }
   return res.status(400).json({ error: "not found" });
 };
+
+exports.editPost = (req, res) => {
+  console.log(req.body);
+  Post.findById(req.body.postId).exec((err, post) => {
+    if (err || !post) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    post.title = req.body.title;
+    post.save();
+    res.status(200).json({ message: "Post updated" });
+  });
+};
+
+exports.deleteComment = (req, res) => {
+  Post.findById(req.body.postId).exec((err, post) => {
+    if (err || !post) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    post.comments.pull(req.body.commentId);
+    post.save();
+    res.status(200).json({ message: "Comment Deleted" });
+  });
+};
