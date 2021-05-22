@@ -126,6 +126,9 @@ var projectSchema = new mongoose.Schema({
       to: ObjectId, // taskIds
     },
   ],
+  estimatedTime: {
+    type: Number,
+  },
 });
 
 module.exports = mongoose.model("Project", projectSchema);

@@ -18,6 +18,7 @@ const {
   updateChat,
   checkIfProjectExists,
   getProject,
+  updateEstimatedTime,
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -49,6 +50,11 @@ router.put(
   declineRequest
 );
 router.post("/project/check", requireSignin, checkIfProjectExists);
+router.put(
+  "/project/estimatedTime/:userId/:projectId",
+  requireSignin,
+  updateEstimatedTime
+);
 // router.put("/project/addFeedbackNotification/:userId",requireSignin,)
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);

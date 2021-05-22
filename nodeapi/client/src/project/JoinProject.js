@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { listprojects, request } from "./apiProject";
-import { getCurrentUser } from "../user/apiUser";
+import { getCurrentUser, getUserById } from "../user/apiUser";
 import { connect } from "react-redux";
 import { notificationAdded } from "../store/notifications";
 import { toast } from "react-toastify";
@@ -8,6 +8,7 @@ import LiveClock from "react-live-clock";
 import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
 import SearchTwoToneIcon from "@material-ui/icons/SearchTwoTone";
+import moment from "moment";
 class JoinProject extends Component {
   constructor() {
     super();
@@ -22,13 +23,56 @@ class JoinProject extends Component {
         console.log(data.error);
       } else {
         this.setState({ projects: data });
+        let projectLeaderNames = {};
+        let projectCreatedDates = {};
+        let projectEstimatedDates = {};
+        data.map((project, index) => {
+          //Leader name
+          // let number = index;
+          getUserById(project.leader).then((data) => {
+            projectLeaderNames[project._id] = data.user.name;
+            // console.log(projectLeaderNames);
+            this.setState({ projectLeaderNames });
+          });
+          // var date = moment(new Date(project.created.substr(0, 16)));
+          // console.log(date.format("DD-MMM-YYYY"));
+
+          let date = moment(new Date(project.created.substr(0, 16)));
+          var new_date = moment(date, "DD-MM-YYYY").add(
+            project.estimatedTime,
+            "days"
+          );
+          projectEstimatedDates[project._id] = new_date.format("DD-MMM-YYYY");
+          this.setState({ projectEstimatedDates });
+          projectCreatedDates[project._id] = date.format("DD-MMM-YYYY");
+          this.setState({ projectCreatedDates });
+          // console.log(project.leadername);
+        });
+        // toast.dark("Loaded");
       }
     });
   }
 
   render() {
-    const { projects } = this.state;
-
+    const {
+      projects,
+      projectLeaderNames,
+      projectCreatedDates,
+      projectEstimatedDates,
+    } = this.state;
+    // console.log(projectLeaderNames);
+    if (
+      projectLeaderNames === undefined ||
+      projectCreatedDates === undefined ||
+      projectEstimatedDates === undefined
+    )
+      return null;
+    if (
+      Object.keys(projectLeaderNames).length !== projects.length ||
+      Object.keys(projectCreatedDates).length !== projects.length ||
+      Object.keys(projectEstimatedDates).length !== projects.length
+    )
+      return null;
     return (
       <>
         <div
@@ -90,7 +134,7 @@ class JoinProject extends Component {
                           </p>
                           <div className="d-flex flex-wrap my-2">
                             <p className="text-muted font-weight-bold mr-lg-8 mr-5 mb-lg-0 mb-2">
-                              {project.leader} [Load username]
+                              {projectLeaderNames[project._id]}
                             </p>
                           </div>
                         </div>
@@ -111,7 +155,7 @@ class JoinProject extends Component {
                                 Start Date
                               </span>
                               <span className="btn btn-sm btn-text btn-light-primary text-uppercase font-weight-bold">
-                                [Load]
+                                {projectCreatedDates[project._id]}
                               </span>
                             </div>
                             <div className="mr-12 d-flex flex-column mb-7">
@@ -119,7 +163,7 @@ class JoinProject extends Component {
                                 Due Date
                               </span>
                               <span className="btn btn-sm btn-text btn-light-danger text-uppercase font-weight-bold">
-                                [Load]
+                                {projectEstimatedDates[project._id]}
                               </span>
                             </div>
                           </div>
@@ -132,14 +176,16 @@ class JoinProject extends Component {
                                 <div
                                   className="progress-bar bg-warning"
                                   role="progressbar"
-                                  style={{ width: "78%" }}
+                                  style={{
+                                    width: `${project.completion_percentage}%`,
+                                  }}
                                   aria-valuenow="50"
                                   aria-valuemin="0"
                                   aria-valuemax="100"
                                 ></div>
                               </div>
                               <span className="ml-3 font-weight-bolder">
-                                78%[L]
+                                {`${project.completion_percentage}%`}
                               </span>
                             </div>
                           </div>

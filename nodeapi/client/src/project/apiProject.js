@@ -549,3 +549,27 @@ export const deleteConnections = (projectId, Id) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const putExpectedTime = (projectId, time) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let Obj = {
+    estimatedTime: time,
+  };
+  return fetch(
+    `http://localhost:3000/project/estimatedTime/${userId}/${projectId}`,
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(Obj),
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

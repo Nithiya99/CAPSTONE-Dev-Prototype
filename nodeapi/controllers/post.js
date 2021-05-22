@@ -58,6 +58,17 @@ exports.postVideo = (req, res) => {
         return res.status(400).json({ err });
       }
       console.log("result:", result);
+      fs.unlink(path, function (err) {
+        if (err && err.code == "ENOENT") {
+          // file doens't exist
+          console.info("File doesn't exist, won't remove it.");
+        } else if (err) {
+          // other errors, e.g. maybe we don't have enough permission
+          console.error("Error occurred while trying to remove file");
+        } else {
+          console.info(`removed`);
+        }
+      });
       return res.status(200).json({ result });
     }
   );
@@ -282,6 +293,32 @@ exports.convertToWebp = (req, res) => {
               return res.status(400).json({ err });
             }
             console.log("result:", result);
+            fs.unlink(
+              file.destination + file.filename + " edited.webp",
+              function (err) {
+                if (err && err.code == "ENOENT") {
+                  // file doens't exist
+                  console.info("File doesn't exist, won't remove it.");
+                } else if (err) {
+                  // other errors, e.g. maybe we don't have enough permission
+                  console.error("Error occurred while trying to remove file");
+                } else {
+                  console.info(`removed`);
+                }
+              }
+            );
+            fs.unlink(file.destination + file.filename, function (err) {
+              if (err && err.code == "ENOENT") {
+                // file doens't exist
+                console.info("File doesn't exist, won't remove it.");
+              } else if (err) {
+                // other errors, e.g. maybe we don't have enough permission
+                console.error("Error occurred while trying to remove file");
+              } else {
+                console.info(`removed`);
+              }
+            });
+
             return res.status(200).json({ result });
           }
         );

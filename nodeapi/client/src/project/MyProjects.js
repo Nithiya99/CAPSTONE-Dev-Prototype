@@ -10,7 +10,7 @@ import {
   Nav,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { getCurrentUser } from "./../user/apiUser";
+import { getCurrentUser, getUserById } from "./../user/apiUser";
 import RoleReq from "./RoleReq";
 import AssignedTo from "./AssignedTo";
 import DeleteProject from "./DeleteProject";
@@ -30,7 +30,7 @@ import { Badge } from "react-bootstrap";
 import QueryBuilderTwoToneIcon from "@material-ui/icons/QueryBuilderTwoTone";
 import ErrorTwoToneIcon from "@material-ui/icons/ErrorTwoTone";
 import CheckCircleTwoToneIcon from "@material-ui/icons/CheckCircleTwoTone";
-
+import moment from "moment";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -38,8 +38,52 @@ class MyProjects extends Component {
     user: {},
   };
   componentDidMount() {
-    listmyprojects().then((data) => this.setState({ myProjects: data }));
-    // toast.dark("Loaded");
+    listmyprojects().then((data) => {
+      this.setState({ myProjects: data });
+      let projectLeaderNames = {};
+      let projectCreatedDates = {};
+      let projectEstimatedDates = {};
+      let overdueStatus = {};
+      data.userProjects.map((project, index) => {
+        //Leader name
+        // let number = index;
+        getUserById(project.leader).then((data) => {
+          projectLeaderNames[project._id] = data.user.name;
+          // console.log(projectLeaderNames);
+          this.setState({ projectLeaderNames });
+        });
+        // var date = moment(new Date(project.created.substr(0, 16)));
+        // console.log(date.format("DD-MMM-YYYY"));
+
+        let date = moment(new Date(project.created.substr(0, 16)));
+        var new_date = moment(date, "DD-MM-YYYY").add(
+          project.estimatedTime,
+          "days"
+        );
+        projectEstimatedDates[project._id] = new_date.format("DD-MMM-YYYY");
+        this.setState({ projectEstimatedDates });
+        projectCreatedDates[project._id] = date.format("DD-MMM-YYYY");
+        this.setState({ projectCreatedDates });
+        // console.log(project.leadername);
+        console.log("today:", date.format("DD-MMM-YYYY"));
+        console.log("estimatedDate:", new_date.format("DD-MMM-YYYY"));
+        console.log(
+          new_date.format("DD-MMM-YYYY") +
+            " is After " +
+            date.format("DD-MMM-YYYY") +
+            ":" +
+            new_date.isAfter(date)
+        );
+        overdueStatus[project._id] = {
+          today: date.format("DD-MMM-YYYY"),
+          estimatedDate: new_date.format("DD-MMM-YYYY"),
+          overdue: !new_date.isSameOrAfter(date),
+        };
+        console.log(overdueStatus);
+        this.setState({ overdueStatus });
+      });
+      // toast.dark("Loaded");
+    });
   }
   renderProject(project) {
     // return <h5>{project.title}</h5>;
@@ -51,16 +95,46 @@ class MyProjects extends Component {
       this.state.myProjects.length === 0
     )
       return <h1>No Projects</h1>;
-    const { myProjects } = this.state;
-    console.log(myProjects);
-    let onGoingProjects = myProjects.userProjects.filter((x) =>
-      x.status.includes("In Progress")
+    const {
+      myProjects,
+      projectLeaderNames,
+      projectCreatedDates,
+      projectEstimatedDates,
+      overdueStatus,
+    } = this.state;
+    // console.log(projectLeaderNames);
+    if (
+      projectLeaderNames === undefined ||
+      projectCreatedDates === undefined ||
+      projectEstimatedDates === undefined
+    )
+      return null;
+    if (
+      Object.keys(projectLeaderNames).length !==
+        myProjects.userProjects.length ||
+      Object.keys(projectCreatedDates).length !==
+        myProjects.userProjects.length ||
+      Object.keys(projectEstimatedDates).length !==
+        myProjects.userProjects.length
+    )
+      return null;
+    console.log(projectCreatedDates);
+    let onGoingProjects = myProjects.userProjects.filter(
+      (x) => x.status.includes("In Progress") && !overdueStatus[x._id].overdue
+    );
+    let overdueProjects = myProjects.userProjects.filter(
+      (x) => x.status.includes("In Progress") && overdueStatus[x._id].overdue
     );
     let CompletedProjects = myProjects.userProjects.filter((x) =>
       x.status.includes("Completed")
     );
+    console.log("overdueProjects:", overdueProjects);
+    console.log("ongoingprojects:", onGoingProjects);
+    console.log("completedprojects:", CompletedProjects);
     socket.emit("getOnlineUsers");
     socket.on("onlineUsers", (data) => console.log(data));
+    // getUserById(project.leader).then((data) => console.log(data));
+
     return (
       <>
         <div
@@ -130,9 +204,10 @@ class MyProjects extends Component {
                 <Tab.Content>
                   <Tab.Pane eventKey="ongoingProj">
                     <div className="row row-cols-1 row-cols-md-2">
-                      {onGoingProjects.map((project) => (
+                      {onGoingProjects.map((project, index) => (
                         <div className="col mb-4">
                           <div className="card card-custom gutter-b card-stretch">
+                            {/* {console.log(project.completion_percentage)} */}
                             <div className="card-body">
                               <div className="d-flex align-items-center">
                                 <div className="d-flex-flex-column mr-auto">
@@ -140,7 +215,7 @@ class MyProjects extends Component {
                                     {project.title}
                                   </p>
                                   <span className="text-muted font-weight-bold">
-                                    {project.leader} [Load username]
+                                    {projectLeaderNames[project._id]}
                                   </span>
                                 </div>
                                 <div className="card-toolbar mb-auto">
@@ -214,7 +289,7 @@ class MyProjects extends Component {
                                     Start Date
                                   </span>
                                   <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
-                                    [Load]
+                                    {projectCreatedDates[project._id]}
                                   </span>
                                 </div>
                                 <div className="mr-12 d-flex flex-column mb-7">
@@ -222,7 +297,7 @@ class MyProjects extends Component {
                                     Due Date
                                   </span>
                                   <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
-                                    [Load]
+                                    {projectEstimatedDates[project._id]}
                                   </span>
                                 </div>
                                 <div className="flex-row-fluid mb-7">
@@ -234,14 +309,211 @@ class MyProjects extends Component {
                                       <div
                                         className="progress-bar bg-warning"
                                         role="progressbar"
-                                        style={{ width: "78%" }}
+                                        style={{
+                                          width: `${project.completion_percentage}%`,
+                                        }}
                                         aria-valuenow="50"
                                         aria-valuemin="0"
                                         aria-valuemax="100"
                                       ></div>
                                     </div>
                                     <span className="ml-3 font-weight-bolder">
-                                      78%[L]
+                                      {project.completion_percentage}%
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="d-flex align-items-center justify-content-between mb-2">
+                                <span className="font-weight-bold mr-2">
+                                  Description:{" "}
+                                </span>
+                                <span>{project.description}</span>
+                              </div>
+                              <div className="d-flex align-items-center justify-content-between mb-2">
+                                <span className="font-weight-bold mr-2">
+                                  Skills:{" "}
+                                </span>
+                                <span>{project.skills.join(", ")}</span>
+                              </div>
+                              <table className="table table-light">
+                                <thead>
+                                  <tr>
+                                    <th key={"rolename"}>Role Name</th>
+                                    <th key={"skills"}>Skills Required</th>
+
+                                    <th key={"assigned"}>Assigned To</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {project.roles.map((role) => (
+                                    <tr key={role._id.toString()}>
+                                      <td
+                                        key={
+                                          role._id.toString() +
+                                          role.roleName.toString()
+                                        }
+                                      >
+                                        {role.roleName}
+                                      </td>
+                                      <td
+                                        key={
+                                          role._id.toString() +
+                                          role.roleSkills.toString()
+                                        }
+                                      >
+                                        {role.roleSkills.join(", ")}
+                                      </td>
+                                      <td>
+                                        {project.leader ===
+                                          getCurrentUser()._id &&
+                                        role.assignedTo === undefined ? (
+                                          <div>
+                                            <RoleReq
+                                              requestBy={role.requestBy}
+                                              projectId={project._id}
+                                              roleId={role._id}
+                                            />
+                                          </div>
+                                        ) : (
+                                          <div>
+                                            <AssignedTo id={role.assignedTo} />
+                                          </div>
+                                        )}
+                                      </td>
+                                      <td></td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                              {getCurrentUser()._id === project.leader ? (
+                                <UserRecommendation project={project} />
+                              ) : (
+                                <div></div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="overdueProj">
+                    <div className="row row-cols-1 row-cols-md-2">
+                      {overdueProjects.map((project, index) => (
+                        <div className="col mb-4">
+                          <div className="card card-custom gutter-b card-stretch">
+                            {/* {console.log(project.completion_percentage)} */}
+                            <div className="card-body">
+                              <div className="d-flex align-items-center">
+                                <div className="d-flex-flex-column mr-auto">
+                                  <p className="card-title font-weight-bolder font-size-h5 text-dark mb-1">
+                                    {project.title}
+                                  </p>
+                                  <span className="text-muted font-weight-bold">
+                                    {projectLeaderNames[project._id]}
+                                  </span>
+                                </div>
+                                <div className="card-toolbar mb-auto">
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <OverlayTrigger
+                                      key="top"
+                                      placement="top"
+                                      overlay={
+                                        <Tooltip id="top2">
+                                          Project Dashboard
+                                        </Tooltip>
+                                      }
+                                    >
+                                      <Link
+                                        className="btn btn-info mr-2"
+                                        to={{
+                                          pathname: `/myprojects/dashboard/${project._id}`,
+                                          state: { project: project },
+                                        }}
+                                      >
+                                        <DashboardTwoToneIcon />
+                                      </Link>
+                                    </OverlayTrigger>
+                                    {getCurrentUser()._id === project.leader ? (
+                                      <div className="d-flex align-items-center justify-content-between">
+                                        <OverlayTrigger
+                                          key="top"
+                                          placement="top"
+                                          overlay={
+                                            <Tooltip id="tooltip-top">
+                                              Edit Project
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <Link
+                                            className="btn btn-warning mr-2"
+                                            to={{
+                                              pathname: `/myprojects/edit/${project._id}`,
+                                              state: { project: project },
+                                            }}
+                                          >
+                                            <EditTwoToneIcon />
+                                          </Link>
+                                        </OverlayTrigger>
+
+                                        <DeleteProject
+                                          projectId={project._id}
+                                        />
+                                        {project.completion_percentage ===
+                                        100 ? (
+                                          <SubmitProject
+                                            projectId={project._id}
+                                            projectTeam={project.team}
+                                            projectLeader={project.leader}
+                                          />
+                                        ) : (
+                                          <div> </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <LeaveProject project={project} />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="d-flex flex-wrap mt-14">
+                                <div className="mr-12 d-flex flex-column mb-7">
+                                  <span className="d-block font-weight-bold mb-4">
+                                    Start Date
+                                  </span>
+                                  <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
+                                    {projectCreatedDates[project._id]}
+                                  </span>
+                                </div>
+                                <div className="mr-12 d-flex flex-column mb-7">
+                                  <span className="d-block font-weight-bold mb-4">
+                                    Due Date
+                                  </span>
+                                  <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
+                                    {projectEstimatedDates[project._id]}
+                                  </span>
+                                </div>
+                                <div className="flex-row-fluid mb-7">
+                                  <span className="d-block font-weight-bold mb-4">
+                                    Progress
+                                  </span>
+                                  <div className="d-flex align-items-center pt-2">
+                                    <div className="progress progress-xs mt-2 mb-2 w-100">
+                                      <div
+                                        className="progress-bar bg-warning"
+                                        role="progressbar"
+                                        style={{
+                                          width: `${project.completion_percentage}%`,
+                                        }}
+                                        aria-valuenow="50"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                      ></div>
+                                    </div>
+                                    <span className="ml-3 font-weight-bolder">
+                                      {project.completion_percentage}%
                                     </span>
                                   </div>
                                 </div>
@@ -332,7 +604,7 @@ class MyProjects extends Component {
                                     {project.title}
                                   </p>
                                   <span className="text-muted font-weight-bold">
-                                    {project.leader} [Load username]
+                                    {projectLeaderNames[project._id]}
                                   </span>
                                 </div>
                                 <div className="card-toolbar mb-auto">
@@ -365,7 +637,7 @@ class MyProjects extends Component {
                                     Start Date
                                   </span>
                                   <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
-                                    [Load]
+                                    {projectCreatedDates[project._id]}
                                   </span>
                                 </div>
                                 <div className="mr-12 d-flex flex-column mb-7">
@@ -385,14 +657,16 @@ class MyProjects extends Component {
                                       <div
                                         className="progress-bar bg-warning"
                                         role="progressbar"
-                                        style={{ width: "100%" }}
+                                        style={{
+                                          width: `${project.completion_percentage}%`,
+                                        }}
                                         aria-valuenow="50"
                                         aria-valuemin="0"
                                         aria-valuemax="100"
                                       ></div>
                                     </div>
                                     <span className="ml-3 font-weight-bolder">
-                                      100%
+                                      {project.completion_percentage}%
                                     </span>
                                   </div>
                                 </div>
@@ -415,9 +689,6 @@ class MyProjects extends Component {
                         </div>
                       ))}
                     </div>
-                  </Tab.Pane>
-                  <Tab.Pane eventKey="overdueProj">
-                    <p>Check with group if Overdue has been added.</p>
                   </Tab.Pane>
                 </Tab.Content>
               </div>

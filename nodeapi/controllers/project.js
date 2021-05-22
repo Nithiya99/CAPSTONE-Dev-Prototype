@@ -453,3 +453,13 @@ exports.addFeedbackNotification = async (rating, projectId) => {
     });
   });
 };
+
+exports.updateEstimatedTime = (req, res) => {
+  let project = req.projectObject;
+  project.estimatedTime = req.body.estimatedTime;
+  console.log(project);
+  project.save((err, result) => {
+    if (err) return res.status(400).json({ error: err });
+    return res.status(200).json({ result });
+  });
+};

@@ -95,13 +95,13 @@ function DragDropImages(props) {
     else {
       createPost(image, title, tags, project).then((data) => {
         // console.log(data);
-        // if (data.error) {
-        //   toast.warning(data.error);
-        // } else {
-        toast.success("Created post Successfully");
-        history.push("/home");
-        dispatch(getPosts());
-        // }
+        if (data.error) {
+          toast.warning(data.error);
+        } else {
+          toast.success("Created post Successfully");
+          dispatch(getPosts());
+          history.push("/home");
+        }
       });
     }
   };

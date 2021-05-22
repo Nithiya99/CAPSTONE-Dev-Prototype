@@ -19,6 +19,7 @@ import {
   getConnections,
   putPredecessors,
   putPosition,
+  putExpectedTime,
 } from "../apiProject";
 import jsPERT from "js-pert";
 import { Button } from "@material-ui/core";
@@ -286,6 +287,10 @@ class LayoutComponent extends Component {
       this.props.setExpectedTime({
         expectedTime: Math.floor(this.props.pert.latestFinishTimes.__end),
       });
+      putExpectedTime(
+        this.props.project._id,
+        Math.floor(this.props.pert.latestFinishTimes.__end)
+      );
       // }
     } catch (err) {
       // console.log(err);
@@ -294,6 +299,7 @@ class LayoutComponent extends Component {
       this.props.setExpectedTime({
         expectedTime: 0,
       });
+      putExpectedTime(this.props.project._id, 0);
     }
     // this.setState({ pert });
   };
