@@ -93,8 +93,16 @@ class TextPostView extends Component {
   };
 
   render() {
-    const { footerText, text, liked_by, _id, tags, comments, delete_button } =
-      this.props;
+    const {
+      footerText,
+      text,
+      liked_by,
+      _id,
+      tags,
+      comments,
+      delete_button,
+      created,
+    } = this.props;
     let counts = collect(liked_by).count();
     return (
       <>
@@ -115,7 +123,7 @@ class TextPostView extends Component {
                   {footerText}
                 </Link>
                 <span className="text-muted font-weight-bold">
-                  [Load Date and time posted here]
+                  {created}[Load Date and Time]
                 </span>
               </div>
             </div>
@@ -125,6 +133,7 @@ class TextPostView extends Component {
               </p>
               <div className="d-flex align-items-center">
                 <button
+                  className="btn btn-primary"
                   onClick={() => {
                     getpost(_id).then((data) => {
                       let link = `http://localhost:3000/post/${data.post._id}`;
@@ -142,11 +151,21 @@ class TextPostView extends Component {
                 ) : (
                   <div></div>
                 )}
+                <div className="ml-auto">
+                  <Link
+                    className="font-size-lg font-weight-bolder"
+                    to={{
+                      pathname: `/post/${this.props._id}`,
+                    }}
+                  >
+                    View Full Post
+                  </Link>
+                </div>
               </div>
               <TextField
                 name="comment"
                 onChange={(e) => this.onTextChange(e)}
-                variant="outlined"
+                id="standard-basic"
                 label="Add a Comment"
                 fullWidth
               />

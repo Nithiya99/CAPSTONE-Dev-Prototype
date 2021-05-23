@@ -9,6 +9,7 @@ import TuneTwoToneIcon from "@material-ui/icons/TuneTwoTone";
 import PlaylistAddTwoToneIcon from "@material-ui/icons/PlaylistAddTwoTone";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
 import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
+import PersonAddTwoToneIcon from "@material-ui/icons/PersonAddTwoTone";
 import ChatIcon from "@material-ui/icons/Chat";
 import { getCurrentUser } from "../user/apiUser";
 import { getAllPosts } from "./../posts/apiPosts";
@@ -19,6 +20,9 @@ import { getTasks } from "./apiProject";
 import { connect } from "react-redux";
 import { updateTasks } from "../store/tasks";
 import { clearAll, setCriticalPath } from "../store/cpm";
+import RoleReq from "./RoleReq";
+import AssignedTo from "./AssignedTo";
+import UserRecommendation from "./UserRecommendation";
 
 class ProjectDashboard extends Component {
   state = {
@@ -198,7 +202,168 @@ class ProjectDashboard extends Component {
                       </div>
                     </div>
                     <div className="card-body">
-                      <h4> Lalalaa </h4>
+                      <div className="col mb-4">
+                        {/* {console.log(project.completion_percentage)} */}
+                        <div className="d-flex align-items-center">
+                          <div className="d-flex-flex-column mr-auto">
+                            <p className="card-title font-weight-bolder font-size-h5 text-dark mb-1">
+                              {project.title}
+                            </p>
+                            <span className="text-muted font-weight-bold">
+                              {project.leader}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="d-flex flex-wrap mt-14">
+                          <div className="mr-12 d-flex flex-column mb-7">
+                            <span className="d-block font-weight-bold mb-4">
+                              Start Date
+                            </span>
+                            <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
+                              {/* {projectCreatedDates[project._id]} */}
+                              LOAD
+                            </span>
+                          </div>
+                          <div className="mr-12 d-flex flex-column mb-7">
+                            <span className="d-block font-weight-bold mb-4">
+                              Due Date
+                            </span>
+                            <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                              {/* {projectEstimatedDates[project._id]} */}
+                              LOAD
+                            </span>
+                          </div>
+                          <div className="mr-12 d-flex flex-column mb-7">
+                            <span className="d-block font-weight-bold mb-4">
+                              Total Tasks
+                            </span>
+                            <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
+                              {/* {projectEstimatedDates[project._id]} */}
+                              LOAD
+                            </span>
+                          </div>
+                          <div className="mr-12 d-flex flex-column mb-7">
+                            <span className="d-block font-weight-bold mb-4">
+                              Ongoing
+                            </span>
+                            <span className="btn btn-light-warning btn-sm font-weight-bold btn-upper btn-text">
+                              {/* {projectEstimatedDates[project._id]} */}
+                              LOAD
+                            </span>
+                          </div>
+                          <div className="mr-12 d-flex flex-column mb-7">
+                            <span className="d-block font-weight-bold mb-4">
+                              Completed
+                            </span>
+                            <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                              {/* {projectEstimatedDates[project._id]} */}
+                              LOAD
+                            </span>
+                          </div>
+                          <div className="mr-12 d-flex flex-column mb-7">
+                            <span className="d-block font-weight-bold mb-4">
+                              Over Due
+                            </span>
+                            <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                              {/* {projectEstimatedDates[project._id]} */}
+                              LOAD
+                            </span>
+                          </div>
+                          <div className="flex-row-fluid mb-7">
+                            <span className="d-block font-weight-bold mb-4">
+                              Progress
+                            </span>
+                            <div className="d-flex align-items-center pt-2">
+                              <div className="progress progress-xs mt-2 mb-2 w-100">
+                                <div
+                                  className="progress-bar bg-warning"
+                                  role="progressbar"
+                                  style={{
+                                    width: `${project.completion_percentage}%`,
+                                  }}
+                                  aria-valuenow="50"
+                                  aria-valuemin="0"
+                                  aria-valuemax="100"
+                                ></div>
+                              </div>
+                              <span className="ml-3 font-weight-bolder">
+                                {project.completion_percentage}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="d-flex align-items-center justify-content-between mb-2 mt-4">
+                          <span className="font-weight-bold mr-2">
+                            Description:{" "}
+                          </span>
+                          <span>{project.description}</span>
+                        </div>
+                        <div className="d-flex align-items-center justify-content-between mb-5">
+                          <span className="font-weight-bold mr-2">
+                            Skills:{" "}
+                          </span>
+                          <span>{project.skills.join(", ")}</span>
+                        </div>
+                        <table className="table table-light">
+                          <thead>
+                            <tr>
+                              <th key={"rolename"}>Role Name</th>
+                              <th key={"skills"}>Skills Required</th>
+                              <th key={"assigned"}>Assigned To</th>
+                              <th key={"invite"}>Send Invite</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {project.roles.map((role) => (
+                              <tr key={role._id.toString()}>
+                                <td
+                                  key={
+                                    role._id.toString() +
+                                    role.roleName.toString()
+                                  }
+                                >
+                                  {role.roleName}
+                                </td>
+                                <td
+                                  key={
+                                    role._id.toString() +
+                                    role.roleSkills.toString()
+                                  }
+                                >
+                                  {role.roleSkills.join(", ")}
+                                </td>
+                                <td>
+                                  {project.leader === getCurrentUser()._id &&
+                                  role.assignedTo === undefined ? (
+                                    <div>
+                                      <RoleReq
+                                        requestBy={role.requestBy}
+                                        projectId={project._id}
+                                        roleId={role._id}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      <AssignedTo id={role.assignedTo} />
+                                    </div>
+                                  )}
+                                </td>
+                                <td>
+                                  <button className="btn btn-info">
+                                    <PersonAddTwoToneIcon />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {getCurrentUser()._id === project.leader ? (
+                          <UserRecommendation project={project} />
+                        ) : (
+                          <div></div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </Tab.Pane>

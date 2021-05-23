@@ -3,6 +3,8 @@ import ShareIcon from "@material-ui/icons/Share";
 import { ToastContainer, toast } from "react-toastify";
 import Heart from "react-animated-heart";
 import { getCurrentUser } from "./../user/apiUser";
+import { Link } from "react-router-dom";
+import DefaultProfile from "../images/avatar.png";
 import {
   likepost,
   dislikepost,
@@ -19,6 +21,7 @@ import { isAuthenticated } from "../auth";
 import { Carousel } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import YouTubeIcon from "@material-ui/icons/YouTube";
+import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import "bootstrap/dist/css/bootstrap.css";
 import Sentiment from "sentiment";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -91,25 +94,35 @@ class showPost extends Component {
     let reverseComments = [...comments].reverse();
     return reverseComments.map(
       ({ PostedOn, comment, userName, _id, userId }, index) => (
-        <div>
-          <div>
-            <span className="font-weight-bold font-size-lg ">{userName}</span>
+        <div className="d-flex py-5">
+          <div className="symbol symbol-40 symbol-light-warning mr-5">
+            <span className="symbol-label">
+              <img src={DefaultProfile} className="h-75 align-self-end" />
+            </span>
           </div>
-          <div className="text-muted font-size-sm">
-            {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+          <div className="d-flex flex-column flex-row-fluid">
+            <div className="d-flex align-items-center flex-wrap">
+              <Link
+                to="#"
+                className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder pr-6"
+              >
+                {userName}
+              </Link>
+              <span className="text-muted font-weight-normal flex-grow-1 font-size-sm">
+                {moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+              </span>
+            </div>
+            <span className="text-dark-75 font-size-sm font-weight-normal pt-1">
+              {comment}
+            </span>
           </div>
           {this.state.id === userId && (
-            <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                ...
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={(e) => this.deletecomment(e, _id)}>
-                  delete
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+            <button
+              className="btn btn-danger"
+              onClick={(e) => this.deletecomment(e, _id)}
+            >
+              <DeleteTwoToneIcon />
+            </button>
           )}
         </div>
       )
@@ -131,115 +144,116 @@ class showPost extends Component {
     return (
       <>
         <ToastContainer />
-        <Card className="m-5">
-          {type !== "text" && <Card.Header>{current_post.title}</Card.Header>}
-          <Card.Body className="col d-flex justify-content-center">
-            {/* <Col> */}
-            {(type === "image" &&
-              (imageUrl !== "undefined" && imageUrl.length > 1 ? (
-                <Carousel interval={null}>
-                  {imageUrl.map((url, i) => {
-                    return (
-                      <Carousel.Item>
-                        <img
-                          className="d-block w-100"
-                          style={{
-                            width: "45vw",
-                            height: "30vw",
-                            "object-fit": "cover",
-                          }}
-                          src={url}
-                          alt={url}
-                        />
-                      </Carousel.Item>
-                    );
-                  })}
-                </Carousel>
-              ) : (
-                <Card.Img
-                  style={{
-                    width: "45vw",
-                    height: "30vw",
-                    "object-fit": "cover",
-                  }}
-                  variant="top"
-                  src={imageUrl[0]}
-                />
-              ))) ||
-              (type === "video" && (
-                <ReactPlayer
-                  url={current_post.video}
-                  controls={true}
-                  volume={1}
-                  muted={false}
-                />
-              )) ||
-              (type === "text" && current_post.title) ||
-              (type === "youtubeVideo" && (
-                <>
-                  <YouTubeIcon />
-                  <div>{current_post.metadataTitle}</div>
+        <div className="card card-custom gutter-b mt-5">
+          <div className="card-body">
+            <div className="d-flex align-items-center pb-4">
+              <div className="symbol symbol-40 symbol-light-warning mr-5">
+                <span className="symbol-label">
+                  <img src={DefaultProfile} className="h-75 align-self-end" />
+                </span>
+              </div>
+              <div className="d-flex flex-column flex-grow-1">
+                <Link
+                  to="#"
+                  className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder"
+                >
+                  {posted_by.name}
+                </Link>
+                <span className="text-muted font-weight-bold">
+                  [Load Date and Time]
+                </span>
+              </div>
+            </div>
+            <div>
+              {(type === "image" &&
+                (imageUrl !== "undefined" && imageUrl.length > 1 ? (
+                  <Carousel interval={null}>
+                    {imageUrl.map((url, i) => {
+                      return (
+                        <Carousel.Item>
+                          <img
+                            className="d-block w-100"
+                            style={{
+                              width: "45vw",
+                              height: "30vw",
+                              "object-fit": "cover",
+                            }}
+                            src={url}
+                            alt={url}
+                          />
+                        </Carousel.Item>
+                      );
+                    })}
+                  </Carousel>
+                ) : (
+                  <Card.Img
+                    style={{
+                      width: "45vw",
+                      height: "30vw",
+                      "object-fit": "cover",
+                    }}
+                    variant="top"
+                    src={imageUrl[0]}
+                  />
+                ))) ||
+                (type === "video" && (
                   <ReactPlayer
                     url={current_post.video}
                     controls={true}
-                    width={window.width}
+                    volume={1}
+                    muted={false}
                   />
-                  <div>By {current_post.metadataAuthor}</div>
-                </>
-              ))}
-            {/* </Col>
-                        <Col> */}
-            {/* </Col> */}
-          </Card.Body>
-          <Card.Body>
-            <button
-              onClick={() => {
-                getpost(current_post._id).then((data) => {
-                  let link = `http://localhost:3000/post/${data.post._id}`;
-                  navigator.clipboard.writeText(link);
-                  toast.success("Link copied to clipboard");
-                });
-              }}
-            >
-              <ShareIcon />
-            </button>
-            <Heart isClick={this.state.isClick} onClick={this.postliked} />
-            {counts + " likes"}
-            <Accordion>
-              <Card>
-                <Card.Header>
-                  <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                    Comment <CommentIcon />
-                  </Accordion.Toggle>
-                </Card.Header>
-                <Accordion.Collapse eventKey="1">
-                  <Card.Body>
-                    <TextField
-                      name="comment"
-                      onChange={(e) => this.onTextChange(e)}
-                      variant="outlined"
-                      label="Add a Comment"
-                      fullWidth
+                )) ||
+                (type === "text" && current_post.title) ||
+                (type === "youtubeVideo" && (
+                  <>
+                    <YouTubeIcon />
+                    <div>{current_post.metadataTitle}</div>
+                    <ReactPlayer
+                      url={current_post.video}
+                      controls={true}
+                      width={window.width}
                     />
-                    <button
-                      onClick={this.submitcomment}
-                      className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                      disabled={this.state.sentimentScore < -3 ? true : false}
-                    >
-                      Submit
-                    </button>
-                    {collect(current_post.comments).count() > 0 ? (
-                      this.rendercomments(current_post.comments)
-                    ) : (
-                      <p>No Comments</p>
-                    )}
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
-          </Card.Body>
-          <Card.Footer>{posted_by.name}</Card.Footer>
-        </Card>
+                    <div>By {current_post.metadataAuthor}</div>
+                  </>
+                ))}
+              <div className="d-flex align-items-center">
+                <button
+                  onClick={() => {
+                    getpost(current_post._id).then((data) => {
+                      let link = `http://localhost:3000/post/${data.post._id}`;
+                      navigator.clipboard.writeText(link);
+                      toast.success("Link copied to clipboard");
+                    });
+                  }}
+                >
+                  <ShareIcon />
+                </button>
+                <Heart isClick={this.state.isClick} onClick={this.postliked} />
+                {counts + " likes"}
+              </div>
+              <TextField
+                name="comment"
+                onChange={(e) => this.onTextChange(e)}
+                id="standard-basic"
+                label="Add a Comment"
+                fullWidth
+              />
+              <button
+                onClick={this.submitcomment}
+                className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                disabled={this.state.sentimentScore < -3 ? true : false}
+              >
+                Submit
+              </button>
+              {collect(current_post.comments).count() > 0 ? (
+                this.rendercomments(current_post.comments)
+              ) : (
+                <p>No Comments</p>
+              )}
+            </div>
+          </div>
+        </div>
       </>
     );
   }
