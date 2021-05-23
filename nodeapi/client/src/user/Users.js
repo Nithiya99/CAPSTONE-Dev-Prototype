@@ -19,7 +19,8 @@ import { Badge } from "react-bootstrap";
 import SearchTwoToneIcon from "@material-ui/icons/SearchTwoTone";
 import { isAuthenticated } from "../auth";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-
+import { ReactSearchAutocomplete } from "react-search-autocomplete";
+import SearchUserBar from "./SearchUserBar";
 const onUnBlockUser = (e, user) => {
   let current_user_id = getCurrentUser()._id;
   let client_user_id = user._id;
@@ -207,27 +208,8 @@ class Users extends Component {
               <h5 className="text-dark font-weight-bold mt-2 mb-2 mr-5">
                 Users
               </h5>
-              <div className="subheader-separator subheader-separator-ver mt-2 mb-2 mr-4 bg-gray-200"></div>
               <span>
-                <div
-                  className="quick-search quick-search-inline ml-4 w-250px"
-                  id="kt_quick_search_inline"
-                >
-                  <form className="quick-search-form">
-                    <div className="input-group rounded">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <SearchTwoToneIcon />
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control h-40px"
-                        placeholder="Search..."
-                      />
-                    </div>
-                  </form>
-                </div>
+                <SearchUserBar />
               </span>
             </div>
             <div class="d-flex align-items-center flex-wrap">

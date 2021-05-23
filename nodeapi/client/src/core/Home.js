@@ -31,6 +31,7 @@ import Sentiment from "sentiment";
 import { getPosts } from "../store/posts";
 import YoutubeURLPost from "../posts/YoutubeURLPost";
 import { setProfilePic } from "../store/user";
+import SearchBar from "./SearchBar";
 const sentiment = new Sentiment();
 class Home extends Component {
   state = {
@@ -131,27 +132,8 @@ class Home extends Component {
               <h5 className="text-dark font-weight-bold mt-2 mb-2 mr-5">
                 My Feed
               </h5>
-              <div className="subheader-separator subheader-separator-ver mt-2 mb-2 mr-4 bg-gray-200"></div>
               <span>
-                <div
-                  className="quick-search quick-search-inline ml-4 w-250px"
-                  id="kt_quick_search_inline"
-                >
-                  <form className="quick-search-form">
-                    <div className="input-group rounded">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <SearchTwoToneIcon />
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control h-40px"
-                        placeholder="Search..."
-                      />
-                    </div>
-                  </form>
-                </div>
+                <SearchBar />
               </span>
             </div>
             <div className="d-flex align-items-center flex-wrap">

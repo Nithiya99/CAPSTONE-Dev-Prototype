@@ -17,12 +17,13 @@ const slice = createSlice({
       let obj = {};
       let canAdd = true;
       Object.keys(state).map((key) => {
-        state[key].map((val) => {
-          let userObj = { ...val };
-          if (userObj._id === user._id) {
-            canAdd = false;
-          }
-        });
+        if (key.toString() !== "profilePic")
+          state[key].map((val) => {
+            let userObj = { ...val };
+            if (userObj._id === user._id) {
+              canAdd = false;
+            }
+          });
       });
       if (canAdd) state.friends.push(user);
     },
