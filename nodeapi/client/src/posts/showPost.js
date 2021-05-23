@@ -87,7 +87,10 @@ class showPost extends Component {
 
   deletecomment(e, commentId) {
     e.preventDefault();
-    deleteComment(commentId, this.props._id).then((data) => console.log(data));
+    // console.log(this.state.post.post._id, commentId);
+    deleteComment(commentId, this.state.post.post._id).then((data) =>
+      console.log(data)
+    );
   }
 
   rendercomments = (comments) => {
@@ -209,16 +212,19 @@ class showPost extends Component {
                   <>
                     <YouTubeIcon />
                     <div>{current_post.metadataTitle}</div>
-                    <ReactPlayer
-                      url={current_post.video}
-                      controls={true}
-                      width={window.width}
-                    />
+                    <center>
+                      <ReactPlayer
+                        url={current_post.video}
+                        controls={true}
+                        width={window.width}
+                      />
+                    </center>
                     <div>By {current_post.metadataAuthor}</div>
                   </>
                 ))}
               <div className="d-flex align-items-center">
                 <button
+                  className="btn btn-primary"
                   onClick={() => {
                     getpost(current_post._id).then((data) => {
                       let link = `http://localhost:3000/post/${data.post._id}`;

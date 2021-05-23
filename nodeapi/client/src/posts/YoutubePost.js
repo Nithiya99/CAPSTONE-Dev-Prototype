@@ -3,6 +3,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import { ToastContainer, toast } from "react-toastify";
 import Heart from "react-animated-heart";
 import { getCurrentUser } from "./../user/apiUser";
+import DefaultProfile from "../images/avatar.png";
 import {
   likepost,
   dislikepost,
@@ -100,17 +101,12 @@ class YoutubePost extends Component {
             {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
           </div>
           {this.state.id === userId && (
-            <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                ...
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={(e) => this.deletecomment(e, _id)}>
-                  delete
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+            <button
+              className="btn btn-danger"
+              onClick={(e) => this.deletecomment(e, _id)}
+            >
+              Delete
+            </button>
           )}
         </div>
       )
@@ -136,81 +132,89 @@ class YoutubePost extends Component {
     return (
       <>
         <ToastContainer />
-        <Card className="m-5">
-          <Card.Header>
-            <Link
-              to={{
-                pathname: `/post/${this.props._id}`,
-              }}
-            >
-              {headerText}
-            </Link>
-            {delete_button === "enabled" ? (
-              <DeletePost postId={_id} />
-            ) : (
-              <div></div>
-            )}
-          </Card.Header>
-          <Card.Body className="col d-flex justify-content-center">
-            <div className="d-flex flex-column bd-highlight mb-3">
-              <YouTubeIcon />
-              {/* <a href={text} target={"_blank"}>
+        <div className="card card-custom gutter-b">
+          <div className="card-body">
+            <div className="d-flex align-items-center pb-4">
+              <div className="symbol symbol-40 symbol-light-warning mr-5">
+                <span className="symbol-label">
+                  <img src={DefaultProfile} className="h-75 align-self-end" />
+                </span>
+              </div>
+              <div className="d-flex flex-column flex-grow-1">
+                <Link
+                  to="#"
+                  className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder"
+                >
+                  {footerText}
+                </Link>
+                <span className="text-muted font-weight-bold">
+                  {/* {created}[Load Date and Time] */}
+                </span>
+              </div>
+            </div>
+            <div>
+              <p className="text-dark-75 font-size-lg font-weight-normal">
+                <YouTubeIcon />
+                {/* <a href={text} target={"_blank"}>
                 {text.toString()} {console.log(metadata)}
               </a> */}
-              <div>{metadataTitle}</div>
-              <ReactPlayer url={url} controls={true} width={window.width} />
-              <div>By {metadataAuthor}</div>
+                <div>{metadataTitle}</div>
+                <ReactPlayer url={url} controls={true} width={window.width} />
+                <div>By {metadataAuthor}</div>
+              </p>
+              <div className="d-flex align-items-center">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    getpost(_id).then((data) => {
+                      let link = `http://localhost:3000/post/${data.post._id}`;
+                      navigator.clipboard.writeText(link);
+                      toast.success("Link copied to clipboard");
+                    });
+                  }}
+                >
+                  <ShareIcon />
+                </button>
+                <Heart isClick={this.state.isClick} onClick={this.postliked} />
+                {counts + " likes"}
+                {delete_button === "enabled" ? (
+                  <DeletePost postId={_id} />
+                ) : (
+                  <div></div>
+                )}
+                <div className="ml-auto">
+                  <Link
+                    className="font-size-lg font-weight-bolder"
+                    to={{
+                      pathname: `/post/${this.props._id}`,
+                    }}
+                  >
+                    View Full Post
+                  </Link>
+                </div>
+              </div>
+              <TextField
+                name="comment"
+                onChange={(e) => this.onTextChange(e)}
+                id="standard-basic"
+                label="Add a Comment"
+                fullWidth
+              />
+              <button
+                onClick={this.submitcomment}
+                className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                disabled={this.state.sentimentScore < -3 ? true : false}
+              >
+                Submit
+              </button>
+              {comments.length > 0 ? (
+                this.rendercomments(comments)
+              ) : (
+                <p>No Comments</p>
+              )}
             </div>
-          </Card.Body>
-          <Card.Body>
-            <button
-              onClick={() => {
-                getpost(_id).then((data) => {
-                  let link = `http://localhost:3000/post/${data.post._id}`;
-                  navigator.clipboard.writeText(link);
-                  toast.success("Link copied to clipboard");
-                });
-              }}
-            >
-              <ShareIcon />
-            </button>
-            <Heart isClick={this.state.isClick} onClick={this.postliked} />
-            {counts + " likes"}
-            <Accordion>
-              <Card>
-                <Card.Header>
-                  <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                    Comment <CommentIcon />
-                  </Accordion.Toggle>
-                </Card.Header>
-                <Accordion.Collapse eventKey="1">
-                  <Card.Body>
-                    <TextField
-                      name="comment"
-                      onChange={(e) => this.onTextChange(e)}
-                      variant="outlined"
-                      label="Add a Comment"
-                      fullWidth
-                    />
-                    <button
-                      onClick={this.submitcomment}
-                      className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                      disabled={this.state.sentimentScore < -3 ? true : false}
-                    >
-                      Submit
-                    </button>
-                    {comments.length > 0 ? (
-                      this.rendercomments(comments)
-                    ) : (
-                      <p>No Comments</p>
-                    )}
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
-          </Card.Body>
-          <Card.Footer>{footerText}</Card.Footer>
-        </Card>
+          </div>
+        </div>
       </>
     );
   }
