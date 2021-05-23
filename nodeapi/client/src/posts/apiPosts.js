@@ -274,6 +274,26 @@ export const dislikepost = (post_id) => {
     .catch((err) => console.log(err));
 };
 
+export const reportpost = (post_id) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+
+  let settings = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  return fetch(
+    `http://localhost:3000/post/report/${userId}/${post_id}`,
+    settings
+  )
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
 export const addcomment = (post_id, comment) => {
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
   let userName = JSON.parse(localStorage.getItem("jwt")).user.name;
