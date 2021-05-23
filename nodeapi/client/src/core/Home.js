@@ -234,6 +234,7 @@ class Home extends Component {
                       comments={post.comments}
                       liked_by={post.liked_by}
                       _id={post._id}
+                      postedOn={post.created}
                     />
                   );
                 if (post.postType === "youtubeVideo") {
