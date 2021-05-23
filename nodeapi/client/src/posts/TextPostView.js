@@ -151,11 +151,21 @@ class TextPostView extends Component {
                 ) : (
                   <div></div>
                 )}
+                <div className="ml-auto">
+                  <Link
+                    className="font-size-lg font-weight-bolder"
+                    to={{
+                      pathname: `/post/${this.props._id}`,
+                    }}
+                  >
+                    View Full Post
+                  </Link>
+                </div>
               </div>
               <TextField
                 name="comment"
                 onChange={(e) => this.onTextChange(e)}
-                variant="outlined"
+                id="standard-basic"
                 label="Add a Comment"
                 fullWidth
               />

@@ -230,7 +230,7 @@ class Home extends Component {
                   return (
                     <TextPostView
                       text={post.title}
-                      footerText={"by " + post.postedBy.name}
+                      footerText={post.postedBy.name}
                       comments={post.comments}
                       liked_by={post.liked_by}
                       _id={post._id}
