@@ -24,6 +24,21 @@ exports.postById = (req, res, next, id) => {
     });
 };
 
+exports.reportPost = (req, res) => {
+  let user = req.profile;
+  let post = req.post;
+  if (!post.reportCounter.includes(user._id)) post.reportCounter.push(user._id);
+  if (post.reportCounter.length >= 3) {
+    Post.findByIdAndDelete(post._id, function (err) {
+      if (err) console.log(err);
+      console.log("Successful deletion");
+    });
+  }
+  post.save();
+  console.log(post);
+  return res.status(200).json({ message: "Post is reported" });
+};
+
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")

@@ -5,6 +5,11 @@ const postSchema = new mongoose.Schema({
   title: {
     type: String,
   },
+  reportCounter: [
+    {
+      type: ObjectId,
+    },
+  ],
   photo: [
     {
       type: String,

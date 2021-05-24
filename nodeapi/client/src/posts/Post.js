@@ -9,11 +9,12 @@ import {
   addcomment,
   getpost,
   deleteComment,
+  reportpost,
 } from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
 import moment from "moment";
-import { Accordion, Button, Card } from "react-bootstrap";
+import { Accordion, Button, Card, Modal, ModalBody } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import DeletePost from "./DeletePost";
@@ -33,6 +34,7 @@ class Post extends Component {
     comment: "",
     id: getCurrentUser()._id,
     sentimentScore: null,
+    show: false,
   };
 
   componentDidMount() {
@@ -58,6 +60,20 @@ class Post extends Component {
     this.findSentiment(e.target.value);
   };
 
+  handleSubmitClicked = () => {
+    reportpost(this.props._id);
+    this.setState({
+      show: false,
+      isDisabled: true,
+    });
+  };
+  handleClose() {
+    this.setState({ show: false });
+  }
+
+  handleShow() {
+    this.setState({ show: true });
+  }
   submitcomment = () => {
     addcomment(this.props._id, this.state.comment).then(async (data) => {
       await this.props.changePosts(this.props._id);
@@ -180,6 +196,26 @@ class Post extends Component {
             {/* </Col> */}
           </Card.Body>
           <Card.Body>
+            <button
+              disabled={this.state.isDisabled}
+              onClick={this.handleShow.bind(this)}
+            >
+              Report
+            </button>
+            <Modal show={this.state.show} onHide={this.handleClose.bind(this)}>
+              <Modal.Header>
+                <Modal.Title>Are you Sure to report this post?</Modal.Title>
+                <Button onClick={this.handleClose.bind(this)}>x</Button>
+              </Modal.Header>
+              <ModalBody>
+                <Button
+                  disabled={this.state.isDisabled}
+                  onClick={this.handleSubmitClicked}
+                >
+                  Yes
+                </Button>
+              </ModalBody>
+            </Modal>
             <button
               onClick={() => {
                 getpost(_id).then((data) => {

@@ -11,6 +11,7 @@ const {
   likePost,
   dislikePost,
   addcomment,
+  reportPost,
   getPost,
   postVideo,
   videoPostMongo,
@@ -61,6 +62,7 @@ router.put("/post/deleteComment/:postId", requireSignin, deleteComment);
 router.put("/post/dislike/:postId", requireSignin, dislikePost);
 router.put("/post/addcomment/:postId", requireSignin, addcomment);
 router.get("/post/:postId", getPost);
+router.put("/post/report/:userId/:postId", requireSignin, reportPost);
 router.delete("/post/delete/:postId", requireSignin, deletePost);
 router.get("/post/likes/:postId", getLikesOfPost);
 router.get("/post/comments/:postId", getCommentsOfPost);

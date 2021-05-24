@@ -11,11 +11,12 @@ import {
   addcomment,
   getpost,
   deleteComment,
+  reportpost,
 } from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
 import moment from "moment";
-import { Accordion, Button, Card } from "react-bootstrap";
+import { Accordion, Button, Card, Modal, ModalBody } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { isAuthenticated } from "../auth";
 import { Carousel } from "react-bootstrap";
@@ -37,6 +38,7 @@ class showPost extends Component {
     loggedin: false,
     post_id: String,
     sentimentScore: null,
+    show: false,
   };
 
   componentDidMount() {
@@ -56,6 +58,20 @@ class showPost extends Component {
     });
   }
 
+  handleSubmitClicked = () => {
+    reportpost(this.props._id);
+    this.setState({
+      show: false,
+      isDisabled: true,
+    });
+  };
+  handleClose() {
+    this.setState({ show: false });
+  }
+
+  handleShow() {
+    this.setState({ show: true });
+  }
   postliked = () => {
     if (this.state.loggedin) {
       this.setState({ isClick: !this.state.isClick });
@@ -225,6 +241,29 @@ class showPost extends Component {
               <div className="d-flex align-items-center">
                 <button
                   className="btn btn-primary"
+                  disabled={this.state.isDisabled}
+                  onClick={this.handleShow.bind(this)}
+                >
+                  Report
+                </button>
+                <Modal
+                  show={this.state.show}
+                  onHide={this.handleClose.bind(this)}
+                >
+                  <Modal.Header>
+                    <Modal.Title>Are you Sure to report this post?</Modal.Title>
+                    <Button onClick={this.handleClose.bind(this)}>x</Button>
+                  </Modal.Header>
+                  <ModalBody>
+                    <Button
+                      disabled={this.state.isDisabled}
+                      onClick={this.handleSubmitClicked}
+                    >
+                      Yes
+                    </Button>
+                  </ModalBody>
+                </Modal>
+                <button
                   onClick={() => {
                     getpost(current_post._id).then((data) => {
                       let link = `http://localhost:3000/post/${data.post._id}`;

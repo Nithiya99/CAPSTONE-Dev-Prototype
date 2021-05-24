@@ -3,11 +3,17 @@ import ShareIcon from "@material-ui/icons/Share";
 import { ToastContainer, toast } from "react-toastify";
 import Heart from "react-animated-heart";
 import { getCurrentUser } from "./../user/apiUser";
-import { likepost, dislikepost, addcomment, getpost } from "./apiPosts";
+import {
+  likepost,
+  dislikepost,
+  addcomment,
+  getpost,
+  reportpost,
+} from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
 import moment from "moment";
-import { Accordion, Button, Card } from "react-bootstrap";
+import { Accordion, Button, Card, Modal, ModalBody } from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Sentiment from "sentiment";
@@ -23,6 +29,7 @@ class TextPostView extends Component {
     comment: "",
     id: getCurrentUser()._id,
     sentimentScore: null,
+    show: false,
   };
 
   componentDidMount() {
@@ -44,6 +51,20 @@ class TextPostView extends Component {
         .then(() => this.props.changePosts(this.props._id));
     }
   };
+  handleSubmitClicked = () => {
+    reportpost(this.props._id);
+    this.setState({
+      show: false,
+      isDisabled: true,
+    });
+  };
+  handleClose() {
+    this.setState({ show: false });
+  }
+
+  handleShow() {
+    this.setState({ show: true });
+  }
 
   onTextChange = (e) => {
     this.setState({ comment: e.target.value });
@@ -133,7 +154,29 @@ class TextPostView extends Component {
               </p>
               <div className="d-flex align-items-center">
                 <button
-                  className="btn btn-primary"
+                  disabled={this.state.isDisabled}
+                  onClick={this.handleShow.bind(this)}
+                >
+                  Report
+                </button>
+                <Modal
+                  show={this.state.show}
+                  onHide={this.handleClose.bind(this)}
+                >
+                  <Modal.Header>
+                    <Modal.Title>Are you Sure to report this post?</Modal.Title>
+                    <Button onClick={this.handleClose.bind(this)}>x</Button>
+                  </Modal.Header>
+                  <ModalBody>
+                    <Button
+                      disabled={this.state.isDisabled}
+                      onClick={this.handleSubmitClicked}
+                    >
+                      Yes
+                    </Button>
+                  </ModalBody>
+                </Modal>
+                <button
                   onClick={() => {
                     getpost(_id).then((data) => {
                       let link = `http://localhost:3000/post/${data.post._id}`;
