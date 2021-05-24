@@ -134,7 +134,7 @@ class Post extends Component {
           </div>
           {this.state.id === userId && (
             <button
-              className="btn btn-clean"
+              className="btn btn-clear"
               onClick={(e) => this.deletecomment(e, _id)}
             >
               <DeleteTwoToneIcon />

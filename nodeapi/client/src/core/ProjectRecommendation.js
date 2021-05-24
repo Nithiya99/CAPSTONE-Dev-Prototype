@@ -40,27 +40,31 @@ class ProjectRecommendation extends Component {
     <div className="row row-cols-1 row-cols-md-1">
       {final_out.map((project, i) => (
         <div className="col">
-          <div className="card mb-4" key={i}>
-            <div className="card-body">
-              <h5 className="card-title">{project.title}</h5>
-              <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="font-weight-bold mr-2">Description: </span>
-                <span className="text-muted email-wrap text-hover-primary">
-                  {project.description}
-                </span>
+          <div className="card card-custom gutter-b card-stretch" key={i}>
+            <div className="card-body text-center pt-4">
+              <div className="my-4">
+                <h5 className="text-dark font-weight-bold font-size-h3">
+                  {project.title}
+                </h5>
               </div>
-              <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="font-weight-bold mr-2">Skills Required: </span>
-                <span className="text-muted email-wrap text-hover-primary">
-                  {project.skills.join(", ")}
-                </span>
+              <div className="text-dark font-weight-bold font-size-h6">
+                {project.description}
               </div>
-              <Link
-                to={`/joinProject/`}
-                className="btn btn-raised btn-small btn-primary"
-              >
-                View Project
-              </Link>
+              <div className="lead">
+                {project.skills.map((skill) => (
+                  <span class="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text m-2">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-9">
+                <Link
+                  to={`/joinProject/`}
+                  className="btn btn-light-primary font-weight-bolder btn-sm py-3 px-6 text-uppercase"
+                >
+                  view project
+                </Link>
+              </div>
             </div>
           </div>
         </div>
