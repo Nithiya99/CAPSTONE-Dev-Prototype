@@ -227,10 +227,11 @@ class Home extends Component {
                       comments={post.comments}
                       liked_by={post.liked_by}
                       _id={post._id}
-                      footerText={"by " + post.postedBy.name}
+                      footerText={post.postedBy.name}
                       url={post.video}
                       metadataTitle={post.metadataTitle}
                       metadataAuthor={post.metadataAuthor}
+                      postedOn={post.created}
                     />
                   );
                 }

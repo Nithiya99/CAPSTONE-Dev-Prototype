@@ -154,6 +154,7 @@ class TextPostView extends Component {
               </p>
               <div className="d-flex align-items-center">
                 <button
+                  className="btn btn-light-danger"
                   disabled={this.state.isDisabled}
                   onClick={this.handleShow.bind(this)}
                 >
