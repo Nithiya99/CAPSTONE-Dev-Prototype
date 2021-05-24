@@ -12,8 +12,18 @@ import {
 } from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ReportTwoToneIcon from "@material-ui/icons/ReportTwoTone";
 import moment from "moment";
-import { Accordion, Button, Card, Modal, ModalBody } from "react-bootstrap";
+import {
+  Accordion,
+  Button,
+  Card,
+  Modal,
+  ModalBody,
+  Popover,
+  OverlayTrigger,
+} from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Sentiment from "sentiment";
@@ -147,47 +157,81 @@ class TextPostView extends Component {
                   {created}[Load Date and Time]
                 </span>
               </div>
+              <div className="ml-auto">
+                <OverlayTrigger
+                  trigger="click"
+                  placement="right"
+                  overlay={
+                    <Popover id="popover-basic">
+                      <Popover.Content>
+                        <div>
+                          <button
+                            className="btn btn-clean"
+                            disabled={this.state.isDisabled}
+                            onClick={this.handleShow.bind(this)}
+                          >
+                            <ReportTwoToneIcon /> Report
+                          </button>
+                          <Modal
+                            show={this.state.show}
+                            onHide={this.handleClose.bind(this)}
+                          >
+                            <Modal.Header>
+                              <Modal.Title>
+                                Are you Sure to report this post?
+                              </Modal.Title>
+                              <Button onClick={this.handleClose.bind(this)}>
+                                x
+                              </Button>
+                            </Modal.Header>
+                            <ModalBody>
+                              <Button
+                                disabled={this.state.isDisabled}
+                                onClick={this.handleSubmitClicked}
+                              >
+                                Yes
+                              </Button>
+                            </ModalBody>
+                          </Modal>
+                        </div>
+                        <Link
+                          className="btn btn-clean"
+                          to={{
+                            pathname: `/post/${this.props._id}`,
+                          }}
+                        >
+                          View Full Post
+                        </Link>
+                        <div>
+                          <button
+                            className="btn btn-clean"
+                            onClick={() => {
+                              getpost(_id).then((data) => {
+                                let link = `http://localhost:3000/post/${data.post._id}`;
+                                navigator.clipboard.writeText(link);
+                                toast.success("Link copied to clipboard");
+                              });
+                            }}
+                          >
+                            <ShareIcon /> Share Post
+                          </button>
+                        </div>
+                      </Popover.Content>
+                    </Popover>
+                  }
+                >
+                  <button className="btn btn-custom">
+                    <MoreVertIcon />
+                  </button>
+                </OverlayTrigger>
+              </div>
             </div>
             <div>
-              <p className="text-dark-75 font-size-lg font-weight-normal">
+              <p className="lead ml-10 mt-5 text-dark-75 font-size-lg font-weight-normal ">
                 {text}
               </p>
+
               <div className="d-flex align-items-center">
-                <button
-                  className="btn btn-light-danger"
-                  disabled={this.state.isDisabled}
-                  onClick={this.handleShow.bind(this)}
-                >
-                  Report
-                </button>
-                <Modal
-                  show={this.state.show}
-                  onHide={this.handleClose.bind(this)}
-                >
-                  <Modal.Header>
-                    <Modal.Title>Are you Sure to report this post?</Modal.Title>
-                    <Button onClick={this.handleClose.bind(this)}>x</Button>
-                  </Modal.Header>
-                  <ModalBody>
-                    <Button
-                      disabled={this.state.isDisabled}
-                      onClick={this.handleSubmitClicked}
-                    >
-                      Yes
-                    </Button>
-                  </ModalBody>
-                </Modal>
-                <button
-                  onClick={() => {
-                    getpost(_id).then((data) => {
-                      let link = `http://localhost:3000/post/${data.post._id}`;
-                      navigator.clipboard.writeText(link);
-                      toast.success("Link copied to clipboard");
-                    });
-                  }}
-                >
-                  <ShareIcon />
-                </button>
                 <Heart isClick={this.state.isClick} onClick={this.postliked} />
                 {counts + " likes"}
                 {delete_button === "enabled" ? (
@@ -195,16 +239,6 @@ class TextPostView extends Component {
                 ) : (
                   <div></div>
                 )}
-                <div className="ml-auto">
-                  <Link
-                    className="font-size-lg font-weight-bolder"
-                    to={{
-                      pathname: `/post/${this.props._id}`,
-                    }}
-                  >
-                    View Full Post
-                  </Link>
-                </div>
               </div>
               <TextField
                 name="comment"

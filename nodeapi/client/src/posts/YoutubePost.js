@@ -210,6 +210,27 @@ class YoutubePost extends Component {
                           >
                             <ReportTwoToneIcon /> Report
                           </button>
+                          <Modal
+                            show={this.state.show}
+                            onHide={this.handleClose.bind(this)}
+                          >
+                            <Modal.Header>
+                              <Modal.Title>
+                                Are you Sure to report this post?
+                              </Modal.Title>
+                              <Button onClick={this.handleClose.bind(this)}>
+                                x
+                              </Button>
+                            </Modal.Header>
+                            <ModalBody>
+                              <Button
+                                disabled={this.state.isDisabled}
+                                onClick={this.handleSubmitClicked}
+                              >
+                                Yes
+                              </Button>
+                            </ModalBody>
+                          </Modal>
                         </div>
                         <Link
                           className="btn btn-clean"
