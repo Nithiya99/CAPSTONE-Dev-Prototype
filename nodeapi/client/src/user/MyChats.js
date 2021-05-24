@@ -245,7 +245,7 @@ const MyChats = () => {
                 </span>
               </div>
             </div>
-            <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left bubble-alt">
+            <div className="mt-2 text-dark font-weight-bold font-size-lg  text-left bubble-alt">
               {message}
             </div>
           </div>
@@ -261,7 +261,7 @@ const MyChats = () => {
                 </span>
               </div>
             </div>
-            <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left  bubble">
+            <div className="mt-2 text-dark font-weight-bold font-size-lg  text-left  bubble">
               {message}
             </div>
           </div>
@@ -274,7 +274,7 @@ const MyChats = () => {
     <div className="pt-5">
       <Tab.Container id="left-tabs-example" defaultActiveKey="empty">
         <Row>
-          <Col sm={2}>
+          <Col sm={3}>
             <div className="card card-custom card-stretch">
               <div className="card-body pt-4">
                 <Nav variant="pills" className="flex-column mt-3">
@@ -309,7 +309,7 @@ const MyChats = () => {
               </div>
             </div>
           </Col>
-          <Col sm={10}>
+          <Col sm={9}>
             <Tab.Content>
               <Tab.Pane eventKey="empty">
                 <div className="card card-stretch">
@@ -328,35 +328,39 @@ const MyChats = () => {
                   <Tab.Pane eventKey={i}>
                     <div className="card card-stretch">
                       <div className="card-header">
-                        <div className="card-title align-items-start flex-column">
-                          <h4 className="card-label font-weight-bolder text-dark">
-                            {user.name}
-                            <button
-                              className="btn btn-primary"
-                              onClick={onClearChat}
-                            >
-                              Clear
-                              <ClearAllIcon />
-                            </button>
+                        <div className="card-title">
+                          <div className="d-flex align-items-center justify-content-between flex-wrap">
+                            <div className="d-flex align-items-center text-dark font-size-h5 font-weight-bold mr-3">
+                              {user.name}
+                            </div>
+                            <div className="d-flex flex-wrap my-2">
+                              <button
+                                className="btn btn-light-warning"
+                                onClick={onClearChat}
+                              >
+                                Clear
+                                <ClearAllIcon />
+                              </button>
 
-                            {!isblocked ? (
-                              <button
-                                className="btn btn-primary"
-                                onClick={onBlockUser}
-                              >
-                                Block
-                                <BlockIcon />
-                              </button>
-                            ) : (
-                              <button
-                                className="btn btn-primary"
-                                onClick={onUnBlockUser}
-                              >
-                                UnBlock
-                                <CheckCircleOutlineIcon />
-                              </button>
-                            )}
-                          </h4>
+                              {!isblocked ? (
+                                <button
+                                  className="btn btn-light-danger ml-5"
+                                  onClick={onBlockUser}
+                                >
+                                  Block
+                                  <BlockIcon />
+                                </button>
+                              ) : (
+                                <button
+                                  className="btn btn-light-danger"
+                                  onClick={onUnBlockUser}
+                                >
+                                  UnBlock
+                                  <CheckCircleOutlineIcon />
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className="card-body">
