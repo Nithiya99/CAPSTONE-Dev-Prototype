@@ -3,6 +3,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import { ToastContainer, toast } from "react-toastify";
 import Heart from "react-animated-heart";
 import { getCurrentUser } from "./../user/apiUser";
+import DefaultProfile from "../images/avatar.png";
 import {
   likepost,
   dislikepost,
@@ -13,8 +14,21 @@ import {
 } from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ReportTwoToneIcon from "@material-ui/icons/ReportTwoTone";
+import SendRoundedIcon from "@material-ui/icons/SendRounded";
+import VisibilityTwoToneIcon from "@material-ui/icons/VisibilityTwoTone";
+import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import moment from "moment";
-import { Accordion, Button, Card, Modal, ModalBody } from "react-bootstrap";
+import {
+  Accordion,
+  Button,
+  Card,
+  Modal,
+  ModalBody,
+  Popover,
+  OverlayTrigger,
+} from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import DeletePost from "./DeletePost";
@@ -96,25 +110,35 @@ class Post extends Component {
     let reverseComments = [...comments].reverse();
     return reverseComments.map(
       ({ PostedOn, comment, userName, _id, userId }, index) => (
-        <div>
-          <div>
-            <span className="font-weight-bold font-size-lg ">{userName}</span>
+        <div className="d-flex py-5">
+          <div className="symbol symbol-40 symbol-light-warning mr-5">
+            <span className="symbol-label">
+              <img src={DefaultProfile} className="h-75 align-self-end" />
+            </span>
           </div>
-          <div className="text-muted font-size-sm">
-            {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+          <div className="d-flex flex-column flex-row-fluid">
+            <div className="d-flex align-items-center flex-wrap">
+              <Link
+                to="#"
+                className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder pr-6"
+              >
+                {userName}
+              </Link>
+              <span className="text-muted font-weight-normal flex-grow-1 font-size-sm">
+                {moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+              </span>
+            </div>
+            <span className="text-dark-75 font-size-sm font-weight-normal pt-1">
+              {comment}
+            </span>
           </div>
           {this.state.id === userId && (
-            <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                ...
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={(e) => this.deletecomment(e, _id)}>
-                  delete
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+            <button
+              className="btn btn-clean"
+              onClick={(e) => this.deletecomment(e, _id)}
+            >
+              <DeleteTwoToneIcon />
+            </button>
           )}
         </div>
       )
@@ -136,134 +160,151 @@ class Post extends Component {
     return (
       <>
         <ToastContainer />
-        <Card className="m-5">
-          <Card.Header>
-            <Link
-              to={{
-                pathname: `/post/${this.props._id}`,
-              }}
-            >
-              {headerText}
-            </Link>
-            {/* <div>
-              {tags.map((tag) => (
-                <>{tag}</>
-              ))}
-            </div> */}
-            {delete_button === "enabled" ? (
-              <>
-                <EditPost post={this.props} />
-                <DeletePost postId={_id} />
-              </>
-            ) : (
-              <div></div>
-            )}
-          </Card.Header>
-          <Card.Body className="col d-flex justify-content-center">
-            {/* <Col> */}
-            {imageUrl !== "undefined" && imageUrl.length > 1 ? (
-              <Carousel interval={null}>
-                {imageUrl.map((url, i) => {
-                  return (
-                    <Carousel.Item>
-                      <img
-                        className="d-block w-100"
-                        style={{
-                          width: "45vw",
-                          height: "30vw",
-                          "object-fit": "cover",
-                        }}
-                        src={url}
-                        alt={url}
-                      />
-                    </Carousel.Item>
-                  );
-                })}
-              </Carousel>
-            ) : (
-              <Card.Img
-                style={{
-                  width: "45vw",
-                  height: "30vw",
-                  "object-fit": "cover",
-                }}
-                variant="top"
-                src={imageUrl[0]}
-              />
-            )}
-            {/* </Col>
-                        <Col> */}
-            {/* </Col> */}
-          </Card.Body>
-          <Card.Body>
-            <button
-              disabled={this.state.isDisabled}
-              onClick={this.handleShow.bind(this)}
-            >
-              Report
-            </button>
-            <Modal show={this.state.show} onHide={this.handleClose.bind(this)}>
-              <Modal.Header>
-                <Modal.Title>Are you Sure to report this post?</Modal.Title>
-                <Button onClick={this.handleClose.bind(this)}>x</Button>
-              </Modal.Header>
-              <ModalBody>
-                <Button
-                  disabled={this.state.isDisabled}
-                  onClick={this.handleSubmitClicked}
+        <div className="card card-custom gutter-b">
+          <div className="card-body">
+            <div className="d-flex align-items-center pb-4">
+              <div className="symbol symbol-40 symbol-light-warning mr-5">
+                <span className="symbol-label">
+                  <img src={DefaultProfile} className="h-75 align-self-end" />
+                </span>
+              </div>
+              <div className="d-flex flex-column flex-grow-1">
+                <Link
+                  to="#"
+                  className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder"
                 >
-                  Yes
-                </Button>
-              </ModalBody>
-            </Modal>
-            <button
-              onClick={() => {
-                getpost(_id).then((data) => {
-                  let link = `http://localhost:3000/post/${data.post._id}`;
-                  navigator.clipboard.writeText(link);
-                  toast.success("Link copied to clipboard");
-                });
-              }}
-            >
-              <ShareIcon />
-            </button>
-            <Heart isClick={this.state.isClick} onClick={this.postliked} />
-            {counts + " likes"}
-            <Accordion>
-              <Card>
-                <Card.Header>
-                  <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                    Comment <CommentIcon />
-                  </Accordion.Toggle>
-                </Card.Header>
-                <Accordion.Collapse eventKey="1">
-                  <Card.Body>
-                    <TextField
-                      name="comment"
-                      onChange={(e) => this.onTextChange(e)}
-                      variant="outlined"
-                      label="Add a Comment"
-                      fullWidth
-                    />
-                    <button
-                      onClick={this.submitcomment}
-                      className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                      disabled={this.state.sentimentScore < -3 ? true : false}
-                    >
-                      Submit
-                    </button>
-                    {comments.length > 0 ? (
-                      this.rendercomments(comments)
-                    ) : (
-                      <p>No Comments</p>
-                    )}
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
-          </Card.Body>
-          <Card.Footer>{footerText}</Card.Footer>
-        </Card>
+                  {footerText}
+                </Link>
+                <span className="text-muted font-weight-bold">
+                  [Load Date and Time]
+                </span>
+              </div>
+              <div className="ml-auto">
+                <OverlayTrigger
+                  trigger="click"
+                  placement="right"
+                  overlay={
+                    <Popover id="popover-basic">
+                      <Popover.Content>
+                        <div>
+                          <button
+                            className="btn btn-clean"
+                            disabled={this.state.isDisabled}
+                            onClick={this.handleShow.bind(this)}
+                          >
+                            <ReportTwoToneIcon /> Report
+                          </button>
+                          <Modal
+                            show={this.state.show}
+                            onHide={this.handleClose.bind(this)}
+                          >
+                            <Modal.Header>
+                              <Modal.Title>
+                                Are you Sure to report this post?
+                              </Modal.Title>
+                              <Button onClick={this.handleClose.bind(this)}>
+                                x
+                              </Button>
+                            </Modal.Header>
+                            <ModalBody>
+                              <Button
+                                disabled={this.state.isDisabled}
+                                onClick={this.handleSubmitClicked}
+                              >
+                                Yes
+                              </Button>
+                            </ModalBody>
+                          </Modal>
+                        </div>
+                        <Link
+                          className="btn btn-clean"
+                          to={{
+                            pathname: `/post/${this.props._id}`,
+                          }}
+                        >
+                          <VisibilityTwoToneIcon /> View Full Post
+                        </Link>
+                        <div>
+                          <button
+                            className="btn btn-clean"
+                            onClick={() => {
+                              getpost(_id).then((data) => {
+                                let link = `http://localhost:3000/post/${data.post._id}`;
+                                navigator.clipboard.writeText(link);
+                                toast.success("Link copied to clipboard");
+                              });
+                            }}
+                          >
+                            <ShareIcon /> Share Post
+                          </button>
+                        </div>
+                      </Popover.Content>
+                    </Popover>
+                  }
+                >
+                  <button className="btn btn-custom">
+                    <MoreVertIcon />
+                  </button>
+                </OverlayTrigger>
+              </div>
+            </div>
+            <div>
+              {imageUrl !== "undefined" && imageUrl.length > 1 ? (
+                <Carousel interval={null}>
+                  {imageUrl.map((url, i) => {
+                    return (
+                      <Carousel.Item>
+                        <img
+                          className="d-block w-100"
+                          style={{ height: "50vh" }}
+                          src={url}
+                          alt={url}
+                        />
+                      </Carousel.Item>
+                    );
+                  })}
+                </Carousel>
+              ) : (
+                <Card.Img
+                  variant="top"
+                  style={{ height: "50vh" }}
+                  src={imageUrl[0]}
+                />
+              )}
+
+              <div className="d-flex align-items-center">
+                <Heart isClick={this.state.isClick} onClick={this.postliked} />
+                {counts + " likes"}
+                {delete_button === "enabled" ? (
+                  <DeletePost postId={_id} />
+                ) : (
+                  <div></div>
+                )}
+              </div>
+              <div className="d-flex align-items-center">
+                <TextField
+                  name="comment"
+                  onChange={(e) => this.onTextChange(e)}
+                  id="standard-basic"
+                  label="Add a Comment"
+                  fullWidth
+                />
+                <button
+                  onClick={this.submitcomment}
+                  className="btn btn-light-primary mr-5 ml-5 "
+                  disabled={this.state.sentimentScore < -3 ? true : false}
+                >
+                  <SendRoundedIcon />
+                </button>
+              </div>
+              {comments.length > 0 ? (
+                this.rendercomments(comments)
+              ) : (
+                <p>No Comments</p>
+              )}
+            </div>
+          </div>
+        </div>
       </>
     );
   }
