@@ -16,7 +16,7 @@ const { getPersonalChat, getBlockedUsers } = require("./controllers/user");
 // "mongodb://localhost/nodeapi"
 // process.env.MONGO_URI
 mongoose
-  .connect("mongodb://localhost:27017/nodeapi", {
+  .connect("mongodb://localhost/nodeapi", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
