@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { DropzoneArea } from "material-ui-dropzone";
 import { ToastContainer, toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
@@ -126,12 +126,20 @@ function DragDropImages(props) {
   return (
     <>
       <ToastContainer />
-      <TextField
+      {/* <TextField
         name="Title"
         onChange={(e) => onTextChange(e)}
         variant="outlined"
         label="Title"
         fullWidth
+      /> */}
+      <Form.Control
+        type="text"
+        placeholder="Title"
+        name="Title"
+        onChange={(e) => onTextChange(e)}
+        as="textarea"
+        rows={3}
       />
       <label>Project</label>
       <select class="custom-select" onChange={(e) => onChangeProject(e)}>

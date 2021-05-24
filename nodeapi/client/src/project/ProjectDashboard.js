@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Accordion, Card, Button, Row, Tab, Col, Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import AddTask from "./taskComponents/AddTask";
 import LayoutComponent from "./layout/LayoutComponent";
 import TrelloTask from "./taskComponents/TrelloTask";
@@ -204,17 +205,37 @@ class ProjectDashboard extends Component {
                     <div className="card-body">
                       <div className="col mb-4">
                         {/* {console.log(project.completion_percentage)} */}
-                        <div className="d-flex align-items-center">
-                          <div className="d-flex-flex-column mr-auto">
-                            <p className="card-title font-weight-bolder font-size-h5 text-dark mb-1">
+                        <div className="d-flex align-items-center justify-content-between flex-wrap">
+                          <div className="mr-3">
+                            <div className="d-flex align-items-center text-dark font-size-h5 font-weight-bold mr-3">
                               {project.title}
-                            </p>
-                            <span className="text-muted font-weight-bold">
-                              {project.leader}
-                            </span>
+                            </div>
+                            <div className="d-flex flex-wrap my-2">
+                              <Link
+                                to="#"
+                                className="text-muted text-hover-primary font-weight-bold mr-lg-8 mr-5 mb-lg-0 mb-2"
+                              >
+                                {project.leader}
+                              </Link>
+                            </div>
+                          </div>
+                          <div className="my-lg-0 my-1">
+                            <button className="btn btn-light-primary">
+                              Test
+                            </button>
                           </div>
                         </div>
-                        <div className="d-flex flex-wrap mt-14">
+                        <div className="flex-grow-1 font-weight-bold font-size-h6 py-5 py-lg-2 mr-5">
+                          {project.description}
+                        </div>
+                        <div className="flex-grow-1 font-weight-bold font-size-h6 py-5 py-lg-2 mr-5">
+                          {project.skills.map((skill) => (
+                            <span class="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text m-1">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="d-flex flex-wrap align-items-center py-2">
                           <div className="mr-12 d-flex flex-column mb-7">
                             <span className="d-block font-weight-bold mb-4">
                               Start Date
@@ -227,42 +248,6 @@ class ProjectDashboard extends Component {
                           <div className="mr-12 d-flex flex-column mb-7">
                             <span className="d-block font-weight-bold mb-4">
                               Due Date
-                            </span>
-                            <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                              {/* {projectEstimatedDates[project._id]} */}
-                              LOAD
-                            </span>
-                          </div>
-                          <div className="mr-12 d-flex flex-column mb-7">
-                            <span className="d-block font-weight-bold mb-4">
-                              Total Tasks
-                            </span>
-                            <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
-                              {/* {projectEstimatedDates[project._id]} */}
-                              LOAD
-                            </span>
-                          </div>
-                          <div className="mr-12 d-flex flex-column mb-7">
-                            <span className="d-block font-weight-bold mb-4">
-                              Ongoing
-                            </span>
-                            <span className="btn btn-light-warning btn-sm font-weight-bold btn-upper btn-text">
-                              {/* {projectEstimatedDates[project._id]} */}
-                              LOAD
-                            </span>
-                          </div>
-                          <div className="mr-12 d-flex flex-column mb-7">
-                            <span className="d-block font-weight-bold mb-4">
-                              Completed
-                            </span>
-                            <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                              {/* {projectEstimatedDates[project._id]} */}
-                              LOAD
-                            </span>
-                          </div>
-                          <div className="mr-12 d-flex flex-column mb-7">
-                            <span className="d-block font-weight-bold mb-4">
-                              Over Due
                             </span>
                             <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
                               {/* {projectEstimatedDates[project._id]} */}
@@ -291,19 +276,6 @@ class ProjectDashboard extends Component {
                               </span>
                             </div>
                           </div>
-                        </div>
-
-                        <div className="d-flex align-items-center justify-content-between mb-2 mt-4">
-                          <span className="font-weight-bold mr-2">
-                            Description:{" "}
-                          </span>
-                          <span>{project.description}</span>
-                        </div>
-                        <div className="d-flex align-items-center justify-content-between mb-5">
-                          <span className="font-weight-bold mr-2">
-                            Skills:{" "}
-                          </span>
-                          <span>{project.skills.join(", ")}</span>
                         </div>
                         <table className="table table-light">
                           <thead>

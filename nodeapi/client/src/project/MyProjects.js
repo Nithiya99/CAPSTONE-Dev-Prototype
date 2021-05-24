@@ -330,12 +330,11 @@ class MyProjects extends Component {
                                 </span>
                                 <span>{project.description}</span>
                               </div>
-                              <div className="d-flex align-items-center justify-content-between mb-2">
-                                <span className="font-weight-bold mr-2">
-                                  Skills:{" "}
+                              {project.skills.map((skill) => (
+                                <span class="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text m-1">
+                                  {skill}
                                 </span>
-                                <span>{project.skills.join(", ")}</span>
-                              </div>
+                              ))}
                               <table className="table table-light">
                                 <thead>
                                   <tr>
