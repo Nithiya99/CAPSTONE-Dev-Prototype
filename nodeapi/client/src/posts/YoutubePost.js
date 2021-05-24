@@ -14,6 +14,7 @@ import {
 } from "./apiPosts";
 import { collect } from "collect.js";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import VisibilityTwoToneIcon from "@material-ui/icons/VisibilityTwoTone";
 import ReportTwoToneIcon from "@material-ui/icons/ReportTwoTone";
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
@@ -238,7 +239,7 @@ class YoutubePost extends Component {
                             pathname: `/post/${this.props._id}`,
                           }}
                         >
-                          View Full Post
+                          <VisibilityTwoToneIcon /> View Full Post
                         </Link>
                         <div>
                           <button

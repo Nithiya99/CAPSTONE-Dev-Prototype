@@ -14,6 +14,8 @@ import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ReportTwoToneIcon from "@material-ui/icons/ReportTwoTone";
+import SendRoundedIcon from "@material-ui/icons/SendRounded";
+import VisibilityTwoToneIcon from "@material-ui/icons/VisibilityTwoTone";
 import moment from "moment";
 import {
   Accordion,
@@ -200,7 +202,7 @@ class TextPostView extends Component {
                             pathname: `/post/${this.props._id}`,
                           }}
                         >
-                          View Full Post
+                          <VisibilityTwoToneIcon /> View Full Post
                         </Link>
                         <div>
                           <button
@@ -240,20 +242,22 @@ class TextPostView extends Component {
                   <div></div>
                 )}
               </div>
-              <TextField
-                name="comment"
-                onChange={(e) => this.onTextChange(e)}
-                id="standard-basic"
-                label="Add a Comment"
-                fullWidth
-              />
-              <button
-                onClick={this.submitcomment}
-                className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                disabled={this.state.sentimentScore < -3 ? true : false}
-              >
-                Submit
-              </button>
+              <div className="d-flex align-items-center">
+                <TextField
+                  name="comment"
+                  onChange={(e) => this.onTextChange(e)}
+                  id="standard-basic"
+                  label="Add a Comment"
+                  fullWidth
+                />
+                <button
+                  onClick={this.submitcomment}
+                  className="btn btn-light-primary mr-5 ml-5 "
+                  disabled={this.state.sentimentScore < -3 ? true : false}
+                >
+                  <SendRoundedIcon />
+                </button>
+              </div>
               {comments.length > 0 ? (
                 this.rendercomments(comments)
               ) : (
