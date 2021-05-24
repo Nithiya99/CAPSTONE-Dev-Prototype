@@ -13,8 +13,10 @@ import {
   reportpost,
 } from "./apiPosts";
 import { collect } from "collect.js";
-import CommentIcon from "@material-ui/icons/Comment";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ReportTwoToneIcon from "@material-ui/icons/ReportTwoTone";
+import SendRoundedIcon from "@material-ui/icons/SendRounded";
+import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import moment from "moment";
 import {
   Accordion,
@@ -117,21 +119,38 @@ class YoutubePost extends Component {
     let reverseComments = [...comments].reverse();
     return reverseComments.map(
       ({ PostedOn, comment, userName, _id, userId }, index) => (
-        <div>
-          <div>
-            <span className="font-weight-bold font-size-lg ">{userName}</span>
+        <div className="d-flex py-5">
+          <div className="symbol symbol-40 symbol-light-warning mr-5">
+            <span className="symbol-label">
+              <img src={DefaultProfile} className="h-75 align-self-end" />
+            </span>
           </div>
-          <div className="text-muted font-size-sm">
-            {comment + " " + moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+          <div className="d-flex flex-column flex-row-fluid">
+            <div className="d-flex align-items-center flex-wrap">
+              <Link
+                to="#"
+                className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder pr-6"
+              >
+                {userName}
+              </Link>
+              <span className="text-muted font-weight-normal flex-grow-1 font-size-sm">
+                {moment(PostedOn).format("DD-MM-YYYY h:mm a")}
+              </span>
+              <div className="ml-auto">
+                {this.state.id === userId && (
+                  <button
+                    className="btn btn-clear"
+                    onClick={(e) => this.deletecomment(e, _id)}
+                  >
+                    <DeleteTwoToneIcon />
+                  </button>
+                )}
+              </div>
+            </div>
+            <span className="text-dark-75 font-size-sm font-weight-normal pt-1">
+              {comment}
+            </span>
           </div>
-          {this.state.id === userId && (
-            <button
-              className="btn btn-danger"
-              onClick={(e) => this.deletecomment(e, _id)}
-            >
-              Delete
-            </button>
-          )}
         </div>
       )
     );
@@ -182,25 +201,38 @@ class YoutubePost extends Component {
                   placement="right"
                   overlay={
                     <Popover id="popover-basic">
-                      <Popover.Title as="h3">Popover right</Popover.Title>
                       <Popover.Content>
                         <div>
                           <button
-                            className="btn btn-light-danger"
+                            className="btn btn-clean"
                             disabled={this.state.isDisabled}
                             onClick={this.handleShow.bind(this)}
                           >
-                            Report
+                            <ReportTwoToneIcon /> Report
                           </button>
                         </div>
                         <Link
-                          className="font-size-lg font-weight-bolder"
+                          className="btn btn-clean"
                           to={{
                             pathname: `/post/${this.props._id}`,
                           }}
                         >
                           View Full Post
                         </Link>
+                        <div>
+                          <button
+                            className="btn btn-clean"
+                            onClick={() => {
+                              getpost(_id).then((data) => {
+                                let link = `http://localhost:3000/post/${data.post._id}`;
+                                navigator.clipboard.writeText(link);
+                                toast.success("Link copied to clipboard");
+                              });
+                            }}
+                          >
+                            <ShareIcon /> Share Post
+                          </button>
+                        </div>
                       </Popover.Content>
                     </Popover>
                   }
@@ -212,53 +244,52 @@ class YoutubePost extends Component {
               </div>
             </div>
 
-            <div>
+            <div className="mt-3">
               <p className="text-dark-75 font-size-lg font-weight-normal">
-                <YouTubeIcon />
+                <YouTubeIcon
+                  fontSize="large"
+                  className="text-danger display-3 mr-5 ml-2"
+                />
                 {/* <a href={text} target={"_blank"}>
                 {text.toString()} {console.log(metadata)}
                 </a> */}
-                <div>{metadataTitle}</div>
+                <span>
+                  <strong>{metadataTitle}</strong> By {metadataAuthor}
+                </span>
                 <center>
                   <ReactPlayer url={url} controls={true} width={window.width} />
                 </center>
-                <div>By {metadataAuthor}</div>
               </p>
               <div className="d-flex align-items-center">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    getpost(_id).then((data) => {
-                      let link = `http://localhost:3000/post/${data.post._id}`;
-                      navigator.clipboard.writeText(link);
-                      toast.success("Link copied to clipboard");
-                    });
-                  }}
-                >
-                  <ShareIcon />
-                </button>
                 <Heart isClick={this.state.isClick} onClick={this.postliked} />
-                {counts + " likes"}
+
+                <button type="button" class="btn btn-light-danger">
+                  <strong>
+                    <span class="badge badge-light">{counts}</span> Likes
+                  </strong>
+                </button>
                 {delete_button === "enabled" ? (
                   <DeletePost postId={_id} />
                 ) : (
                   <div></div>
                 )}
               </div>
-              <TextField
-                name="comment"
-                onChange={(e) => this.onTextChange(e)}
-                id="standard-basic"
-                label="Add a Comment"
-                fullWidth
-              />
-              <button
-                onClick={this.submitcomment}
-                className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                disabled={this.state.sentimentScore < -3 ? true : false}
-              >
-                Submit
-              </button>
+              <div className="d-flex align-items-center">
+                <TextField
+                  name="comment"
+                  onChange={(e) => this.onTextChange(e)}
+                  id="standard-basic"
+                  label="Add a Comment"
+                  fullWidth
+                />
+                <button
+                  onClick={this.submitcomment}
+                  className="btn btn-light-primary mr-5 ml-5 "
+                  disabled={this.state.sentimentScore < -3 ? true : false}
+                >
+                  <SendRoundedIcon />
+                </button>
+              </div>
               {comments.length > 0 ? (
                 this.rendercomments(comments)
               ) : (
@@ -266,74 +297,6 @@ class YoutubePost extends Component {
               )}
             </div>
           </div>
-          <Card.Body>
-            <button
-              disabled={this.state.isDisabled}
-              onClick={this.handleShow.bind(this)}
-            >
-              Report
-            </button>
-            <Modal show={this.state.show} onHide={this.handleClose.bind(this)}>
-              <Modal.Header>
-                <Modal.Title>Are you Sure to report this post?</Modal.Title>
-                <Button onClick={this.handleClose.bind(this)}>x</Button>
-              </Modal.Header>
-              <ModalBody>
-                <Button
-                  disabled={this.state.isDisabled}
-                  onClick={this.handleSubmitClicked}
-                >
-                  Yes
-                </Button>
-              </ModalBody>
-            </Modal>
-            <button
-              onClick={() => {
-                getpost(_id).then((data) => {
-                  let link = `http://localhost:3000/post/${data.post._id}`;
-                  navigator.clipboard.writeText(link);
-                  toast.success("Link copied to clipboard");
-                });
-              }}
-            >
-              <ShareIcon />
-            </button>
-            <Heart isClick={this.state.isClick} onClick={this.postliked} />
-            {counts + " likes"}
-            <Accordion>
-              <Card>
-                <Card.Header>
-                  <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                    Comment <CommentIcon />
-                  </Accordion.Toggle>
-                </Card.Header>
-                <Accordion.Collapse eventKey="1">
-                  <Card.Body>
-                    <TextField
-                      name="comment"
-                      onChange={(e) => this.onTextChange(e)}
-                      variant="outlined"
-                      label="Add a Comment"
-                      fullWidth
-                    />
-                    <button
-                      onClick={this.submitcomment}
-                      className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
-                      disabled={this.state.sentimentScore < -3 ? true : false}
-                    >
-                      Submit
-                    </button>
-                    {comments.length > 0 ? (
-                      this.rendercomments(comments)
-                    ) : (
-                      <p>No Comments</p>
-                    )}
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
-          </Card.Body>
-          <Card.Footer>{footerText}</Card.Footer>
         </div>
       </>
     );
