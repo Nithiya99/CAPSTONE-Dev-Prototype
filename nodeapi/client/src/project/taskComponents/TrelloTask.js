@@ -144,9 +144,44 @@ class TrelloTask extends Component {
     // console.log(this.state.currentTask);
     this.showMe();
   };
+
+  get_card_label = (slackObject, task) => {
+    let card_label = "";
+    if (slackObject[task.taskName] !== undefined) {
+      if (
+        slackObject[task.taskName].slack - slackObject[task.taskName].days >=
+        0
+      )
+        card_label =
+          slackObject[task.taskName].slack -
+          slackObject[task.taskName].days +
+          " days left";
+      else
+        card_label =
+          slackObject[task.taskName].days -
+          slackObject[task.taskName].slack +
+          " days overdue";
+    } else card_label = task.mostLikelyTime + " days left";
+
+    if (task.status === "COMPLETED") card_label = "Completed";
+    if (task.status === "Review") card_label = "Reviewing";
+    return card_label;
+  };
+
+  get_card_style = (slackObject, task) => {
+    let color = "";
+    if (
+      slackObject[task.taskName] !== undefined &&
+      slackObject[task.taskName].overdue &&
+      (task.status === "PLANNED" || task.status === "WIP")
+    )
+      color = "#ED2939";
+    return color;
+  };
+
   updateBoard = () => {
     const mytasks = this.state.mytasks;
-    // console.log("slackObject:", this.props.slackObject);
+    console.log("slackObject:", this.props.slackObject);
     const { slackObject } = this.props;
     // console.log(mytasks);
     // console.log("mytasks:" + mytasks);
@@ -160,12 +195,7 @@ class TrelloTask extends Component {
       var card = {
         id: task._id,
         title: task.taskName,
-        label:
-          slackObject[task.taskName] !== undefined
-            ? slackObject[task.taskName].slack -
-              slackObject[task.taskName].days +
-              " days left"
-            : task.mostLikelyTime + " days left",
+        label: this.get_card_label(slackObject, task),
         description: task.taskDescription,
         pessimisticTime: task.pessimisticTime,
         optimisticTime: task.optimisticTime,
@@ -173,14 +203,8 @@ class TrelloTask extends Component {
         desc: task.taskDescription,
         mostLikelyTime: task.mostLikelyTime,
         status: task.status,
-
         style: {
-          backgroundColor:
-            slackObject[task.taskName] !== undefined
-              ? slackObject[task.taskName].overdue
-                ? "#ED2939"
-                : ""
-              : "",
+          backgroundColor: this.get_card_style(slackObject, task),
         },
       };
       if (task.status === "PLANNED") cards_planned.push(card);
