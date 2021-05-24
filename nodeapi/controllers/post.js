@@ -294,7 +294,7 @@ exports.convertToWebp = (req, res) => {
   // console.log(req.file);
   console.log("path:", file.destination + file.filename);
   sharp(file.destination + file.filename)
-    .resize(1000, 1000)
+    .resize(1280, 720)
     .webp()
     .toFile(file.destination + file.filename + " edited.webp", (err, info) => {
       if (err) console.log(err);

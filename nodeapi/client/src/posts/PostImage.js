@@ -11,7 +11,6 @@ export default function PostImage() {
     <div>
       <Button onClick={() => setOpen(true)}>Add Image</Button>
       <Modal show={open} onHide={handleClose}>
-        <Modal.Header closeButton />
         <Modal.Body>
           <h4 className="text-center mb-3">Lets post pics!</h4>
           <DragDropImages />
