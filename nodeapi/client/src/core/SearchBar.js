@@ -19,7 +19,7 @@ const SearchBar = () => {
         data.map((user) => {
           suggestions.push({
             id: user._id,
-            name: user.name,
+            name: user.name + `(@${user.username})`,
             url: `/user/${user._id}`,
             type: user,
           });
