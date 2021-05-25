@@ -260,6 +260,11 @@ class YoutubePost extends Component {
                             <ShareIcon /> Share Post
                           </button>
                         </div>
+                        {delete_button === "enabled" ? (
+                          <DeletePost postId={_id} />
+                        ) : (
+                          <div></div>
+                        )}
                       </Popover.Content>
                     </Popover>
                   }
@@ -270,7 +275,9 @@ class YoutubePost extends Component {
                 </OverlayTrigger>
               </div>
             </div>
-
+            <p className="lead ml-10 mt-5 text-dark-75 font-size-lg font-weight-normal ">
+              {headerText}
+            </p>
             <div className="mt-3">
               <p className="text-dark-75 font-size-lg font-weight-normal">
                 <YouTubeIcon
@@ -295,11 +302,6 @@ class YoutubePost extends Component {
                     <span class="badge badge-light">{counts}</span> Likes
                   </strong>
                 </button>
-                {delete_button === "enabled" ? (
-                  <DeletePost postId={_id} />
-                ) : (
-                  <div></div>
-                )}
               </div>
               <div className="d-flex align-items-center">
                 <TextField

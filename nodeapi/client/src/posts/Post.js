@@ -255,6 +255,11 @@ class Post extends Component {
                             <ShareIcon /> Share Post
                           </button>
                         </div>
+                        {delete_button === "enabled" ? (
+                          <DeletePost postId={_id} />
+                        ) : (
+                          <div></div>
+                        )}
                       </Popover.Content>
                     </Popover>
                   }
@@ -265,6 +270,9 @@ class Post extends Component {
                 </OverlayTrigger>
               </div>
             </div>
+            <p className="lead ml-10 mt-5 text-dark-75 font-size-lg font-weight-normal ">
+              {headerText}
+            </p>
             <div>
               {imageUrl !== "undefined" && imageUrl.length > 1 ? (
                 <Carousel interval={null}>
@@ -292,11 +300,6 @@ class Post extends Component {
               <div className="d-flex align-items-center">
                 <Heart isClick={this.state.isClick} onClick={this.postliked} />
                 {counts + " likes"}
-                {delete_button === "enabled" ? (
-                  <DeletePost postId={_id} />
-                ) : (
-                  <div></div>
-                )}
               </div>
               <div className="d-flex align-items-center">
                 <TextField

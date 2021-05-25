@@ -30,15 +30,15 @@ class DeletePost extends Component {
   render() {
     return (
       <div>
-        <OverlayTrigger
+        {/* <OverlayTrigger
           key="top"
           placement="top"
           overlay={<Tooltip id="top">Delete Post</Tooltip>}
-        >
-          <Button onClick={this.deleteConfirmed} variant="danger">
-            <DeleteForeverTwoToneIcon />
-          </Button>
-        </OverlayTrigger>
+        > */}
+        <button onClick={this.deleteConfirmed} className="btn btn-clean">
+          <DeleteForeverTwoToneIcon /> Delete Post
+        </button>
+        {/* </OverlayTrigger> */}
       </div>
     );
   }

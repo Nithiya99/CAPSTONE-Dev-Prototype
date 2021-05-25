@@ -218,6 +218,11 @@ class TextPostView extends Component {
                             <ShareIcon /> Share Post
                           </button>
                         </div>
+                        {delete_button === "enabled" ? (
+                          <DeletePost postId={_id} />
+                        ) : (
+                          <div></div>
+                        )}
                       </Popover.Content>
                     </Popover>
                   }
@@ -236,11 +241,6 @@ class TextPostView extends Component {
               <div className="d-flex align-items-center">
                 <Heart isClick={this.state.isClick} onClick={this.postliked} />
                 {counts + " likes"}
-                {delete_button === "enabled" ? (
-                  <DeletePost postId={_id} />
-                ) : (
-                  <div></div>
-                )}
               </div>
               <div className="d-flex align-items-center">
                 <TextField
