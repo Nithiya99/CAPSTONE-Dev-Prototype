@@ -263,6 +263,7 @@ class Home extends Component {
                         comments={post.comments}
                         tags={post.tags}
                         created={post.created}
+                        postedBy={post.postedBy}
                       />
                     );
                 })}

@@ -113,7 +113,12 @@ class YoutubePost extends Component {
 
   deletecomment(e, commentId) {
     e.preventDefault();
-    deleteComment(commentId, this.props._id).then((data) => console.log(data));
+    deleteComment(commentId, this.props._id)
+      .then((data) => console.log(data))
+      .then(async () => {
+        await this.props.changePosts(this.props._id);
+        toast.success("deleted comment successfully");
+      });
   }
 
   rendercomments = (comments) => {

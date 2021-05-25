@@ -39,6 +39,7 @@ import { connect } from "react-redux";
 import { changePosts } from "../store/posts";
 import EditPost from "./EditPost";
 import Dropdown from "react-bootstrap/Dropdown";
+import { notificationAdded } from "../store/notifications";
 
 const sentiment = new Sentiment();
 
@@ -75,7 +76,17 @@ class Post extends Component {
   };
 
   handleSubmitClicked = () => {
-    reportpost(this.props._id);
+    reportpost(this.props._id).then((data) => {
+      if (data.message !== undefined) {
+        toast.error("Reported Message. Thanks for the integrity!");
+        this.props.notificationAdded({
+          userId: this.props.postedBy._id,
+          message: `Your post with title ${this.props.headerText} was reported. Please look into the issue`,
+          type: "PostReported",
+          postId: this.props._id,
+        });
+      }
+    });
     this.setState({
       show: false,
       isDisabled: true,
@@ -103,7 +114,12 @@ class Post extends Component {
 
   deletecomment(e, commentId) {
     e.preventDefault();
-    deleteComment(commentId, this.props._id).then((data) => console.log(data));
+    deleteComment(commentId, this.props._id)
+      .then((data) => console.log(data))
+      .then(async () => {
+        await this.props.changePosts(this.props._id);
+        toast.success("deleted comment successfully");
+      });
   }
 
   rendercomments = (comments) => {
@@ -316,5 +332,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   changePosts: (params) => dispatch(changePosts(params)),
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Post);

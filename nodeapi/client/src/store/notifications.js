@@ -10,29 +10,36 @@ const slice = createSlice({
   },
   reducers: {
     notificationAdded: (state, action) => {
+      console.log("payload:", action.payload);
       addNotification(
         action.payload.userId,
         action.payload.message,
         action.payload.type,
-        action.payload.projectId
+        action.payload.projectId !== undefined
+          ? action.payload.projectId
+          : undefined,
+        action.payload.postId !== undefined ? action.payload.postId : undefined
       )
         .then((response) => {
           return response.json();
         })
         .then((user) => {
-          let notifications = user.user.notifications;
-          if (action.payload.userId === isAuthenticated().user._id) {
-            toast.dark(action.payload.message, {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
+          if (user.user !== undefined) {
+            console.log(user);
+            let notifications = user.user.notifications;
+            if (action.payload.userId === isAuthenticated().user._id) {
+              toast.dark(action.payload.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+            }
+            console.log(notifications);
           }
-          console.log(notifications);
         });
     },
     getNotified: (state, action) => {

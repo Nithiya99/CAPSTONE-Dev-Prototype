@@ -126,6 +126,10 @@ var userSchema = new mongoose.Schema({
         type: ObjectId,
         ref: "Project",
       },
+      postId: {
+        type: ObjectId,
+        ref: "Post",
+      },
     },
   ],
   social: {

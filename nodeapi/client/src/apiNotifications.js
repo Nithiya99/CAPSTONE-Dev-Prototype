@@ -1,16 +1,22 @@
-export const addNotification = (userId, message, type, projectId) => {
+export const addNotification = (userId, message, type, projectId, postId) => {
   let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let obj = {
+    notification: message,
+    type,
+  };
+  if (projectId !== undefined) {
+    obj[projectId] = projectId;
+  }
+  if (postId !== undefined) {
+    obj[postId] = postId;
+  }
   let settings = {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      notification: message,
-      type,
-      projectId,
-    }),
+    body: JSON.stringify(obj),
   };
   //   console.log(settings);
   return fetch(

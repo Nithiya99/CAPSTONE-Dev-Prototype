@@ -104,9 +104,12 @@ class showPost extends Component {
   deletecomment(e, commentId) {
     e.preventDefault();
     // console.log(this.state.post.post._id, commentId);
-    deleteComment(commentId, this.state.post.post._id).then((data) =>
-      console.log(data)
-    );
+    deleteComment(commentId, this.state.post.post._id)
+      .then((data) => console.log(data))
+      .then(async () => {
+        await this.props.changePosts(this.props._id);
+        toast.success("deleted comment successfully");
+      });
   }
 
   rendercomments = (comments) => {

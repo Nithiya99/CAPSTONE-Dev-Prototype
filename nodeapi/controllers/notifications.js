@@ -1,11 +1,21 @@
 exports.addNotification = (req, res) => {
   let user = req.profile;
-  user.notifications.push({
-    message: req.body.notification,
-    read: false,
-    notifType: req.body.type ? req.body.type : "request",
-    projectId: req.body.projectId ? req.body.projectId : "none",
-  });
+  if (req.body.projectId !== undefined) {
+    user.notifications.push({
+      message: req.body.notification,
+      read: false,
+      notifType: req.body.type ? req.body.type : "request",
+      projectId: req.body.projectId,
+    });
+  }
+  if (req.body.postId !== undefined) {
+    user.notifications.push({
+      message: req.body.notification,
+      read: false,
+      notifType: req.body.type ? req.body.type : "request",
+      postId: req.body.postId,
+    });
+  }
   user.newNotification = true;
   console.log(user.notifications);
   user.save(); //(err) => {
