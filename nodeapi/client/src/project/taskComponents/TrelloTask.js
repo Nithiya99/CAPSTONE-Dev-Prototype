@@ -191,8 +191,8 @@ class TrelloTask extends Component {
         // label: this.get_card_label(slackObject, task),
         description: (
           <>
-            <h1>{task.taskDescription}</h1>
-            <h4>{this.get_card_label(slackObject, task)}</h4>
+            <div className="lead">{task.taskDescription}</div>
+            <p>{this.get_card_label(slackObject, task)}</p>
           </>
         ),
         pessimisticTime: task.pessimisticTime,
