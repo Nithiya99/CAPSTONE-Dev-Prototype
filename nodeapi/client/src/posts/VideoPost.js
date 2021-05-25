@@ -155,6 +155,7 @@ class VideoPost extends Component {
       tags,
       comments,
       delete_button,
+      created,
     } = this.props;
     let counts = collect(liked_by).count();
     return (
@@ -176,7 +177,7 @@ class VideoPost extends Component {
                   {footerText}
                 </Link>
                 <span className="text-muted font-weight-bold">
-                  [Load Date and Time]
+                  {moment(created).format("DD-MM-YYYY h:mm a")}
                 </span>
               </div>
               <div className="ml-auto">

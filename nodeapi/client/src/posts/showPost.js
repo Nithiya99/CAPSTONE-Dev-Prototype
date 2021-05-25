@@ -179,7 +179,7 @@ class showPost extends Component {
                   {posted_by.name}
                 </Link>
                 <span className="text-muted font-weight-bold">
-                  [Load Date and Time]
+                  {moment(current_post.created).format("DD-MM-YYYY h:mm a")}
                 </span>
               </div>
             </div>

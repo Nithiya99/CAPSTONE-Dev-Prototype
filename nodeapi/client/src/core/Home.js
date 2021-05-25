@@ -218,7 +218,7 @@ class Home extends Component {
                         comments={post.comments}
                         liked_by={post.liked_by}
                         _id={post._id}
-                        postedOn={post.created}
+                        created={post.created}
                       />
                     );
                   if (post.postType === "youtubeVideo") {
@@ -233,7 +233,7 @@ class Home extends Component {
                         url={post.video}
                         metadataTitle={post.metadataTitle}
                         metadataAuthor={post.metadataAuthor}
-                        postedOn={post.created}
+                        created={post.created}
                       />
                     );
                   }
@@ -248,6 +248,7 @@ class Home extends Component {
                         _id={post._id}
                         comments={post.comments}
                         tags={post.tags}
+                        created={post.created}
                       />
                     );
                   if (post.postType === "image")
@@ -261,6 +262,7 @@ class Home extends Component {
                         _id={post._id}
                         comments={post.comments}
                         tags={post.tags}
+                        created={post.created}
                       />
                     );
                 })}

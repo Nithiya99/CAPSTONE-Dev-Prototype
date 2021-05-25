@@ -193,7 +193,7 @@ class YoutubePost extends Component {
                   {footerText}
                 </Link>
                 <span className="text-muted font-weight-bold">
-                  {created}[Load Date and Time]
+                  {moment(created).format("DD-MM-YYYY h:mm a")}
                 </span>
               </div>
               <div className="ml-auto">
