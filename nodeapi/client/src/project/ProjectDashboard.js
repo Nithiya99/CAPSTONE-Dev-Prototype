@@ -24,7 +24,7 @@ import { clearAll, setCriticalPath } from "../store/cpm";
 import RoleReq from "./RoleReq";
 import AssignedTo from "./AssignedTo";
 import UserRecommendation from "./UserRecommendation";
-
+import moment from "moment";
 class ProjectDashboard extends Component {
   state = {
     expectedTime: {},
@@ -85,14 +85,26 @@ class ProjectDashboard extends Component {
     }
     const { project } = this.props.location.state;
     // console.log(this.props.location);
+    // 25/5 26/5     23/6
+    // estimated date : 23/6
+    // no of days left : 23/6 - 26/5
     let today = new Date();
     let day1 = new Date(today.toUTCString());
-    let day2 = new Date(project.created);
-    let difference = Math.abs(day2 - day1);
-    let days = parseInt(difference / (1000 * 3600 * 24));
+    // let day2 = new Date(project.created);
+    // let difference = Math.abs(day2 - day1);
+    // let days = parseInt(difference / (1000 * 3600 * 24));
     // console.log(days);
     const { expectedTime, slacks, criticalPath, pert } = this.props;
     const { posts } = this.state;
+    let createDate = new Date(project.created);
+    let expectedDate = moment(createDate, "DD-MM-YYYY").add(
+      expectedTime,
+      "days"
+    );
+    const diffTime = Math.abs(expectedDate._d - day1);
+    const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    console.log("no. of days left:", duration);
+    console.log("expectedDate : ", expectedDate.format("DD-MM-YYYY"));
     // console.log(slacks);
     // if (slacks === undefined) return ;
     if (expectedTime === undefined) return null;
@@ -354,9 +366,9 @@ class ProjectDashboard extends Component {
                     </div>
                     <div className="card-body">
                       <h4>No. of days:</h4>
-                      <span>{days}</span>
+                      <span>{duration}</span>
                       <h4>Estimated date:</h4>
-                      <span>{expectedTime}</span>
+                      <span>{expectedDate.format("DD-MM-YYYY")}</span>
                       {slacks !== undefined ? (
                         <>
                           <h4>Tasks that can be slacked On:</h4>

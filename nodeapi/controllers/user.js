@@ -1,6 +1,7 @@
 const _ = require("lodash");
 const User = require("../models/user");
 const fs = require("fs");
+const sharp = require("sharp");
 exports.userById = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user) {
@@ -265,31 +266,35 @@ exports.addProfilePic = (req, res) => {
     api_key: "141328859214936",
     api_secret: "ped5_kvwuwzIV2YJxxkFkDKmKHw",
   });
-  cloudinary.uploader.upload(
-    file.destination + file.filename,
-    (err, result) => {
-      if (err) {
-        console.log("error:", err);
-        return res.status(400).json({ err });
-      }
-      console.log("result:", result);
-      fs.unlink(file.destination + file.filename, function (err) {
-        if (err && err.code == "ENOENT") {
-          // file doens't exist
-          console.info("File doesn't exist, won't remove it.");
-        } else if (err) {
-          // other errors, e.g. maybe we don't have enough permission
-          console.error("Error occurred while trying to remove file");
-        } else {
-          console.info(`removed`);
+  sharp("file.destination + file.filename")
+    .resize(1000, 1000)
+    .toFile(file.destination + file.filename, (data) => {
+      cloudinary.uploader.upload(
+        file.destination + file.filename,
+        (err, result) => {
+          if (err) {
+            console.log("error:", err);
+            return res.status(400).json({ err });
+          }
+          console.log("result:", result);
+          fs.unlink(file.destination + file.filename, function (err) {
+            if (err && err.code == "ENOENT") {
+              // file doens't exist
+              console.info("File doesn't exist, won't remove it.");
+            } else if (err) {
+              // other errors, e.g. maybe we don't have enough permission
+              console.error("Error occurred while trying to remove file");
+            } else {
+              console.info(`removed`);
+            }
+          });
+          let user = req.profile;
+          user.profilePictures.push(result.url);
+          user.save((err, result) => {
+            if (err) return res.status(400).json({ error: "cannot save dp" });
+            return res.status(200).json({ user: result });
+          });
         }
-      });
-      let user = req.profile;
-      user.profilePictures.push(result.url);
-      user.save((err, result) => {
-        if (err) return res.status(400).json({ error: "cannot save dp" });
-        return res.status(200).json({ user: result });
-      });
-    }
-  );
+      );
+    });
 };

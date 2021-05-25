@@ -155,7 +155,7 @@ class Notifications extends Component {
                 return (
                   <>
                     <div
-                      className="alert alert-custom alert-notice alert-light-success"
+                      className="alert alert-custom alert-notice alert-light-danger"
                       role="alert"
                     >
                       <div className="alert-icon">
@@ -168,11 +168,8 @@ class Notifications extends Component {
                       <div className="alert-text">
                         <Link
                           className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder"
-                          onClick={async () => {
-                            let obj = {};
-                            obj = await this.getTo(val);
-                            // console.log(obj);
-                            this.props.history.push(obj);
+                          to={{
+                            pathname: "/joinproject",
                           }}
                           // {
                           //   pathname: `/myprojects/dashboard/${project._id}`,
@@ -183,7 +180,7 @@ class Notifications extends Component {
                         </Link>
                       </div>
                     </div>
-                    <Link
+                    {/* <Link
                       to={{
                         pathname: "/joinproject",
                       }}
@@ -191,14 +188,14 @@ class Notifications extends Component {
                       //   pathname: `/myprojects/dashboard/${project._id}`,
                       //   state: { project: project },
                       // }
-                    >
+                    > 
                       <div
                         className="card-text ml-3 mt-1 mb-2 p-1"
                         style={{ width: "50rem" }}
                       >
                         {val.message}
                       </div>
-                    </Link>
+                    </Link>*/}
                   </>
                 );
               }

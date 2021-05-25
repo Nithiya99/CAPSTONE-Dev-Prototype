@@ -148,19 +148,11 @@ class TrelloTask extends Component {
   get_card_label = (slackObject, task) => {
     let card_label = "";
     if (slackObject[task.taskName] !== undefined) {
-      if (
-        slackObject[task.taskName].slack - slackObject[task.taskName].days >=
-        0
-      )
-        card_label =
-          slackObject[task.taskName].slack -
-          slackObject[task.taskName].days +
-          " days left";
+      if (slackObject[task.taskName].days >= 0)
+        card_label = slackObject[task.taskName].days + " days left";
       else
         card_label =
-          slackObject[task.taskName].days -
-          slackObject[task.taskName].slack +
-          " days overdue";
+          Math.abs(slackObject[task.taskName].days) + " days overdue";
     } else card_label = task.mostLikelyTime + " days left";
 
     if (task.status === "COMPLETED") card_label = "Completed";
@@ -170,6 +162,7 @@ class TrelloTask extends Component {
 
   get_card_style = (slackObject, task) => {
     let color = "";
+    console.log(task.taskName, "Object:", slackObject[task.taskName]);
     if (
       slackObject[task.taskName] !== undefined &&
       slackObject[task.taskName].overdue &&
@@ -195,12 +188,16 @@ class TrelloTask extends Component {
       var card = {
         id: task._id,
         title: task.taskName,
-        label: this.get_card_label(slackObject, task),
-        description: task.taskDescription,
+        // label: this.get_card_label(slackObject, task),
+        description: (
+          <>
+            <h1>{task.taskDescription}</h1>
+            <h4>{this.get_card_label(slackObject, task)}</h4>
+          </>
+        ),
         pessimisticTime: task.pessimisticTime,
         optimisticTime: task.optimisticTime,
         assigned: task.assignedTo,
-        desc: task.taskDescription,
         mostLikelyTime: task.mostLikelyTime,
         status: task.status,
         style: {

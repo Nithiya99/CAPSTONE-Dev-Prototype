@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import { updateProject, leaveProject } from "./apiProject";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { isAuthenticated } from "./../auth/index";
 import { getCurrentUser } from "./../user/apiUser";
-
+import ExitToAppTwoToneIcon from "@material-ui/icons/ExitToAppTwoTone";
 class LeaveProject extends Component {
   state = {};
-
   leaveproject = () => {
     const project = this.props.project;
     console.log(project);
-    let final_team = [], final_tasks = [], final_roles = [];
+    let final_team = [],
+      final_tasks = [],
+      final_roles = [];
     let tasks = project.tasks;
     tasks.forEach((task) => {
       let final_task = task;
@@ -34,8 +35,8 @@ class LeaveProject extends Component {
     });
 
     let roles = project.roles;
-    roles.map((role)=>{
-      if(role.assignedTo !== getCurrentUser()._id) final_roles.push(role);
+    roles.map((role) => {
+      if (role.assignedTo !== getCurrentUser()._id) final_roles.push(role);
     });
 
     let proj = {
@@ -51,7 +52,7 @@ class LeaveProject extends Component {
         console.log(data.error);
       } else {
         const token = isAuthenticated().token;
-        leaveProject(getCurrentUser()._id,project._id,token).then((data) => {
+        leaveProject(getCurrentUser()._id, project._id, token).then((data) => {
           if (data.error) {
             console.log(data.error);
           }
@@ -72,9 +73,15 @@ class LeaveProject extends Component {
   render() {
     return (
       <div>
-        <Button onClick={this.leaveConfirmed} variant="outline-danger">
-          Leave Project
-        </Button>
+        <OverlayTrigger
+          key="top"
+          placement="top"
+          overlay={<Tooltip id="top2">Leave Project</Tooltip>}
+        >
+          <Button onClick={this.leaveConfirmed} variant="danger">
+            <ExitToAppTwoToneIcon />
+          </Button>
+        </OverlayTrigger>
       </div>
     );
   }

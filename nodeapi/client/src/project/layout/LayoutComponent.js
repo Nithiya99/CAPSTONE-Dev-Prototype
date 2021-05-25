@@ -36,6 +36,7 @@ import {
 } from "../../store/cpm";
 import { updateTasks } from "../../store/tasks";
 import { getCurrentUser } from "./../../user/apiUser";
+import moment from "moment";
 const styles = (theme) => ({
   modal: {
     display: "flex",
@@ -249,18 +250,66 @@ class LayoutComponent extends Component {
       slackObject = newNodes.map((elem, index) => {
         // console.log(elem.id, pert.slack[elem.id]);
         if (index !== 0 && index !== 1) {
-          // console.log("Slack elem:", elem);
+          // console.log("Slack elem:", elem);                           // Website design layout
+          console.log("index:", index);
+          console.log("task:", elem.data.label);
           let created = elem.data.created;
+
+          // let earliestFinish = new Date(
+          //   pert.earliestFinishTimes[index] + created
+          // ); // 23/5 + 3
+          let createdDate = new Date(created);
+          let earliestFinish = moment(createdDate, "DD-MM-YYYY").add(
+            pert.earliestFinishTimes[index + 1],
+            "days"
+          );
+          earliestFinish = earliestFinish._d;
+          // let slack = new Date(pert.slack[elem.id]);
+          const diffTime = Math.abs(earliestFinish - createdDate);
+          const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          // console.log(duration);
           let today = new Date();
-          let day1 = new Date(today.toUTCString());
-          let day2 = new Date(created);
-          let difference = Math.abs(day2 - day1);
-          let days = parseInt(difference / (1000 * 3600 * 24));
+          let todayDate = new Date(today.toUTCString()); // 25/5
+          let earliestStart = moment(createdDate, "DD-MM-YYYY").add(
+            +pert.earliestStartTimes[index + 1],
+            "days"
+          );
+          earliestStart = earliestStart._d;
+          // console.log(todayDate, startTime._d);
+          const diffTime2 = Math.abs(todayDate - earliestStart);
+          let daysDone = Math.ceil(diffTime2 / (1000 * 60 * 60 * 24));
+          // console.log(daysDone);
+          let finaldiff = Math.abs(duration - daysDone);
+          let days = Math.round(
+            (earliestFinish - todayDate) / (1000 * 60 * 60 * 24)
+          );
+          console.log(earliestStart, todayDate, earliestFinish);
+          console.log(
+            "no. of days done:",
+            Math.round(todayDate - earliestStart) / (1000 * 60 * 60 * 24)
+          );
+          console.log(
+            "no. of days left:",
+            Math.round((earliestFinish - todayDate) / (1000 * 60 * 60 * 24))
+          );
+          days = pert.slack[elem.id] !== 0 ? days + pert.slack[elem.id] : days;
+          // 23/5 25/5 26/5
+          // console.log("slack:", pert.slack[elem.id]);
+          // console.log("day1:", duration);
+          // console.log("day2:", daysDone);
+          // console.log("days left:", days);
+          // console.log("Overdue", days >= 0 ? false : true);
           // console.log(elem.data.label + " " + days + " " + pert.slack[elem.id]);
           slackObject[elem.data.label] = {
             slack: pert.slack[elem.id],
-            days,
-            overdue: pert.slack[elem.id] < days ? true : false,
+            days: days,
+            daysPassed: Math.round(
+              (todayDate - earliestStart) / (1000 * 60 * 60 * 24)
+            ),
+            earliestStartDate: earliestStart,
+            todayDate: todayDate,
+            earliestFinishDate: earliestFinish,
+            overdue: days >= 0 ? false : true,
           };
           return slackObject;
         }
@@ -283,7 +332,7 @@ class LayoutComponent extends Component {
       criticalPathData = criticalPathData[criticalPathData.length - 1];
       console.log("criticalPathDataObject:", criticalPathData);
       this.props.setCriticalPath({ criticalPath: criticalPathData });
-
+      
       this.props.setExpectedTime({
         expectedTime: Math.floor(this.props.pert.latestFinishTimes.__end),
       });
