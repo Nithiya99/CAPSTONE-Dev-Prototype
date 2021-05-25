@@ -8,6 +8,8 @@ import { connect } from "react-redux";
 import { updateTasks, updateTrello } from "./../../store/tasks";
 import { toast, ToastContainer } from "react-toastify";
 import EditModel from "./EditModel";
+import moment from "moment";
+
 let data = {};
 let projleader = "";
 let tasks = [];
@@ -193,6 +195,21 @@ class TrelloTask extends Component {
           <>
             <div className="lead">{task.taskDescription}</div>
             <p>{this.get_card_label(slackObject, task)}</p>
+            {/* {slackObject[task.taskName].map((startDate) => (
+              <p>{startDate.earliestStartDate}</p>
+            ))} */}
+            <p>
+              Start By:{" "}
+              {moment(slackObject[task.taskName].earliestStartDate).format(
+                "DD-MM-YYYY"
+              )}
+            </p>
+            <p>
+              Finish By:{" "}
+              {moment(slackObject[task.taskName].earliestFinishDate).format(
+                "DD-MM-YYYY"
+              )}
+            </p>
           </>
         ),
         pessimisticTime: task.pessimisticTime,
