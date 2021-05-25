@@ -140,8 +140,11 @@ export const createVideoPost = async (video, title, tags, project) => {
       });
   }
 };
-const functioncall = (final_url, title, tags, project, token, userId) => {
+
+export const createPost = async (final_url, title, tags, project) => {
   console.log(final_url);
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
   let settings =
     project !== "Personal"
       ? {
@@ -178,54 +181,6 @@ const functioncall = (final_url, title, tags, project, token, userId) => {
     .catch((err) => {
       console.log(err);
     });
-};
-export const createPost = async (images, title, tags, project) => {
-  console.log(images);
-  let token = JSON.parse(localStorage.getItem("jwt")).token;
-  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
-
-  let final_url = [];
-  await images.map(async (image) => {
-    const data = new FormData();
-    data.append("title", title);
-    data.append("tags", tags);
-    data.append("myImage", image);
-    let settings = {
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    };
-    let response = await axios.post(
-      `http://localhost:3000/convertToWebp`,
-      data,
-      settings
-    );
-    let result = await response.data.result;
-    if (result.url) {
-      let url = result.url;
-      final_url.push(url);
-    }
-    if (final_url.length === images.length)
-      return functioncall(final_url, title, tags, project, token, userId);
-  });
-
-  // data.append("file", image);
-  // data.append("upload_preset", "workshaketrial");
-  // data.append("cloud_name", "workshaketrial");
-  // return fetch("https://api.cloudinary.com/v1_1/workshaketrial/image/upload", {
-  //   method: "post",
-  //   body: data,
-  // })
-  //   .then((res) => res.json())
-  //   .then((data) => {
-  //     //   setUrl(data.url);
-  //     if (data.url) {
-  //       let url = data.url;
-
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
 };
 
 export const likepost = (post_id) => {

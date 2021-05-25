@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { DropzoneArea } from "material-ui-dropzone";
 import { ToastContainer, toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
@@ -10,6 +10,8 @@ import { listmyprojects } from "./../project/apiProject";
 import Sentiment from "sentiment";
 import { useDispatch } from "react-redux";
 import { getPosts } from "./../store/posts";
+import axios from "axios";
+
 const sentiment = new Sentiment();
 function DragDropImages(props) {
   const dispatch = useDispatch();
@@ -90,17 +92,42 @@ function DragDropImages(props) {
     },
     [files]
   );
-  const postDetails = (image) => {
+  const postDetails = (images) => {
     if (title === "") toast.warning("Please enter the Title");
     else {
-      createPost(image, title, tags, project).then((data) => {
-        // console.log(data);
-        if (data.error) {
-          toast.warning(data.error);
-        } else {
-          toast.success("Created post Successfully");
-          dispatch(getPosts());
-          history.push("/home");
+      let final_url = [];
+      images.map(async (image, i) => {
+        const data = new FormData();
+        data.append("title", title);
+        data.append("tags", tags);
+        data.append("myImage", image);
+        let settings = {
+          headers: {
+            "content-type": "multipart/form-data",
+          },
+        };
+        let response = await axios.post(
+          `http://localhost:3000/convertToWebp`,
+          data,
+          settings
+        );
+        try {
+          let result = await response.data.result;
+          final_url.push(result.url);
+          if (final_url.length === images.length)
+            createPost(final_url, title, tags, project).then((data) => {
+              console.log(data);
+              if (data.error) {
+                toast.warning(data.error);
+              } else {
+                toast.success("Created post Successfully");
+                dispatch(getPosts());
+                history.push("/home");
+              }
+            });
+        } catch (e) {
+          console.log(e);
+          toast.warning("Please Try again");
         }
       });
     }
@@ -126,12 +153,20 @@ function DragDropImages(props) {
   return (
     <>
       <ToastContainer />
-      <TextField
+      {/* <TextField
         name="Title"
         onChange={(e) => onTextChange(e)}
         variant="outlined"
         label="Title"
         fullWidth
+      /> */}
+      <Form.Control
+        type="text"
+        placeholder="Title"
+        name="Title"
+        onChange={(e) => onTextChange(e)}
+        as="textarea"
+        rows={3}
       />
       <label>Project</label>
       <select class="custom-select" onChange={(e) => onChangeProject(e)}>

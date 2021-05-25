@@ -387,7 +387,7 @@ class Profile extends Component {
                   </div>
                 </Tab.Pane>
                 <Tab.Pane eventKey="posts">
-                  <div>
+                  <div className="userPosts">
                     {posts.map(
                       (post) =>
                         (post.postType === "video" && (

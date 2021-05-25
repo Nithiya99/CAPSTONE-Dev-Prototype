@@ -18,8 +18,8 @@ body {
   height: 60px;
 }
 
-.login-control{
-  background-color: #fff!important
+.login-control {
+  background-color: #fff !important;
 }
 
 /* .signin-wrapper {
@@ -30,7 +30,8 @@ body {
   height: 89vh;
 }
 
-.signin-wrapper .row .col-md-7, .signin-bg {
+.signin-wrapper .row .col-md-7,
+.signin-bg {
   background-image: url("./images/login.png");
   background-repeat: no-repeat;
   background-size: cover;
@@ -134,4 +135,9 @@ body {
 
 .postOptions {
   justify-content: space-around;
+}
+
+.userPosts {
+  height: 88vh !important;
+  overflow: auto;
 }

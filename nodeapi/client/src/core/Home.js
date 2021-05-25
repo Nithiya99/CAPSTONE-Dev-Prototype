@@ -152,116 +152,119 @@ class Home extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8">
-              <div className="jumbotron w-100">
+              {/* <div className="jumbotron w-100">
                 <h2>Home</h2>
                 <p className="lead">News Feed (Posts) will be here</p>
-              </div>
-              <div className="card card-custom gutter-b">
-                <div className="card-body">
-                  <div className="d-flex align-items-center">
-                    <div className="symbol symbol-40 symbol-light-warning mr-5">
-                      <span className="symbol-label">
-                        <img
-                          src={profilePic ? profilePic : DefaultProfile}
-                          className="h-75 align-self-end"
-                        />
+              </div> */}
+              <div className="">
+                <div className="card card-custom gutter-b">
+                  <div className="card-body">
+                    <div className="d-flex align-items-center">
+                      <div className="symbol symbol-40 symbol-light-warning mr-5">
+                        <span className="symbol-label">
+                          <img
+                            src={profilePic ? profilePic : DefaultProfile}
+                            className="h-75 align-self-end"
+                          />
+                        </span>
+                      </div>
+                      <span className="text-dark font-weight-bold font-size-lg">
+                        Hi {`${isAuthenticated().user.name}`}! Let us hear what
+                        this hustler did today, we're excited to know!
                       </span>
                     </div>
-                    <span className="text-dark font-weight-bold font-size-lg">
-                      Hi {`${isAuthenticated().user.name}`}! Let us hear what
-                      this hustler did today, we're excited to know!
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    id="typeText"
-                    className="form-control mt-3"
-                    onChange={(e) => this.textChange(e)}
-                  />
-                  {/* {youtubeUrl ? (
+                    <input
+                      type="text"
+                      id="typeText"
+                      className="form-control mt-3"
+                      onChange={(e) => this.textChange(e)}
+                    />
+                    {/* {youtubeUrl ? (
                     <Button>youtube post</Button>
                   ) : (
                     <Button>text post</Button>
                   )} */}
-                  <div className="postOptions d-flex align-items-center flex-wrap mr-2 mt-3">
-                    <div>
-                      <PostImage />
-                    </div>
-                    <div>
-                      <PostVideo />
-                    </div>
-                    <div>
-                      {this.state.sentimentScore >= -3 ? (
-                        <TextPost text={text} disabled={false} />
-                      ) : (
-                        <TextPost text={text} disabled={true} />
-                      )}
-                    </div>
-                    <div>
-                      {this.state.youtubeUrl ? (
-                        <YoutubeURLPost text={text} disabled={false} />
-                      ) : (
-                        <YoutubeURLPost text={text} disabled={true} />
-                      )}
+                    <div className="postOptions d-flex align-items-center flex-wrap mr-2 mt-3">
+                      <div>
+                        <PostImage />
+                      </div>
+                      <div>
+                        <PostVideo />
+                      </div>
+                      <div>
+                        {this.state.sentimentScore >= -3 ? (
+                          <TextPost text={text} disabled={false} />
+                        ) : (
+                          <TextPost text={text} disabled={true} />
+                        )}
+                      </div>
+                      <div>
+                        {this.state.youtubeUrl ? (
+                          <YoutubeURLPost text={text} disabled={false} />
+                        ) : (
+                          <YoutubeURLPost text={text} disabled={true} />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {posts.map((post) => {
+                  if (post.postType === "text")
+                    return (
+                      <TextPostView
+                        text={post.title}
+                        footerText={post.postedBy.name}
+                        comments={post.comments}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        postedOn={post.created}
+                      />
+                    );
+                  if (post.postType === "youtubeVideo") {
+                    // console.log(post);
+                    return (
+                      <YoutubePost
+                        headerText={post.title}
+                        comments={post.comments}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        footerText={post.postedBy.name}
+                        url={post.video}
+                        metadataTitle={post.metadataTitle}
+                        metadataAuthor={post.metadataAuthor}
+                        postedOn={post.created}
+                      />
+                    );
+                  }
+                  if (post.postType === "video")
+                    return (
+                      <VideoPost
+                        headerText={post.title}
+                        footerText={"by " + post.postedBy.name}
+                        cardText={post.video}
+                        videoUrl={post.video}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        comments={post.comments}
+                        tags={post.tags}
+                      />
+                    );
+                  if (post.postType === "image")
+                    return (
+                      <Post
+                        headerText={post.title}
+                        footerText={"by " + post.postedBy.name}
+                        cardText={post.photo}
+                        imageUrl={post.photo}
+                        liked_by={post.liked_by}
+                        _id={post._id}
+                        comments={post.comments}
+                        tags={post.tags}
+                      />
+                    );
+                })}
               </div>
-              {posts.map((post) => {
-                if (post.postType === "text")
-                  return (
-                    <TextPostView
-                      text={post.title}
-                      footerText={post.postedBy.name}
-                      comments={post.comments}
-                      liked_by={post.liked_by}
-                      _id={post._id}
-                      postedOn={post.created}
-                    />
-                  );
-                if (post.postType === "youtubeVideo") {
-                  // console.log(post);
-                  return (
-                    <YoutubePost
-                      headerText={post.title}
-                      comments={post.comments}
-                      liked_by={post.liked_by}
-                      _id={post._id}
-                      footerText={post.postedBy.name}
-                      url={post.video}
-                      metadataTitle={post.metadataTitle}
-                      metadataAuthor={post.metadataAuthor}
-                      postedOn={post.created}
-                    />
-                  );
-                }
-                if (post.postType === "video")
-                  return (
-                    <VideoPost
-                      headerText={post.title}
-                      footerText={"by " + post.postedBy.name}
-                      cardText={post.video}
-                      videoUrl={post.video}
-                      liked_by={post.liked_by}
-                      _id={post._id}
-                      comments={post.comments}
-                      tags={post.tags}
-                    />
-                  );
-                if (post.postType === "image")
-                  return (
-                    <Post
-                      headerText={post.title}
-                      footerText={"by " + post.postedBy.name}
-                      cardText={post.photo}
-                      imageUrl={post.photo}
-                      liked_by={post.liked_by}
-                      _id={post._id}
-                      comments={post.comments}
-                      tags={post.tags}
-                    />
-                  );
-              })}
             </div>
             <div className="col-md-4">
               <ProjectRecommendation />
