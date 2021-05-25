@@ -4,7 +4,7 @@ import { signout, isAuthenticated } from "../auth";
 import { clearNotifications } from "../store/notifications";
 import "../styles.css";
 import { Nav, DropdownButton, Dropdown } from "react-bootstrap";
-import Logo from "../images/logo-letter-5.png";
+import Logo from "../images/logo5.png";
 import PersonTwoToneIcon from "@material-ui/icons/PersonTwoTone";
 
 import { useDispatch } from "react-redux";
