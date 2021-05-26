@@ -17,6 +17,7 @@ const {
   blockuser,
   unblockuser,
   addProfilePic,
+  blockfollower,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const bodyParser = require("body-parser");
@@ -50,6 +51,7 @@ router.get("/friends/:userId", requireSignin, getfriends);
 router.put("/clearchat", requireSignin, clearchat);
 router.put("/blockuser", requireSignin, blockuser);
 router.put("/unblockuser", requireSignin, unblockuser);
+router.put("/blockfollower", requireSignin, blockfollower);
 router.put(
   "/user/profilePicture/:userId",
   requireSignin,

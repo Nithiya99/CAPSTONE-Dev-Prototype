@@ -36,6 +36,9 @@ import YoutubePost from "./../posts/YoutubePost";
 import { getPostsOfUser } from "../posts/apiPosts";
 import { notificationAdded } from "../store/notifications";
 import { ToastContainer } from "react-toastify";
+import { sortedLastIndex } from "lodash";
+import Following from "./Following";
+import Followers from "./Followers";
 class Profile extends Component {
   constructor() {
     super();
@@ -212,6 +215,16 @@ class Profile extends Component {
                         {` ${new Date(user.created).toDateString()}`}
                       </span>
                     </div>
+                    {user._id === getCurrentUser()._id && (
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <button className="btn btn-clean">
+                          <Following following_users={user.following} />
+                        </button>
+                        <button className="btn btn-clean">
+                          <Followers followers_users={user.followers} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <Nav variant="pills" className="flex-column mt-3">
                     <Nav.Item>

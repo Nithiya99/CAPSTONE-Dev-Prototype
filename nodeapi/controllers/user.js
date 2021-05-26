@@ -298,3 +298,27 @@ exports.addProfilePic = (req, res) => {
       );
     });
 };
+
+exports.blockfollower = (req, res) => {
+  User.findById(req.body.currentUser).exec((err, user) => {
+    if (err || !user) console.log("user not found");
+    else {
+      user.followers.pull(req.body.follower);
+      if (user.following.includes(req.body.follower))
+        user.following.pull(req.body.follower);
+      user.blocked_users.push(req.body.follower);
+      user.save();
+    }
+  });
+  User.findById(req.body.follower).exec((err, user) => {
+    if (err || !user) console.log("user not found");
+    else {
+      user.following.pull(req.body.currentUser);
+      if (user.followers.includes(req.body.currentUser))
+        user.followers.pull(req.body.currentUser);
+      user.blocked_by.push(req.body.currentUser);
+      user.save();
+    }
+  });
+  return res.status(200).json("User Blocked");
+};
