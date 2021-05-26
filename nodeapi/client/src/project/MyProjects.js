@@ -49,11 +49,12 @@ class MyProjects extends Component {
       data.userProjects.map((project, index) => {
         //Leader name
         // let number = index;
-        getUserById(project.leader).then((data) => {
-          projectLeaderNames[project._id] = data.user.name;
-          // console.log(projectLeaderNames);
-          this.setState({ projectLeaderNames });
-        });
+        if (project.leader !== undefined)
+          getUserById(project.leader).then((data) => {
+            projectLeaderNames[project._id] = data.user.name;
+            // console.log(projectLeaderNames);
+            this.setState({ projectLeaderNames });
+          });
         // var date = moment(new Date(project.created.substr(0, 16)));
         // console.log(date.format("DD-MMM-YYYY"));
 

@@ -401,6 +401,8 @@ class Profile extends Component {
                             comments={post.comments}
                             tags={post.tags}
                             delete_button={this.state.delete_button}
+                            reportCounter={post.reportCounter}
+                            postedBy={post.postedBy}
                           />
                         )) ||
                         (post.postType === "image" && (
@@ -414,6 +416,8 @@ class Profile extends Component {
                             comments={post.comments}
                             tags={post.tags}
                             delete_button={this.state.delete_button}
+                            reportCounter={post.reportCounter}
+                            postedBy={post.postedBy}
                           />
                         )) ||
                         (post.postType === "text" && (
@@ -424,6 +428,8 @@ class Profile extends Component {
                             liked_by={post.liked_by}
                             _id={post._id}
                             delete_button={this.state.delete_button}
+                            reportCounter={post.reportCounter}
+                            postedBy={post.postedBy}
                           />
                         )) ||
                         (post.postType === "youtubeVideo" && (
@@ -437,6 +443,8 @@ class Profile extends Component {
                             metadataTitle={post.metadataTitle}
                             metadataAuthor={post.metadataAuthor}
                             delete_button={this.state.delete_button}
+                            reportCounter={post.reportCounter}
+                            postedBy={post.postedBy}
                           />
                         ))
                     )}
