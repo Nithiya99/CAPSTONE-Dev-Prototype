@@ -6,6 +6,7 @@ const webp = require("webp-converter");
 const sharp = require("sharp");
 const multer = require("multer");
 const path = require("path");
+const e = require("cors");
 webp.grant_permission();
 
 exports.postById = (req, res, next, id) => {
@@ -30,13 +31,17 @@ exports.reportPost = (req, res) => {
   if (!post.reportCounter.includes(user._id)) post.reportCounter.push(user._id);
   if (post.reportCounter.length >= 3) {
     Post.findByIdAndDelete(post._id, function (err) {
-      if (err) console.log(err);
-      console.log("Successful deletion");
+      if (err)
+        return res.status(400).json({ error: "Post could not be found" });
+      else {
+        return res.status(200).json({ message: "Post is Deleted." });
+      }
     });
+  } else {
+    post.save();
+    console.log(post);
+    return res.status(200).json({ message: "Post is reported" });
   }
-  post.save();
-  console.log(post);
-  return res.status(200).json({ message: "Post is reported" });
 };
 
 exports.getPosts = (req, res) => {

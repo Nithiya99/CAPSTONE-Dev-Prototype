@@ -4,7 +4,6 @@ import { Accordion, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 const similarity = require("sentence-similarity");
 const similarityScore = require("similarity-score");
-
 class UserRecommendation extends Component {
   constructor(props) {
     super(props);

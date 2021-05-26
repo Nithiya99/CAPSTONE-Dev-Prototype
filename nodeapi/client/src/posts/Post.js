@@ -77,14 +77,24 @@ class Post extends Component {
 
   handleSubmitClicked = () => {
     reportpost(this.props._id).then((data) => {
-      if (data.message !== undefined) {
-        toast.error("Reported Message. Thanks for the integrity!");
+      if (data.message === "Post is Deleted.") {
+        toast.error("Reported Post. Thanks for the integrity!");
         this.props.notificationAdded({
           userId: this.props.postedBy._id,
-          message: `Your post with title ${this.props.headerText} was reported. Please look into the issue`,
+          message: `Your post with title ${this.props.headerText} was reported by 3 or more people and deleted. Please, follow regulations`,
           type: "PostReported",
           postId: this.props._id,
         });
+      } else {
+        if (data.message !== undefined) {
+          toast.error("Reported Post. Thanks for the integrity!");
+          this.props.notificationAdded({
+            userId: this.props.postedBy._id,
+            message: `Your post with title ${this.props.headerText} was reported. Please look into the issue`,
+            type: "PostReported",
+            postId: this.props._id,
+          });
+        }
       }
     });
     this.setState({

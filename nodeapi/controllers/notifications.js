@@ -1,5 +1,7 @@
 exports.addNotification = (req, res) => {
   let user = req.profile;
+  console.log(req.body);
+  console.log(user);
   if (req.body.projectId !== undefined) {
     user.notifications.push({
       message: req.body.notification,
@@ -15,9 +17,10 @@ exports.addNotification = (req, res) => {
       notifType: req.body.type ? req.body.type : "request",
       postId: req.body.postId,
     });
+    console.log(user.notifications);
   }
   user.newNotification = true;
-  console.log(user.notifications);
+  // console.log(user.notifications);
   user.save(); //(err) => {
   //   if (err)
   //     return res.status !== undefined

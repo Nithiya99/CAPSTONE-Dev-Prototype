@@ -198,7 +198,7 @@ class TrelloTask extends Component {
             {/* {slackObject[task.taskName].map((startDate) => (
               <p>{startDate.earliestStartDate}</p>
             ))} */}
-            <p>
+            {/* <p>
               Start By:{" "}
               {moment(slackObject[task.taskName].earliestStartDate).format(
                 "DD-MM-YYYY"
@@ -209,7 +209,7 @@ class TrelloTask extends Component {
               {moment(slackObject[task.taskName].earliestFinishDate).format(
                 "DD-MM-YYYY"
               )}
-            </p>
+            </p> */}
           </>
         ),
         pessimisticTime: task.pessimisticTime,

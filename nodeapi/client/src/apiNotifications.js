@@ -5,10 +5,10 @@ export const addNotification = (userId, message, type, projectId, postId) => {
     type,
   };
   if (projectId !== undefined) {
-    obj[projectId] = projectId;
+    obj["projectId"] = projectId;
   }
   if (postId !== undefined) {
-    obj[postId] = postId;
+    obj["postId"] = postId;
   }
   let settings = {
     method: "PUT",

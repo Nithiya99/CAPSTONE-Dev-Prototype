@@ -3,7 +3,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import { ToastContainer, toast } from "react-toastify";
 import Heart from "react-animated-heart";
 import { getCurrentUser } from "./../user/apiUser";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import DefaultProfile from "../images/avatar.png";
 import {
   likepost,
@@ -37,8 +37,11 @@ class showPost extends Component {
     post: {},
     loggedin: false,
     post_id: String,
+    post_title: "",
+    postedBy_id: "",
     sentimentScore: null,
     show: false,
+    redirect: false,
   };
 
   componentDidMount() {
@@ -47,6 +50,8 @@ class showPost extends Component {
       this.setState({
         post: data,
         post_id: post_id,
+        postedBy_id: data.post.postedBy._id,
+        post_title: data.post.title,
       });
       if (isAuthenticated()) {
         this.setState({ loggedin: true, id: getCurrentUser()._id });
@@ -59,7 +64,28 @@ class showPost extends Component {
   }
 
   handleSubmitClicked = () => {
-    reportpost(this.props._id);
+    reportpost(this.state.post_id).then((data) => {
+      if (data.message === "Post is Deleted.") {
+        toast.error("Reported Post. Thanks for the integrity!");
+        this.props.notificationAdded({
+          userId: this.state.postedBy_id,
+          message: `Your post with title ${this.state.post_title} was reported by 3 or more people and deleted. Please, follow regulations`,
+          type: "PostReported",
+          postId: this.state.post_id,
+        });
+        this.setState({ redirect: true });
+      } else {
+        if (data.message !== undefined) {
+          toast.error("Reported Post. Thanks for the integrity!");
+          this.props.notificationAdded({
+            userId: this.state.postedBy_id,
+            message: `Your post with title ${this.state.title} was reported. Please look into the issue`,
+            type: "PostReported",
+            postId: this.state.post_id,
+          });
+        }
+      }
+    });
     this.setState({
       show: false,
       isDisabled: true,
@@ -152,6 +178,8 @@ class showPost extends Component {
   };
 
   render() {
+    const { redirect } = this.state;
+    if (redirect === true) return <Redirect to={`/home`} />;
     let post = this.state.post.post;
     const current_post = { ...post };
     let type = current_post.postType;
