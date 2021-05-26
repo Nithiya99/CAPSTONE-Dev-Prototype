@@ -17,6 +17,7 @@ import {
   clearNotifications,
   setSegregatedNotifications,
 } from "../store/notifications";
+import FeedbackForm from "./../project/FeedbackForm";
 const BASE_URL = process.env.REACT_APP_API_URL;
 class Notifications extends Component {
   state = {
@@ -304,6 +305,19 @@ class Notifications extends Component {
                         {val.message}
                       </div>
                     </Link> */}
+                  </>
+                );
+              }
+              if (val.notifType === "FeedbackForm") {
+                console.log("FeedbackForm:", val);
+                return (
+                  <>
+                    <FeedbackForm
+                      type={val.notifType}
+                      id={val._id}
+                      message={val.message}
+                      projectId={val.projectId}
+                    />
                   </>
                 );
               }
