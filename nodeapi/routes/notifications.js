@@ -5,6 +5,7 @@ const { userById } = require("../controllers/user");
 const {
   addNotification,
   getNotifications,
+  removeNotification,
 } = require("../controllers/notifications");
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.put(
   addNotification
 );
 router.get("/notifications/:userId", requireSignin, getNotifications);
-
+router.put("/notifications/remove/:userId", requireSignin, removeNotification);
 router.param("userId", userById);
 
 module.exports = router;

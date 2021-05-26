@@ -144,6 +144,7 @@ class MyProjects extends Component {
           className="subheader py-2 py-lg-6  subheader-transparent "
           id="kt_subheader"
         >
+          <ToastContainer />
           <div className=" container  d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
             <div className="d-flex align-items-center flex-wrap mr-2">
               <h5 className="text-dark font-weight-bold mt-2 mb-2 mr-5">
@@ -391,12 +392,18 @@ class MyProjects extends Component {
                                           )}
                                         </td>
                                         <td>
-                                          <button className="btn btn-info">
-                                            <RecommendedRolePeople
-                                              project={project}
-                                              role={role}
-                                            />
-                                          </button>
+                                          {getCurrentUser()._id ===
+                                            project.leader &&
+                                          role.assignedTo === undefined ? (
+                                            <button className="btn btn-info">
+                                              <RecommendedRolePeople
+                                                project={project}
+                                                role={role}
+                                              />
+                                            </button>
+                                          ) : (
+                                            <></>
+                                          )}
                                         </td>
                                       </tr>
                                     </>

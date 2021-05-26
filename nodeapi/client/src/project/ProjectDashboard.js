@@ -25,6 +25,7 @@ import AssignedTo from "./AssignedTo";
 import UserRecommendation from "./UserRecommendation";
 import moment from "moment";
 import RecommendedRolePeople from "./RecommendedRolePeople";
+import { ToastContainer } from "react-toastify";
 class ProjectDashboard extends Component {
   state = {
     expectedTime: {},
@@ -117,6 +118,7 @@ class ProjectDashboard extends Component {
     if (expectedTime === undefined) return null;
     return (
       <div className="pt-5">
+        <ToastContainer />
         <Tab.Container id="left-tabs-example" defaultActiveKey="projStats">
           <Row>
             <Col sm={2}>
@@ -337,12 +339,17 @@ class ProjectDashboard extends Component {
                                     )}
                                   </td>
                                   <td>
-                                    <button className="btn btn-info">
-                                      <RecommendedRolePeople
-                                        project={project}
-                                        role={role}
-                                      />
-                                    </button>
+                                    {getCurrentUser()._id === project.leader &&
+                                    role.assignedTo === undefined ? (
+                                      <button className="btn btn-info">
+                                        <RecommendedRolePeople
+                                          project={project}
+                                          role={role}
+                                        />
+                                      </button>
+                                    ) : (
+                                      <></>
+                                    )}
                                   </td>
                                 </tr>
                               </>

@@ -1,7 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { addNotification, getNotifications } from "./../apiNotifications";
 import { toast } from "react-toastify";
 import { isAuthenticated } from "../auth";
+
 const slice = createSlice({
   name: "notifications",
   initialState: {
@@ -18,7 +19,13 @@ const slice = createSlice({
         action.payload.projectId !== undefined
           ? action.payload.projectId
           : undefined,
-        action.payload.postId !== undefined ? action.payload.postId : undefined
+        action.payload.postId !== undefined ? action.payload.postId : undefined,
+        action.payload.userObjId !== undefined
+          ? action.payload.userObjId
+          : undefined,
+        action.payload.sentBy !== undefined ? action.payload.sentBy : undefined,
+        action.payload.sentTo !== undefined ? action.payload.sentTo : undefined,
+        action.payload.roleId !== undefined ? action.payload.roleId : undefined
       )
         .then((response) => {
           return response.json();
@@ -58,6 +65,10 @@ const slice = createSlice({
       const segregatedNotificationsObj = action.payload.segregatedNotifications;
       void (state.segregatedNotifications = segregatedNotificationsObj);
     },
+    setNotifications: (state, action) => {
+      const notifications = action.payload.notifications;
+      void (state.notifications = notifications);
+    },
   },
 });
 export const {
@@ -65,5 +76,6 @@ export const {
   getNotified,
   clearNotifications,
   setSegregatedNotifications,
+  setNotifications,
 } = slice.actions;
 export default slice.reducer;

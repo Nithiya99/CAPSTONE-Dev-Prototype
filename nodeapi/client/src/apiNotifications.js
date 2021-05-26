@@ -1,4 +1,14 @@
-export const addNotification = (userId, message, type, projectId, postId) => {
+export const addNotification = (
+  userId,
+  message,
+  type,
+  projectId,
+  postId,
+  userObjId,
+  sentBy,
+  sentTo,
+  roleId
+) => {
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let obj = {
     notification: message,
@@ -10,6 +20,19 @@ export const addNotification = (userId, message, type, projectId, postId) => {
   if (postId !== undefined) {
     obj["postId"] = postId;
   }
+  if (userId !== undefined) {
+    obj["userObjId"] = userObjId;
+  }
+  if (sentBy !== undefined) {
+    obj["sentBy"] = sentBy;
+  }
+  if (sentTo !== undefined) {
+    obj["sentTo"] = sentTo;
+  }
+  if (roleId !== undefined) {
+    obj["roleId"] = roleId;
+  }
+  console.log("Obj:", obj);
   let settings = {
     method: "PUT",
     headers: {
@@ -35,4 +58,26 @@ export const getNotifications = () => {
     },
   };
   return fetch(`http://localhost:8081/notifications/${userId}`, requestObj);
+};
+
+export const removeNotificationId = (userId, notifId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let requestObj = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ notifId }),
+  };
+  console.log(userId, notifId, requestObj);
+  return fetch(
+    `http://localhost:3000/notifications/remove/${userId}`,
+    requestObj
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      // console.log(data);
+      return data;
+    });
 };

@@ -198,31 +198,25 @@ exports.acceptRequest = (req, res) => {
   let roleId = req.body.roleId;
   project.roles.map((role) => {
     if (leader.toString() === project.leader.toString()) {
-      if (userIsPresent(role.requestBy, acceptId)) {
-        if (roleId.toString() === role._id.toString()) {
-          role.assignedTo = acceptId;
-          role.requestBy = [];
-          project.team.push(acceptId);
-          project.save((err) => {
-            if (err) res.status(400).json({ err });
-            User.findById(acceptId).exec((err, user) => {
-              if (err || !user) {
-                return;
-              }
-              user.projects.push(project._id);
-              // user.save();
-              updateUserCompletion(user);
-            });
+      if (roleId.toString() === role._id.toString()) {
+        role.assignedTo = acceptId;
+        role.requestBy = [];
+        project.team.push(acceptId);
+        project.save((err) => {
+          if (err) res.status(400).json({ err });
+          User.findById(acceptId).exec((err, user) => {
+            if (err || !user) {
+              return;
+            }
+            user.projects.push(project._id);
+            // user.save();
+            updateUserCompletion(user);
           });
-          res.status(200).json({ role });
-        }
-      } else {
-        res.status(400).json({
-          err: "User has not requested",
         });
+        return res.status(200).json({ role });
       }
     } else {
-      res.status(400).json({
+      return res.status(400).json({
         err: "Not Authorized to Perform this action",
       });
     }
@@ -241,23 +235,21 @@ exports.declineRequest = (req, res) => {
   let leader = req.profile._id;
   let rejectId = req.body.rejectUserId;
   let roleId = req.body.roleId;
+  // console.log(project._id, leader, rejectId, roleId);
   project.roles.map((role) => {
     if (leader.toString() === project.leader.toString()) {
-      if (userIsPresent(role.requestBy, rejectId)) {
-        if (roleId.toString() === role._id.toString()) {
+      if (roleId.toString() === role._id.toString()) {
+        if (role.requestBy.includes(rejectId)) {
           removeRequest(role.requestBy, rejectId);
           project.save((err) => {
             if (err) res.status(400).json({ err });
           });
-          res.status(200).json({ role });
         }
-      } else {
-        res.status(400).json({
-          err: "User has not requested",
-        });
+        console.log(role);
+        return res.status(200).json({ role });
       }
     } else {
-      res.status(400).json({
+      return res.status(400).json({
         err: "Not Authorized to Perform this action",
       });
     }

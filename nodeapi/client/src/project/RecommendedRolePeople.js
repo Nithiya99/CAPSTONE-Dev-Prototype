@@ -12,7 +12,7 @@ const RecommendedRolePeople = ({ role, project }) => {
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header>Most suitable people for Role</Modal.Header>
         <Modal.Body>
-          <User_Role role={role} leader={project.leader} />
+          <User_Role role={role} leader={project.leader} project={project} />
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={() => setShow(false)}>Close</Button>

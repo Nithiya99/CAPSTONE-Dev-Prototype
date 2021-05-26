@@ -21,6 +21,8 @@ import { isAuthenticated } from "../auth";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import SearchUserBar from "./SearchUserBar";
+import { notificationAdded } from "../store/notifications";
+import { ToastContainer } from "react-toastify";
 const onUnBlockUser = (e, user) => {
   let current_user_id = getCurrentUser()._id;
   let client_user_id = user._id;
@@ -40,6 +42,7 @@ class Users extends Component {
     };
   }
   componentDidMount() {
+    // console.log(getCurrentUser());
     list().then((data) => {
       if (data.error) {
         console.log(data.error);
@@ -130,10 +133,25 @@ class Users extends Component {
                       className="btn btn-raised btn-primary ml-3"
                       onClick={(e) =>
                         followUser(e, user._id).then(
-                          (data) =>
+                          (data) => {
                             this.props.updateFollowing({
                               following: data.user.following,
-                            })
+                            });
+                            this.props.notificationAdded({
+                              userId: user._id,
+                              message: `${
+                                getCurrentUser().name
+                              } has followed you.`,
+                              type: "FollowedYou",
+                              userObjId: getCurrentUser()._id,
+                            });
+                            this.props.notificationAdded({
+                              userId: getCurrentUser()._id,
+                              message: `Followed ${user.name}!`,
+                              type: "StartedFollowing",
+                              userObjId: user._id,
+                            });
+                          }
                           // console.log(data.user.following)
                         )
                       }
@@ -199,6 +217,7 @@ class Users extends Component {
     console.log(final_blocked);
     return (
       <>
+        <ToastContainer />
         <div
           className="subheader py-2 py-lg-6  subheader-transparent "
           id="kt_subheader"
@@ -243,6 +262,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   updateFollowing: (params) => dispatch(updateFollowing(params)),
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Users);

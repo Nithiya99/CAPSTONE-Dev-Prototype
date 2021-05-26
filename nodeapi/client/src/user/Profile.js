@@ -34,6 +34,8 @@ import VideoPost from "./../posts/VideoPost";
 import TextPostView from "./../posts/TextPostView";
 import YoutubePost from "./../posts/YoutubePost";
 import { getPostsOfUser } from "../posts/apiPosts";
+import { notificationAdded } from "../store/notifications";
+import { ToastContainer } from "react-toastify";
 class Profile extends Component {
   constructor() {
     super();
@@ -104,6 +106,7 @@ class Profile extends Component {
     if (posts === undefined) return null;
     return (
       <div className="container mt-5">
+        <ToastContainer />
         <Tab.Container id="left-tabs-example" defaultActiveKey="personalInfo">
           <Row>
             <Col sm={3}>
@@ -159,11 +162,25 @@ class Profile extends Component {
                               <button
                                 className="btn btn-raised btn-primary"
                                 onClick={(e) =>
-                                  followUser(e, user._id).then((data) =>
+                                  followUser(e, user._id).then((data) => {
                                     this.props.updateFollowing({
                                       following: data.user.following,
-                                    })
-                                  )
+                                    });
+                                    this.props.notificationAdded({
+                                      userId: user._id,
+                                      message: `${
+                                        getCurrentUser().name
+                                      } has followed you.`,
+                                      type: "FollowedYou",
+                                      userObjId: getCurrentUser()._id,
+                                    });
+                                    this.props.notificationAdded({
+                                      userId: getCurrentUser()._id,
+                                      message: `Followed ${user.name}!`,
+                                      type: "StartedFollowing",
+                                      userObjId: user._id,
+                                    });
+                                  })
                                 }
                               >
                                 Follow <PersonAddIcon />
@@ -465,5 +482,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   updateFollowing: (params) => dispatch(updateFollowing(params)),
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

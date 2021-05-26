@@ -16,8 +16,15 @@ import {
   getNotified,
   clearNotifications,
   setSegregatedNotifications,
+  notificationAdded,
+  setNotifications,
 } from "../store/notifications";
 import FeedbackForm from "./../project/FeedbackForm";
+import { getCurrentUser } from "../user/apiUser";
+import { acceptRequest, declineRequest } from "./../project/apiProject";
+import { toast, ToastContainer } from "react-toastify";
+import { removeAndUpdateNotifications } from "./../store/notifications";
+import { removeNotificationId } from "./../apiNotifications";
 const BASE_URL = process.env.REACT_APP_API_URL;
 class Notifications extends Component {
   state = {
@@ -48,7 +55,7 @@ class Notifications extends Component {
         this.props.setSegregatedNotifications({
           segregatedNotifications: notificationGroupedObject,
         });
-        console.log(notifications);
+        // console.log(notifications);
       });
     // const { segregatedNotifications } = this.props;
     // console.log(segregatedNotifications);
@@ -76,6 +83,7 @@ class Notifications extends Component {
 
     return (
       <>
+        <ToastContainer />
         <div
           className="subheader py-2 py-lg-6  subheader-transparent "
           id="kt_subheader"
@@ -309,7 +317,7 @@ class Notifications extends Component {
                 );
               }
               if (val.notifType === "FeedbackForm") {
-                console.log("FeedbackForm:", val);
+                // console.log("FeedbackForm:", val);
                 return (
                   <>
                     <FeedbackForm
@@ -321,6 +329,217 @@ class Notifications extends Component {
                   </>
                 );
               }
+              if (val.notifType === "InviteToProject") {
+                // console.log("FeedbackForm:", val);
+                return (
+                  <>
+                    <>
+                      {" "}
+                      <div
+                        className="alert alert-custom alert-notice alert-light-warning"
+                        role="alert"
+                      >
+                        <div className="alert-icon">
+                          <img
+                            src={NewAddIcon}
+                            alt="Logo"
+                            style={{ height: "40px" }}
+                          />
+                        </div>
+                        <div className="alert-text">
+                          <Link
+                            className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder"
+                            to={`/joinproject`}
+                            // {
+                            //   pathname: `/myprojects/dashboard/${project._id}`,
+                            //   state: { project: project },
+                            // }
+                          >
+                            {val.message}
+                          </Link>
+                        </div>
+                      </div>
+                    </>
+                  </>
+                );
+              }
+              if (
+                val.notifType === "StartedFollowing" ||
+                val.notifType === "FollowedYou"
+              ) {
+                // console.log("StartedFollowing:", val);
+                // console.log("Current user id: ", getCurrentUser()._id);
+                return (
+                  <>
+                    {" "}
+                    <div
+                      className="alert alert-custom alert-notice alert-light-warning"
+                      role="alert"
+                    >
+                      <div className="alert-icon">
+                        <img
+                          src={NewAddIcon}
+                          alt="Logo"
+                          style={{ height: "40px" }}
+                        />
+                      </div>
+                      <div className="alert-text">
+                        <Link
+                          className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder"
+                          to={`/user/${val.userObjId}`}
+                          // {
+                          //   pathname: `/myprojects/dashboard/${project._id}`,
+                          //   state: { project: project },
+                          // }
+                        >
+                          {val.message}
+                        </Link>
+                      </div>
+                    </div>
+                  </>
+                );
+              }
+              if (val.notifType === "InviteToRole") {
+                // console.log("StartedFollowing:", val);
+                // console.log("Current user id: ", getCurrentUser()._id);
+                console.log(val);
+                return (
+                  <>
+                    <>
+                      {" "}
+                      <div
+                        className="alert alert-custom alert-notice alert-light-warning"
+                        role="alert"
+                      >
+                        <div className="alert-icon">
+                          <img
+                            src={NewAddIcon}
+                            alt="Logo"
+                            style={{ height: "40px" }}
+                          />
+                        </div>
+                        <div className="alert-text">
+                          <Link
+                            className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder"
+                            to={`/joinproject`}
+                            // {
+                            //   pathname: `/myprojects/dashboard/${project._id}`,
+                            //   state: { project: project },
+                            // }
+                          >
+                            {val.message}
+                          </Link>
+                          <Button
+                            onClick={() => {
+                              // console.log(
+                              //   val.sentBy,
+                              //   val.projectId,
+                              //   val.sentTo,
+                              //   val.roleId
+                              // );
+                              acceptRequest(
+                                val.sentBy,
+                                val.projectId,
+                                val.sentTo,
+                                val.roleId
+                              )
+                                .then((res) => {
+                                  console.log(res);
+                                  this.props.notificationAdded({
+                                    userId: val.sentBy,
+                                    message: `New Role (${
+                                      res.role.roleName
+                                    }) Accepted by ${
+                                      getCurrentUser().name
+                                    }, Congrats on the new Member!`,
+                                    type: "RoleAcceptedInNotif",
+                                    projectId: val.projectId,
+                                  });
+                                  this.props.notificationAdded({
+                                    userId: getCurrentUser()._id,
+                                    message: `New Role (${res.role.roleName})! time to show off my skills B)`,
+                                    type: "RoleAcceptedInNotif",
+                                    projectId: val.projectId,
+                                  });
+                                })
+                                .then(() => {
+                                  removeNotificationId(
+                                    getCurrentUser()._id,
+                                    val._id
+                                  ).then((data) => {
+                                    if (data.user !== undefined) {
+                                      console.log("removed notif");
+                                      window.location.reload();
+                                    }
+                                  });
+                                });
+                            }}
+                          >
+                            Accept
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              //  declineRequest(
+                              //     getCurrentUser()._id,
+                              //     projectId,
+                              //     user._id,
+                              //     roleId
+                              //   ).then((res) => {
+                              //     console.log(res);
+                              //     this.props.notificationAdded({
+                              //       userId: user._id,
+                              //       message: `Role Declined by ${getCurrentUser().name} :(`,
+                              //       type: "RoleDeclined",
+                              //       projectId: projectId,
+                              //     });
+                              //   });
+                              // }}
+                              declineRequest(
+                                val.sentBy,
+                                val.projectId,
+                                val.sentTo,
+                                val.roleId
+                              )
+                                .then((res) => {
+                                  console.log(res);
+                                  this.props.notificationAdded({
+                                    userId: val.sentBy,
+                                    message: `Role (${
+                                      res.role.roleName
+                                    }) declined by ${getCurrentUser().name}`,
+                                    type: "RoleDeclinedInNotif",
+                                    projectId: val.projectId,
+                                  });
+                                  toast.warning(
+                                    `Rejected role (${res.role.roleName}) successfully!`
+                                  );
+                                  // this.props.removeAndUpdateNotifications({
+                                  //   userId: getCurrentUser()._id,
+                                  //   notifId: val._id,
+                                  // });
+                                })
+                                .then(() => {
+                                  removeNotificationId(
+                                    getCurrentUser()._id,
+                                    val._id
+                                  ).then((data) => {
+                                    if (data.user !== undefined) {
+                                      console.log("removed notif");
+                                      window.location.reload();
+                                    }
+                                  });
+                                });
+                            }}
+                          >
+                            Decline
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  </>
+                );
+              }
+
               return (
                 <div
                   className="card-text ml-3 mt-1 mb-2 p-1"
@@ -345,5 +564,7 @@ const mapDispatchToProps = (dispatch) => ({
   clearNotifications: () => dispatch(clearNotifications()),
   setSegregatedNotifications: (params) =>
     dispatch(setSegregatedNotifications(params)),
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
+  setNotifications: (params) => dispatch(setNotifications(params)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Notifications);

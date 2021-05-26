@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import { getCurrentUser, list } from "../user/apiUser";
 import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import { connect } from "react-redux";
+import { notificationAdded } from "./../store/notifications";
+import { toast } from "react-toastify";
 const similarity = require("sentence-similarity");
 const similarityScore = require("similarity-score");
 class User_Role extends Component {
@@ -68,13 +72,14 @@ class User_Role extends Component {
     // final_out = final_out.filter((x) => x.exact != 0);
     final_out = final_out.slice(0, 5);
     console.log("role:", role.roleName, "users:", final_out);
+    const { project } = this.props;
     return (
       <div>
         <div>{role.roleName}</div>
         <div>
           {final_out.map((user, i) => (
             <div className="col">
-              <div className="card bg-info mb-3" key={i}>
+              <div className="card mb-3" key={i}>
                 <div className="card-body">
                   <h5 className="card-title">{user.name}</h5>
                   <p className="card-text">{user.email}</p>
@@ -85,6 +90,31 @@ class User_Role extends Component {
                   >
                     View Profile
                   </Link>
+                  <Button
+                    onClick={() => {
+                      let obj = {
+                        userId: user._id,
+                        message: `You are invited to role ${
+                          role.roleName
+                        } in project ${project.title} by ${
+                          getCurrentUser().name
+                        }`,
+                        type: "InviteToRole",
+                        projectId: project._id,
+                        sentBy: getCurrentUser()._id,
+                        sentTo: user._id,
+                        roleId: role._id,
+                      };
+                      console.log(obj);
+                      this.props.notificationAdded(obj);
+                      // // .then(() =>
+                      toast.success(
+                        `Invited ${user.name} to project ${project.title}(${role.roleName}).`
+                      );
+                    }}
+                  >
+                    Invite
+                  </Button>
                 </div>
               </div>
             </div>
@@ -94,5 +124,7 @@ class User_Role extends Component {
     );
   }
 }
-
-export default User_Role;
+const mapDispatchToProps = (dispatch) => ({
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
+});
+export default connect(null, mapDispatchToProps)(User_Role);

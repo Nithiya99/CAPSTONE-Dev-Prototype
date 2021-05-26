@@ -155,6 +155,7 @@ export const declineRequest = (userId, projectId, declineUserId, roleId) => {
     rejectUserId: declineUserId,
     roleId: roleId,
   };
+  // console.log(userId, projectId, declineUserId, roleId);
   let settings = {
     method: "PUT",
     headers: {
@@ -168,8 +169,11 @@ export const declineRequest = (userId, projectId, declineUserId, roleId) => {
     settings
   )
     .then((response) => {
-      window.location.reload();
+      // window.location.reload();
       return response.json();
+    })
+    .then((data) => {
+      return data;
     })
     .catch((err) => console.log(err));
 };

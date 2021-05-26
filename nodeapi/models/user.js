@@ -130,6 +130,21 @@ var userSchema = new mongoose.Schema({
         type: ObjectId,
         ref: "Post",
       },
+      userObjId: {
+        type: ObjectId,
+        ref: "User",
+      },
+      sentBy: {
+        type: ObjectId,
+        ref: "User",
+      },
+      sentTo: {
+        type: ObjectId,
+        ref: "User",
+      },
+      roleId: {
+        type: ObjectId,
+      },
     },
   ],
   social: {

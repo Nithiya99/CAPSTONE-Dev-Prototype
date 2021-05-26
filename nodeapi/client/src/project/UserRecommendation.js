@@ -1,7 +1,10 @@
 import React, { Component } from "react";
-import { list } from "./../user/apiUser";
+import { getCurrentUser, list } from "./../user/apiUser";
 import { Accordion, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { notificationAdded } from "../store/notifications";
+import { toast } from "react-toastify";
 const similarity = require("sentence-similarity");
 const similarityScore = require("similarity-score");
 class UserRecommendation extends Component {
@@ -22,12 +25,12 @@ class UserRecommendation extends Component {
     });
   }
 
-  renderUsers = (final_out) => (
+  renderUsers = (final_out, project) => (
     <Accordion>
       <Card>
         <Card.Header>
           <Accordion.Toggle as={Button} variant="link" eventKey="0">
-            Recommended Users
+            Best people for the project
           </Accordion.Toggle>
         </Card.Header>
         <Accordion.Collapse eventKey="0">
@@ -35,7 +38,7 @@ class UserRecommendation extends Component {
             <div className="row row-cols-1 row-cols-md-2">
               {final_out.map((user, i) => (
                 <div className="col">
-                  <div className="card bg-info mb-3" key={i}>
+                  <div className="card mb-3" key={i}>
                     <div className="card-body">
                       <h5 className="card-title">{user.name}</h5>
                       <p className="card-text">{user.email}</p>
@@ -46,6 +49,33 @@ class UserRecommendation extends Component {
                       >
                         View Profile
                       </Link>
+                      <Button
+                        onClick={() => {
+                          //params
+                          //getCurrentUser()._id,
+                          // projectId,
+                          // user._id,
+                          // roleId
+                          // console.log(getCurrentUser().name);
+                          this.props.notificationAdded({
+                            userId: user._id,
+                            message: `You are invited to project ${
+                              project.title
+                            } by ${getCurrentUser().name}`,
+                            type: "InviteToProject",
+                            projectId: project._id,
+                            sentBy: getCurrentUser()._id,
+                            sentTo: user._id,
+                          });
+                          // .then(() =>
+                          toast.success(
+                            `Invited ${user.name} to project ${project.title}.`
+                          );
+                          // );
+                        }}
+                      >
+                        Invite
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -104,10 +134,16 @@ class UserRecommendation extends Component {
     final_out = final_out.slice(0, 5);
     return (
       <div className="container">
-        {final_out.length === 0 ? <></> : <>{this.renderUsers(final_out)}</>}
+        {final_out.length === 0 ? (
+          <></>
+        ) : (
+          <>{this.renderUsers(final_out, project)}</>
+        )}
       </div>
     );
   }
 }
-
-export default UserRecommendation;
+const mapDispatchToProps = (dispatch) => ({
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
+});
+export default connect(null, mapDispatchToProps)(UserRecommendation);
