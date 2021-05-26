@@ -10,9 +10,8 @@ import TuneTwoToneIcon from "@material-ui/icons/TuneTwoTone";
 import PlaylistAddTwoToneIcon from "@material-ui/icons/PlaylistAddTwoTone";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
 import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
-import PersonAddTwoToneIcon from "@material-ui/icons/PersonAddTwoTone";
 import ChatIcon from "@material-ui/icons/Chat";
-import { getCurrentUser } from "../user/apiUser";
+import { getCurrentUser, getUserById } from "../user/apiUser";
 import { getAllPosts } from "./../posts/apiPosts";
 import Post from "../posts/Post";
 import VideoPost from "./../posts/VideoPost";
@@ -20,15 +19,16 @@ import Chat from "./Chat";
 import { getTasks } from "./apiProject";
 import { connect } from "react-redux";
 import { updateTasks } from "../store/tasks";
-import { clearAll, setCriticalPath } from "../store/cpm";
+import { clearAll } from "../store/cpm";
 import RoleReq from "./RoleReq";
 import AssignedTo from "./AssignedTo";
 import UserRecommendation from "./UserRecommendation";
 import moment from "moment";
-import User_Role from "./User_Role";
+import RecommendedRolePeople from "./RecommendedRolePeople";
 class ProjectDashboard extends Component {
   state = {
     expectedTime: {},
+    leaderName: "",
   };
   componentDidMount() {
     this.props.clearAll();
@@ -41,9 +41,12 @@ class ProjectDashboard extends Component {
     getAllPosts()
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         this.setState({ posts: data.posts });
       });
+    getUserById(project.leader).then((data) =>
+      this.setState({ leaderName: data.user.name })
+    );
   }
   // componentDidUpdate(prevState) {
   //   if (prevState.connections.length !== this.props.connections.length) {
@@ -84,11 +87,14 @@ class ProjectDashboard extends Component {
     if (this.props.location.state.project === undefined) {
       return null;
     }
+    if (this.state.leaderName === undefined) return null;
+
     const { project } = this.props.location.state;
     // console.log(this.props.location);
     // 25/5 26/5     23/6
     // estimated date : 23/6
     // no of days left : 23/6 - 26/5
+
     let today = new Date();
     let day1 = new Date(today.toUTCString());
     // let day2 = new Date(project.created);
@@ -96,7 +102,7 @@ class ProjectDashboard extends Component {
     // let days = parseInt(difference / (1000 * 3600 * 24));
     // console.log(days);
     const { expectedTime, slacks, criticalPath, pert } = this.props;
-    const { posts } = this.state;
+    const { posts, leaderName } = this.state;
     let createDate = new Date(project.created);
     let expectedDate = moment(createDate, "DD-MM-YYYY").add(
       expectedTime,
@@ -104,8 +110,8 @@ class ProjectDashboard extends Component {
     );
     const diffTime = Math.abs(expectedDate._d - day1);
     const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    console.log("no. of days left:", duration);
-    console.log("expectedDate : ", expectedDate.format("DD-MM-YYYY"));
+    // console.log("no. of days left:", duration);
+    // console.log("expectedDate : ", expectedDate.format("DD-MM-YYYY"));
     // console.log(slacks);
     // if (slacks === undefined) return ;
     if (expectedTime === undefined) return null;
@@ -228,14 +234,9 @@ class ProjectDashboard extends Component {
                                 to="#"
                                 className="text-muted text-hover-primary font-weight-bold mr-lg-8 mr-5 mb-lg-0 mb-2"
                               >
-                                {project.leader}
+                                {leaderName}
                               </Link>
                             </div>
-                          </div>
-                          <div className="my-lg-0 my-1">
-                            <button className="btn btn-light-primary">
-                              Test
-                            </button>
                           </div>
                         </div>
                         <div className="flex-grow-1 font-weight-bold font-size-h6 py-5 py-lg-2 mr-5">
@@ -255,7 +256,7 @@ class ProjectDashboard extends Component {
                             </span>
                             <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
                               {/* {projectCreatedDates[project._id]} */}
-                              LOAD
+                              {moment(createDate).format("DD-MM-YYYY")}
                             </span>
                           </div>
                           <div className="mr-12 d-flex flex-column mb-7">
@@ -264,7 +265,7 @@ class ProjectDashboard extends Component {
                             </span>
                             <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
                               {/* {projectEstimatedDates[project._id]} */}
-                              LOAD
+                              {expectedDate.format("DD-MM-YYYY")}
                             </span>
                           </div>
                           <div className="flex-row-fluid mb-7">
@@ -301,49 +302,50 @@ class ProjectDashboard extends Component {
                           </thead>
                           <tbody>
                             {project.roles.map((role) => (
-                              <tr key={role._id.toString()}>
-                                <User_Role
-                                  role={role}
-                                  leader={project.leader}
-                                />
-                                <td
-                                  key={
-                                    role._id.toString() +
-                                    role.roleName.toString()
-                                  }
-                                >
-                                  {role.roleName}
-                                </td>
-                                <td
-                                  key={
-                                    role._id.toString() +
-                                    role.roleSkills.toString()
-                                  }
-                                >
-                                  {role.roleSkills.join(", ")}
-                                </td>
-                                <td>
-                                  {project.leader === getCurrentUser()._id &&
-                                  role.assignedTo === undefined ? (
-                                    <div>
-                                      <RoleReq
-                                        requestBy={role.requestBy}
-                                        projectId={project._id}
-                                        roleId={role._id}
+                              <>
+                                <tr key={role._id.toString()}>
+                                  <td
+                                    key={
+                                      role._id.toString() +
+                                      role.roleName.toString()
+                                    }
+                                  >
+                                    {role.roleName}
+                                  </td>
+                                  <td
+                                    key={
+                                      role._id.toString() +
+                                      role.roleSkills.toString()
+                                    }
+                                  >
+                                    {role.roleSkills.join(", ")}
+                                  </td>
+                                  <td>
+                                    {project.leader === getCurrentUser()._id &&
+                                    role.assignedTo === undefined ? (
+                                      <div>
+                                        <RoleReq
+                                          requestBy={role.requestBy}
+                                          projectId={project._id}
+                                          roleId={role._id}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <AssignedTo id={role.assignedTo} />
+                                      </div>
+                                    )}
+                                  </td>
+                                  <td>
+                                    <button className="btn btn-info">
+                                      <RecommendedRolePeople
+                                        project={project}
+                                        role={role}
                                       />
-                                    </div>
-                                  ) : (
-                                    <div>
-                                      <AssignedTo id={role.assignedTo} />
-                                    </div>
-                                  )}
-                                </td>
-                                <td>
-                                  <button className="btn btn-info">
-                                    <PersonAddTwoToneIcon />
-                                  </button>
-                                </td>
-                              </tr>
+                                    </button>
+                                  </td>
+                                </tr>
+                              </>
                             ))}
                           </tbody>
                         </table>
@@ -491,7 +493,7 @@ class ProjectDashboard extends Component {
                             post.project !== undefined &&
                             post.project.toString() === project._id.toString()
                           ) {
-                            console.log(post.project, project._id);
+                            // console.log(post.project, project._id);
                             if (post.postType === "video")
                               return (
                                 <VideoPost

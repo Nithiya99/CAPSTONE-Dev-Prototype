@@ -164,7 +164,7 @@ class TrelloTask extends Component {
 
   get_card_style = (slackObject, task) => {
     let color = "";
-    console.log(task.taskName, "Object:", slackObject[task.taskName]);
+    // console.log(task.taskName, "Object:", slackObject[task.taskName]);
     if (
       slackObject[task.taskName] !== undefined &&
       slackObject[task.taskName].overdue &&
@@ -176,7 +176,7 @@ class TrelloTask extends Component {
 
   updateBoard = () => {
     const mytasks = this.state.mytasks;
-    console.log("slackObject:", this.props.slackObject);
+    // console.log("slackObject:", this.props.slackObject);
     const { slackObject } = this.props;
     // console.log(mytasks);
     // console.log("mytasks:" + mytasks);
@@ -185,8 +185,8 @@ class TrelloTask extends Component {
     let cards_review = [];
     let cards_completed = [];
     mytasks.forEach((task) => {
-      if (slackObject[task.taskName] !== undefined)
-        console.log("Overdue:", slackObject[task.taskName].overdue);
+      // if (slackObject[task.taskName] !== undefined)
+      //   console.log("Overdue:", slackObject[task.taskName].overdue);
       var card = {
         id: task._id,
         title: task.taskName,
@@ -319,14 +319,14 @@ class TrelloTask extends Component {
     tasks.shift();
     if (prevState.mytasks.length !== tasks.length) {
       if (this.props.updateTrelloBoard) {
-        console.log(this.props.updateTrelloBoard);
+        // console.log(this.props.updateTrelloBoard);
         getTasks(this.props.projectId)
           .then((data) => {
             this.setState({ mytasks: data.tasks });
             this.updateBoard();
           })
           .then(() => this.props.updateTrello({ update: false }));
-        console.log(prevState.mytasks, tasks);
+        // console.log(prevState.mytasks, tasks);
       }
       // this.setState({ mytasks: tasks });
     }

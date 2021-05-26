@@ -233,9 +233,9 @@ class LayoutComponent extends Component {
       return tasksObject;
     });
     let tasksObjectFinal = tasksObject[tasksObject.length - 1];
-    console.log("TasksObject:");
-    console.log(tasksObjectFinal);
-    console.log("Pert:");
+    // console.log("TasksObject:");
+    // console.log(tasksObjectFinal);
+    // console.log("Pert:");
     let pert = {};
     // console.log("gonna set pert");
     try {
@@ -332,7 +332,7 @@ class LayoutComponent extends Component {
       criticalPathData = criticalPathData[criticalPathData.length - 1];
       console.log("criticalPathDataObject:", criticalPathData);
       this.props.setCriticalPath({ criticalPath: criticalPathData });
-      
+
       this.props.setExpectedTime({
         expectedTime: Math.floor(this.props.pert.latestFinishTimes.__end),
       });

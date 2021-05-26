@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { getCurrentUser, list } from "../user/apiUser";
+import { Link } from "react-router-dom";
 const similarity = require("sentence-similarity");
 const similarityScore = require("similarity-score");
 class User_Role extends Component {
@@ -67,7 +68,30 @@ class User_Role extends Component {
     // final_out = final_out.filter((x) => x.exact != 0);
     final_out = final_out.slice(0, 5);
     console.log("role:", role.roleName, "users:", final_out);
-    return <div></div>;
+    return (
+      <div>
+        <div>{role.roleName}</div>
+        <div>
+          {final_out.map((user, i) => (
+            <div className="col">
+              <div className="card bg-info mb-3" key={i}>
+                <div className="card-body">
+                  <h5 className="card-title">{user.name}</h5>
+                  <p className="card-text">{user.email}</p>
+                  <p className="card-text">{user.bio}</p>
+                  <Link
+                    to={`/user/${user._id}`}
+                    className="btn btn-raised btn-small btn-primary"
+                  >
+                    View Profile
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 }
 

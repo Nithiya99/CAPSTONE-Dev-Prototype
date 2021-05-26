@@ -30,9 +30,9 @@ import { Badge } from "react-bootstrap";
 import QueryBuilderTwoToneIcon from "@material-ui/icons/QueryBuilderTwoTone";
 import ErrorTwoToneIcon from "@material-ui/icons/ErrorTwoTone";
 import CheckCircleTwoToneIcon from "@material-ui/icons/CheckCircleTwoTone";
-
-import moment from "moment";
+import RecommendedRolePeople from "./RecommendedRolePeople";
 import User_Role from "./User_Role";
+import moment from "moment";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -339,20 +339,20 @@ class MyProjects extends Component {
                               ))}
                               <table className="table table-light">
                                 <thead>
+                                  {/* <User_Role
+                                    role={role}
+                                    leader={project.leader}
+                                  /> */}
                                   <tr>
                                     <th key={"rolename"}>Role Name</th>
                                     <th key={"skills"}>Skills Required</th>
-
                                     <th key={"assigned"}>Assigned To</th>
+                                    <th key={"invite"}>Send Invite</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {project.roles.map((role) => (
                                     <>
-                                      <User_Role
-                                        role={role}
-                                        leader={project.leader}
-                                      />
                                       <tr key={role._id.toString()}>
                                         <td
                                           key={
@@ -389,7 +389,14 @@ class MyProjects extends Component {
                                             </div>
                                           )}
                                         </td>
-                                        <td></td>
+                                        <td>
+                                          <button className="btn btn-info">
+                                            <RecommendedRolePeople
+                                              project={project}
+                                              role={role}
+                                            />
+                                          </button>
+                                        </td>
                                       </tr>
                                     </>
                                   ))}
