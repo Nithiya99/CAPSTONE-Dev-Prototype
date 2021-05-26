@@ -32,6 +32,7 @@ import ErrorTwoToneIcon from "@material-ui/icons/ErrorTwoTone";
 import CheckCircleTwoToneIcon from "@material-ui/icons/CheckCircleTwoTone";
 
 import moment from "moment";
+import User_Role from "./User_Role";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -347,42 +348,50 @@ class MyProjects extends Component {
                                 </thead>
                                 <tbody>
                                   {project.roles.map((role) => (
-                                    <tr key={role._id.toString()}>
-                                      <td
-                                        key={
-                                          role._id.toString() +
-                                          role.roleName.toString()
-                                        }
-                                      >
-                                        {role.roleName}
-                                      </td>
-                                      <td
-                                        key={
-                                          role._id.toString() +
-                                          role.roleSkills.toString()
-                                        }
-                                      >
-                                        {role.roleSkills.join(", ")}
-                                      </td>
-                                      <td>
-                                        {project.leader ===
-                                          getCurrentUser()._id &&
-                                        role.assignedTo === undefined ? (
-                                          <div>
-                                            <RoleReq
-                                              requestBy={role.requestBy}
-                                              projectId={project._id}
-                                              roleId={role._id}
-                                            />
-                                          </div>
-                                        ) : (
-                                          <div>
-                                            <AssignedTo id={role.assignedTo} />
-                                          </div>
-                                        )}
-                                      </td>
-                                      <td></td>
-                                    </tr>
+                                    <>
+                                      <User_Role
+                                        role={role}
+                                        leader={project.leader}
+                                      />
+                                      <tr key={role._id.toString()}>
+                                        <td
+                                          key={
+                                            role._id.toString() +
+                                            role.roleName.toString()
+                                          }
+                                        >
+                                          {role.roleName}
+                                        </td>
+                                        <td
+                                          key={
+                                            role._id.toString() +
+                                            role.roleSkills.toString()
+                                          }
+                                        >
+                                          {role.roleSkills.join(", ")}
+                                        </td>
+                                        <td>
+                                          {project.leader ===
+                                            getCurrentUser()._id &&
+                                          role.assignedTo === undefined ? (
+                                            <div>
+                                              <RoleReq
+                                                requestBy={role.requestBy}
+                                                projectId={project._id}
+                                                roleId={role._id}
+                                              />
+                                            </div>
+                                          ) : (
+                                            <div>
+                                              <AssignedTo
+                                                id={role.assignedTo}
+                                              />
+                                            </div>
+                                          )}
+                                        </td>
+                                        <td></td>
+                                      </tr>
+                                    </>
                                   ))}
                                 </tbody>
                               </table>
