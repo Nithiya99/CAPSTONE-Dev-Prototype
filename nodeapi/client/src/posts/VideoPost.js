@@ -45,6 +45,8 @@ class VideoPost extends Component {
     comment: "",
     id: getCurrentUser()._id,
     sentimentScore: null,
+    disabled: false,
+    show: false,
   };
 
   componentDidMount() {
@@ -161,6 +163,8 @@ class VideoPost extends Component {
       comments,
       delete_button,
       created,
+      postedBy,
+      reportCounter,
     } = this.props;
     let counts = collect(liked_by).count();
     return (
@@ -193,34 +197,49 @@ class VideoPost extends Component {
                     <Popover id="popover-basic">
                       <Popover.Content>
                         <div>
-                          <button
-                            className="btn btn-clean"
-                            disabled={this.state.isDisabled}
-                            onClick={this.handleShow.bind(this)}
-                          >
-                            <ReportTwoToneIcon /> Report
-                          </button>
-                          <Modal
-                            show={this.state.show}
-                            onHide={this.handleClose.bind(this)}
-                          >
-                            <Modal.Header>
-                              <Modal.Title>
-                                Are you Sure to report this post?
-                              </Modal.Title>
-                              <Button onClick={this.handleClose.bind(this)}>
-                                x
-                              </Button>
-                            </Modal.Header>
-                            <ModalBody>
-                              <Button
-                                disabled={this.state.isDisabled}
-                                onClick={this.handleSubmitClicked}
+                          {getCurrentUser()._id === postedBy._id ? (
+                            <></>
+                          ) : reportCounter.includes(getCurrentUser()._id) ? (
+                            <>
+                              <button className="btn btn-clean" disabled={true}>
+                                <ReportTwoToneIcon /> Post Reported
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className="btn btn-clean"
+                                onClick={() => {
+                                  this.handleShow();
+                                  this.setState({ disabled: true });
+                                }}
+                                disabled={this.state.disabled}
                               >
-                                Yes
-                              </Button>
-                            </ModalBody>
-                          </Modal>
+                                <ReportTwoToneIcon /> Report
+                              </button>
+                              <Modal
+                                show={this.state.show}
+                                onHide={this.handleClose.bind(this)}
+                              >
+                                <Modal.Header>
+                                  <Modal.Title>
+                                    Are you Sure to report this post?
+                                  </Modal.Title>
+                                  <Button onClick={this.handleClose.bind(this)}>
+                                    x
+                                  </Button>
+                                </Modal.Header>
+                                <ModalBody>
+                                  <Button
+                                    disabled={this.state.isDisabled}
+                                    onClick={this.handleSubmitClicked}
+                                  >
+                                    Yes
+                                  </Button>
+                                </ModalBody>
+                              </Modal>
+                            </>
+                          )}
                         </div>
                         <Link
                           className="btn btn-clean"

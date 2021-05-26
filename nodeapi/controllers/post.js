@@ -47,9 +47,6 @@ exports.reportPost = (req, res) => {
 exports.getPosts = (req, res) => {
   const posts = Post.find()
     .populate("postedBy", "_id name")
-    .select(
-      "_id photo video postType title liked_by comments tags metadataAuthor metadataTitle project"
-    )
     .then((posts) => {
       res.json({ posts });
     })
@@ -443,7 +440,6 @@ exports.addcomment = (req, res) => {
 exports.getPost = (req, res) => {
   Post.findById(req.post._id)
     .populate("postedBy", "_id name")
-    .select("_id photo title likes liked_by comments postType tags video ")
     .then((post) => {
       res.json({ post });
     })

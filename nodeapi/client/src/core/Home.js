@@ -106,6 +106,7 @@ class Home extends Component {
     // notifications.map((notif) => {
     //   console.log(notif);
     // });
+    console.log(posts);
     const { profilePic } = this.props;
     console.log(profilePic);
     Object.keys(notificationGroupedObject).length > 0 &&
@@ -219,6 +220,8 @@ class Home extends Component {
                         liked_by={post.liked_by}
                         _id={post._id}
                         created={post.created}
+                        postedBy={post.postedBy}
+                        reportCounter={post.reportCounter}
                       />
                     );
                   if (post.postType === "youtubeVideo") {
@@ -234,6 +237,8 @@ class Home extends Component {
                         metadataTitle={post.metadataTitle}
                         metadataAuthor={post.metadataAuthor}
                         created={post.created}
+                        postedBy={post.postedBy}
+                        reportCounter={post.reportCounter}
                       />
                     );
                   }
@@ -249,6 +254,8 @@ class Home extends Component {
                         comments={post.comments}
                         tags={post.tags}
                         created={post.created}
+                        postedBy={post.postedBy}
+                        reportCounter={post.reportCounter}
                       />
                     );
                   if (post.postType === "image")
@@ -264,6 +271,7 @@ class Home extends Component {
                         tags={post.tags}
                         created={post.created}
                         postedBy={post.postedBy}
+                        reportCounter={post.reportCounter}
                       />
                     );
                 })}

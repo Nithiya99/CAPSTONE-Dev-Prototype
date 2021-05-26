@@ -26,7 +26,7 @@ import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import "bootstrap/dist/css/bootstrap.css";
 import Sentiment from "sentiment";
 import Dropdown from "react-bootstrap/Dropdown";
-
+import ReportTwoToneIcon from "@material-ui/icons/ReportTwoTone";
 const sentiment = new Sentiment();
 
 class showPost extends Component {
@@ -42,6 +42,7 @@ class showPost extends Component {
     sentimentScore: null,
     show: false,
     redirect: false,
+    disabled: false,
   };
 
   componentDidMount() {
@@ -183,6 +184,9 @@ class showPost extends Component {
     let post = this.state.post.post;
     const current_post = { ...post };
     let type = current_post.postType;
+    if (current_post.reportCounter === undefined) return null;
+    const reportCounter = [...current_post.reportCounter];
+    // console.log(current_post.reportCounter);
     const posted_by = { ...current_post.postedBy };
     let counts = collect(current_post.liked_by).count();
     let imageUrl = [];
@@ -270,30 +274,47 @@ class showPost extends Component {
                   </>
                 ))}
               <div className="d-flex align-items-center">
-                <button
-                  className="btn btn-primary"
-                  disabled={this.state.isDisabled}
-                  onClick={this.handleShow.bind(this)}
-                >
-                  Report
-                </button>
-                <Modal
-                  show={this.state.show}
-                  onHide={this.handleClose.bind(this)}
-                >
-                  <Modal.Header>
-                    <Modal.Title>Are you Sure to report this post?</Modal.Title>
-                    <Button onClick={this.handleClose.bind(this)}>x</Button>
-                  </Modal.Header>
-                  <ModalBody>
-                    <Button
-                      disabled={this.state.isDisabled}
-                      onClick={this.handleSubmitClicked}
+                {getCurrentUser()._id === posted_by ? (
+                  <></>
+                ) : reportCounter.includes(getCurrentUser()._id) ? (
+                  <>
+                    <button className="btn btn-clean" disabled={true}>
+                      <ReportTwoToneIcon /> Post Reported
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="btn btn-clean"
+                      onClick={() => {
+                        this.handleShow();
+                        this.setState({ disabled: true });
+                      }}
+                      disabled={this.state.disabled}
                     >
-                      Yes
-                    </Button>
-                  </ModalBody>
-                </Modal>
+                      <ReportTwoToneIcon /> Report
+                    </button>
+                    <Modal
+                      show={this.state.show}
+                      onHide={this.handleClose.bind(this)}
+                    >
+                      <Modal.Header>
+                        <Modal.Title>
+                          Are you Sure to report this post?
+                        </Modal.Title>
+                        <Button onClick={this.handleClose.bind(this)}>x</Button>
+                      </Modal.Header>
+                      <ModalBody>
+                        <Button
+                          disabled={this.state.isDisabled}
+                          onClick={this.handleSubmitClicked}
+                        >
+                          Yes
+                        </Button>
+                      </ModalBody>
+                    </Modal>
+                  </>
+                )}
                 <button
                   onClick={() => {
                     getpost(current_post._id).then((data) => {
