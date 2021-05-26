@@ -31,7 +31,6 @@ import QueryBuilderTwoToneIcon from "@material-ui/icons/QueryBuilderTwoTone";
 import ErrorTwoToneIcon from "@material-ui/icons/ErrorTwoTone";
 import CheckCircleTwoToneIcon from "@material-ui/icons/CheckCircleTwoTone";
 import RecommendedRolePeople from "./RecommendedRolePeople";
-import User_Role from "./User_Role";
 import moment from "moment";
 class MyProjects extends Component {
   state = {

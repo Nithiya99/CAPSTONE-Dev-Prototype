@@ -165,6 +165,29 @@ export const getfollowers = (userId) => {
     .catch((err) => console.log(err));
 };
 
+export const blockFollower = (e, userId) => {
+  e.preventDefault();
+  console.log(userId);
+  let currentUserId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  return fetch(`http://localhost:8081/blockfollower/`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      currentUser: currentUserId,
+      follower: userId,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      return data;
+    });
+};
+
 export const getfollowing = (userId) => {
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   return fetch("http://localhost:8081/following/" + `${userId}`, {
