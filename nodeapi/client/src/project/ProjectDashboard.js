@@ -25,6 +25,7 @@ import RoleReq from "./RoleReq";
 import AssignedTo from "./AssignedTo";
 import UserRecommendation from "./UserRecommendation";
 import moment from "moment";
+import User_Role from "./User_Role";
 class ProjectDashboard extends Component {
   state = {
     expectedTime: {},
@@ -126,7 +127,7 @@ class ProjectDashboard extends Component {
                           <div className="mr-3">
                             <GroupTwoToneIcon />
                           </div>
-                          <div>Team Information</div>
+                          <div>Team Information </div>
                         </div>
                       </Nav.Link>
                     </Nav.Item>
@@ -301,6 +302,10 @@ class ProjectDashboard extends Component {
                           <tbody>
                             {project.roles.map((role) => (
                               <tr key={role._id.toString()}>
+                                <User_Role
+                                  role={role}
+                                  leader={project.leader}
+                                />
                                 <td
                                   key={
                                     role._id.toString() +

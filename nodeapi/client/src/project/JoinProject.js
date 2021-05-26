@@ -3,7 +3,7 @@ import { listprojects, request } from "./apiProject";
 import { getCurrentUser, getUserById } from "../user/apiUser";
 import { connect } from "react-redux";
 import { notificationAdded } from "../store/notifications";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import LiveClock from "react-live-clock";
 import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
@@ -76,6 +76,7 @@ class JoinProject extends Component {
       return null;
     return (
       <>
+        <ToastContainer />
         <div
           className="subheader py-2 py-lg-6  subheader-transparent "
           id="kt_subheader"
@@ -207,7 +208,9 @@ class JoinProject extends Component {
                                 className="btn btn-outline-primary"
                                 onClick={() => {
                                   getCurrentUser()._id === project.leader
-                                    ? toast("Leaders cant Request, right???")
+                                    ? toast.warning(
+                                        "Leaders cant Request, right???"
+                                      )
                                     : request(
                                         getCurrentUser()._id,
                                         project._id,
