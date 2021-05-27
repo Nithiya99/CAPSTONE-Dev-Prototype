@@ -198,6 +198,20 @@ const Menu = ({ history }) => {
                               </span>
                             </Link>
                           </li>
+                          <li className="menu-item " aria-haspopup="true">
+                            <Link
+                              style={isActive(history, `/recommendation`)}
+                              to={`/recommendation/`}
+                              className="menu-link "
+                            >
+                              <span
+                                className="menu-text"
+                                style={isActive(history, `/recommendation`)}
+                              >
+                                Recommendation
+                              </span>
+                            </Link>
+                          </li>
                         </ul>
                       )}
                     </div>
