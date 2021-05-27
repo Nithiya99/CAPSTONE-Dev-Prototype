@@ -127,7 +127,11 @@ class JoinProject extends Component {
                           {project.description}
                           <p className="card-text">
                             <strong>Skills required: </strong>
-                            {project.skills}
+                            {project.skills.map((skill) => (
+                              <span class="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text m-1">
+                                {skill}
+                              </span>
+                            ))}
                           </p>
                         </div>
 
@@ -196,7 +200,12 @@ class JoinProject extends Component {
                               role._id.toString() + role.roleSkills.toString()
                             }
                           >
-                            {role.roleSkills + ","}
+                            {/* {role.roleSkills + ","} */}
+                            {role.roleSkills.map((skill) => (
+                              <span class="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text mr-1">
+                                {skill}
+                              </span>
+                            ))}
                           </td>
                           <td>
                             {role.assignedTo !== undefined ? (
