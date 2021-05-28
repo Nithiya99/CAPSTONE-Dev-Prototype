@@ -313,6 +313,6 @@ export const processResumes = async (file) => {
     settings
   );
   let result = response.data.pdfData;
-  console.log(result);
+  if (result !== undefined) return result;
   // });
 };
