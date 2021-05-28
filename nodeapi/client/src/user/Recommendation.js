@@ -10,7 +10,8 @@ import AssignmentIndRoundedIcon from "@material-ui/icons/AssignmentIndRounded";
 import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
-
+import { DropzoneArea } from "material-ui-dropzone";
+import { PdfDropZone } from "./PdfDropZone";
 class Recommendation extends Component {
   state = {
     key: "Database",
@@ -153,7 +154,10 @@ class Recommendation extends Component {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="Resume">
-                    <div className="row row-cols-1 row-cols-md-2">Resumes</div>
+                    <div className="text-center">
+                      <div>Drop in the resumes here</div>
+                      <PdfDropZone />
+                    </div>
                   </Tab.Pane>
                 </Tab.Content>
               </div>

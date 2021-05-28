@@ -2,6 +2,8 @@ const _ = require("lodash");
 const User = require("../models/user");
 const fs = require("fs");
 const sharp = require("sharp");
+const PDFParser = require("pdf2json");
+let pdfParser = new PDFParser();
 exports.userById = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user) {
@@ -321,4 +323,43 @@ exports.blockfollower = (req, res) => {
     }
   });
   return res.status(200).json("User Blocked");
+};
+
+exports.processResumes = (req, res) => {
+  // console.log(req.file);
+  // console.log("HIII");
+  let file = req.file;
+  // console.log(files);
+  // files.map((file) => {
+  // [ {akshay:{name: "akshay", skills: "html, css", score: 83, experience: 5 (no. of years)}}]
+  let filepath = file.destination + file.filename;
+  let k = 0;
+  let obj = {};
+  let arr = [];
+  pdfParser.loadPDF(filepath);
+  pdfParser.on("pdfParser_dataReady", (pdfData) => {
+    // console.log(pdfData);
+    let newObject = {};
+    newObject = pdfData.formImage.Pages.map((page) => {
+      // page.Texts.map((val) =>
+      //   val.R.map((obj) => console.log(obj.T.split("%")))
+      // );
+      page.Fields.map((val) => (obj[k++] = val.V));
+      // console.log(obj["0"], obj["1"], obj["2"], obj["3"]);
+      let newObj = {
+        [obj["0"]]: {
+          name: obj["0"],
+          skills: obj["1"].split(","),
+          experience: obj["2"].split(","),
+          college: obj["3"],
+        },
+      };
+      return newObj;
+    });
+    let finalObj = newObject[newObject.length - 1];
+    return res.status(200).json({ pdfData: finalObj });
+  });
+  // return res.status(400).json({ error: "Cannot parse pdf" });
+  // console.log(pdfData.PdfParser.PDFJs);
+  // });
 };

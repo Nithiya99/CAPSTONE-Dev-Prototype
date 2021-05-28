@@ -18,6 +18,7 @@ const {
   unblockuser,
   addProfilePic,
   blockfollower,
+  processResumes,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const bodyParser = require("body-parser");
@@ -30,10 +31,19 @@ const storage = multer.diskStorage({
     cb(null, "IMAGE-" + Date.now() + path.extname(file.originalname));
   },
 });
+const storagePdfs = multer.diskStorage({
+  destination: "./public/uploads/resume/",
+  filename: function (req, file, cb) {
+    cb(null, "PDF-" + Date.now() + path.extname(file.originalname));
+  },
+});
 const upload = multer({
   storage: storage,
   limits: { fileSize: 10000000 },
 }).single("myProfilePicture");
+const uploadPdfs = multer({
+  storage: storagePdfs,
+}).single('myFile');
 router.use(bodyParser.json());
 
 router.get("/users", allUsers);
@@ -58,6 +68,7 @@ router.put(
   upload,
   addProfilePic
 );
+router.put("/processResumes", uploadPdfs, processResumes);
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 

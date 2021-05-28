@@ -1,3 +1,4 @@
+import axios from "axios";
 export const read = (userId, token) => {
   return fetch("http://localhost:8081/user/" + `${userId}`, {
     method: "GET",
@@ -294,4 +295,24 @@ export const unblockUser = (current_user_id, client_user_id) => {
       return response.json();
     })
     .catch((err) => console.log(err));
+};
+
+export const processResumes = async (file) => {
+  // console.log("files:", files);
+  // files.map(async (file) => {
+  const data = new FormData();
+  data.append("myFile", file);
+  let settings = {
+    headers: {
+      "content-type": "multipart/form-data",
+    },
+  };
+  let response = await axios.put(
+    `http://localhost:3000/processResumes`,
+    data,
+    settings
+  );
+  let result = response.data.pdfData;
+  console.log(result);
+  // });
 };
