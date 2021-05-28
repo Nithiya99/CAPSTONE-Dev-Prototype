@@ -19,6 +19,7 @@ const {
   addProfilePic,
   blockfollower,
   processResumes,
+  removeProfilePic,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const bodyParser = require("body-parser");
@@ -43,7 +44,7 @@ const upload = multer({
 }).single("myProfilePicture");
 const uploadPdfs = multer({
   storage: storagePdfs,
-}).single('myFile');
+}).single("myFile");
 router.use(bodyParser.json());
 
 router.get("/users", allUsers);
@@ -69,6 +70,7 @@ router.put(
   addProfilePic
 );
 router.put("/processResumes", uploadPdfs, processResumes);
+router.put("/user/profilePicture/remove/:userId", removeProfilePic);
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 

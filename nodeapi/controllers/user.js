@@ -359,7 +359,17 @@ exports.processResumes = (req, res) => {
     let finalObj = newObject[newObject.length - 1];
     return res.status(200).json({ pdfData: finalObj });
   });
-  // return res.status(400).json({ error: "Cannot parse pdf" });
-  // console.log(pdfData.PdfParser.PDFJs);
-  // });
+};
+// return res.status(400).json({ error: "Cannot parse pdf" });
+// console.log(pdfData.PdfParser.PDFJs);
+// });
+exports.removeProfilePic = (req, res) => {
+  let user = req.profile;
+  user.profilePictures.push(
+    "http://res.cloudinary.com/workshaketrial/image/upload/v1622131040/DefaultProfile.png"
+  );
+  user.save((err, result) => {
+    if (err) return res.status(400).json({ error: "cannot save dp" });
+    return res.status(200).json({ user: result });
+  });
 };
