@@ -438,3 +438,20 @@ export const postProfilePic = async (image) => {
   let profilePictures = response.data.user.profilePictures;
   return profilePictures[profilePictures.length - 1];
 };
+
+export const removeProfilePic = async () => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let settings = {
+    headers: {
+      "content-type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  let response = await axios.put(
+    `http://localhost:3000/user/profilePicture/remove/${userId}`,
+    settings
+  );
+  let profilePictures = response.data.user.profilePictures;
+  return profilePictures[profilePictures.length - 1];
+};

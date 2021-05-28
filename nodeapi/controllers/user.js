@@ -322,3 +322,14 @@ exports.blockfollower = (req, res) => {
   });
   return res.status(200).json("User Blocked");
 };
+
+exports.removeProfilePic = (req, res) => {
+  let user = req.profile;
+  user.profilePictures.push(
+    "http://res.cloudinary.com/workshaketrial/image/upload/v1622131040/DefaultProfile.png"
+  );
+  user.save((err, result) => {
+    if (err) return res.status(400).json({ error: "cannot save dp" });
+    return res.status(200).json({ user: result });
+  });
+};

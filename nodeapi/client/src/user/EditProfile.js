@@ -6,7 +6,7 @@ import SkillsInput from "../utils/signupbutton/Tagify/SkillsInput";
 import DefaultProfile from "../images/avatar.png";
 import { Modal, Button } from "react-bootstrap";
 import DragDropProfilePic from "./../posts/DragDropProfilePic";
-import { postProfilePic } from "../posts/apiPosts";
+import { postProfilePic, removeProfilePic } from "../posts/apiPosts";
 import { toast, ToastContainer } from "react-toastify";
 import { setProfilePic } from "../store/user";
 import { connect } from "react-redux";
@@ -193,7 +193,15 @@ class EditProfile extends Component {
           >
             Edit DP
           </Button>
-          <Button onClick={() => console.log("Delete DP")}>Delete DP</Button>
+          <Button
+            onClick={() =>
+              removeProfilePic().then((data) => {
+                console.log("dp:", data);
+              })
+            }
+          >
+            Delete DP
+          </Button>
         </div>
         <form>
           <div className="form-group">

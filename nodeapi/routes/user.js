@@ -18,6 +18,7 @@ const {
   unblockuser,
   addProfilePic,
   blockfollower,
+  removeProfilePic,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const bodyParser = require("body-parser");
@@ -58,6 +59,7 @@ router.put(
   upload,
   addProfilePic
 );
+router.put("/user/profilePicture/remove/:userId", removeProfilePic);
 // any route containing: userId, our app will first excute userById()
 router.param("userId", userById);
 
