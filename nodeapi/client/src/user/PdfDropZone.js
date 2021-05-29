@@ -3,6 +3,7 @@ import { AttachFile, Description, PictureAsPdf } from "@material-ui/icons";
 import { DropzoneAreaBase } from "material-ui-dropzone";
 import { Button } from "react-bootstrap";
 import { processResumes } from "./apiUser";
+let array = require("./ranking.json");
 
 const handlePreviewIcon = (fileObject, classes) => {
   const { type } = fileObject.file;
@@ -21,6 +22,18 @@ const handlePreviewIcon = (fileObject, classes) => {
 };
 export const PdfDropZone = () => {
   const [fileObjects, setFileObjects] = useState([]);
+  const [finalObj, setFinalObj] = useState({});
+  const findscore = (data) => {
+    console.log(data);
+    array.map((obj) => {
+      if (obj.Name === data.college) data["score"] = obj.Score;
+    });
+    let obj = finalObj;
+    let nameObj = { [data.name]: { ...data } };
+    Object.assign(obj, nameObj);
+    setFinalObj(obj);
+  };
+
   return (
     <>
       <DropzoneAreaBase
@@ -54,7 +67,9 @@ export const PdfDropZone = () => {
             files.push(file.file);
           });
           files.map((file) => {
-            processResumes(file);
+            processResumes(file).then((data) => {
+              findscore(data);
+            });
           });
         }}
       >

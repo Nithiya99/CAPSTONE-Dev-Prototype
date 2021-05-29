@@ -23,7 +23,7 @@
     "bufferutil": "^4.0.3",
     "cloudinary": "^1.25.1",
     "compression": "^1.7.4",
-    "concurrently": "^6.0.2",
+    "concurrently": "^6.2.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

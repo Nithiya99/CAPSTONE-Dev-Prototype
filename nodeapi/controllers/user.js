@@ -3,7 +3,6 @@ const User = require("../models/user");
 const fs = require("fs");
 const sharp = require("sharp");
 const PDFParser = require("pdf2json");
-let pdfParser = new PDFParser();
 exports.userById = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user) {
@@ -326,6 +325,7 @@ exports.blockfollower = (req, res) => {
 };
 
 exports.processResumes = (req, res) => {
+  let pdfParser = new PDFParser();
   // console.log(req.file);
   // console.log("HIII");
   let file = req.file;
@@ -347,16 +347,25 @@ exports.processResumes = (req, res) => {
       page.Fields.map((val) => (obj[k++] = val.V));
       // console.log(obj["0"], obj["1"], obj["2"], obj["3"]);
       let newObj = {
-        [obj["0"]]: {
-          name: obj["0"],
-          skills: obj["1"].split(","),
-          experience: obj["2"].split(","),
-          college: obj["3"],
-        },
+        name: obj["0"],
+        skills: obj["1"].split(","),
+        experience: obj["2"].split(","),
+        college: obj["3"],
       };
       return newObj;
     });
     let finalObj = newObject[newObject.length - 1];
+    fs.unlink(filepath, function (err) {
+      if (err && err.code == "ENOENT") {
+        // file doens't exist
+        console.info("File doesn't exist, won't remove it.");
+      } else if (err) {
+        // other errors, e.g. maybe we don't have enough permission
+        console.error("Error occurred while trying to remove file");
+      } else {
+        console.info(`removed`);
+      }
+    });
     return res.status(200).json({ pdfData: finalObj });
   });
 };
