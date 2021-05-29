@@ -52,6 +52,36 @@ export const newProject = (project) => {
   // console.log(response.json());
   // return response.json();
 };
+
+export const checkProject = (project) => {
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let obj = {
+    title: project.title,
+    description: project.description,
+  };
+  let checkSettings = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(obj),
+  };
+  return fetch(
+    `http://localhost:8081/recommendation/check/?X=${obj.title}&X1=${obj.description}`,
+    checkSettings
+  )
+    .then((response) => {
+      // let val = response.json();
+      console.log(response);
+      return response.json();
+    })
+    .then((val) => {
+      console.log(val.message, val.data);
+      return { error: val.message, similar: val.data };
+    });
+};
 export const updateProject = (project, projectId) => {
   let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
   let token = JSON.parse(localStorage.getItem("jwt")).token;

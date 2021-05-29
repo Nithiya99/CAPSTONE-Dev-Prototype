@@ -17,6 +17,7 @@ const {
   submitProject,
   updateChat,
   checkIfProjectExists,
+  checkIfProjectExiststeacher,
   getProject,
   updateEstimatedTime,
 } = require("../controllers/project");
@@ -36,6 +37,13 @@ router.post(
   createProjectValidator,
   createProject
 );
+
+router.post(
+  "/recommendation/check/",
+  requireSignin,
+  checkIfProjectExiststeacher
+);
+
 router.put("/project/edit/:userId/:projectId", requireSignin, updateProject);
 router.put("/project/chat/:projectId", requireSignin, updateChat);
 router.put("/project/leave/:userId/:projectId", requireSignin, leaveProject);

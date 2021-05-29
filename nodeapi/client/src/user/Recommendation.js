@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Tab, Nav } from "react-bootstrap";
+import { Tab, Nav, Modal, Button, ModalBody, Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LiveClock from "react-live-clock";
@@ -12,26 +13,87 @@ import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { DropzoneArea } from "material-ui-dropzone";
 import { PdfDropZone } from "./PdfDropZone";
+import { checkProject } from "./../project/apiProject";
 class Recommendation extends Component {
   state = {
     key: "Database",
+    show: false,
+    title: "",
+    description: "",
+    skills: [""],
+    error: "",
+    roleDetails: [
+      {
+        index: Math.random(),
+        roleName: "",
+        roleSkills: [""],
+      },
+    ],
+    open: false,
+    similar: [],
+  };
+
+  handleShow() {
+    this.setState({ show: true });
+  }
+
+  handleClose() {
+    this.setState({ show: false });
+  }
+
+  handleChange = (proj) => (event) => {
+    this.setState({ error: "" });
+    this.setState({ [proj]: event.target.value });
+  };
+
+  clickSubmit = (event) => {
+    event.preventDefault();
+    this.setState({ loading: true });
+    let { title, description, skills, roleDetails } = this.state;
+    let project = {
+      title,
+      description,
+      skills,
+      roleDetails,
+    };
+    try {
+      checkProject(project).then((data) => {
+        console.log(data);
+        if (data === undefined) return;
+        if (data.error) {
+          if (data.similar) {
+            this.setState({ similar: data.similar });
+            console.log(data.similar);
+          } else if (data.similar === undefined)
+            this.setState({ similar: undefined });
+          this.setState({ error: data.error });
+        } else
+          this.setState({
+            title: "",
+            description: "",
+            skills: [""],
+            roleDetails: [
+              {
+                index: Math.random(),
+                roleName: "",
+                roleSkills: [],
+              },
+            ],
+            error: "",
+            open: true,
+          });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    // console.log(project);
+    this.setState({ show: true });
   };
   componentDidMount() {}
   render() {
+    let { error, title, description, open } = this.state;
+    const { similar } = this.state;
     return (
-      //   <Tabs
-      //     id="controlled-tab-example"
-      //     activeKey={this.state.key}
-      //     onSelect={(k) => this.setState({ key: k })}
-      //   >
-      //     <Tab eventKey="Database" title="Database">
-      //       <h1>Database</h1>
-      //     </Tab>
-      //     <Tab eventKey="Resume" title="Resume">
-      //       <h1>Resume</h1>
-      //     </Tab>
-      //   </Tabs>
-
       <>
         <div
           className="subheader py-2 py-lg-6  subheader-transparent "
@@ -145,8 +207,83 @@ class Recommendation extends Component {
                             </Tab.Pane>
                             <Tab.Pane eventKey="ProjectChecker">
                               <div className="row row-cols-1 ">
-                                Project Checker
+                                Want to check if the desired job is available?
+                                check here!
                               </div>
+                              <form className="mt-5">
+                                <div className="form-group">
+                                  <div className="row">
+                                    <div className="col-sm-10 offset-1">
+                                      <label>
+                                        <big>Title of your Project</big>
+                                      </label>
+                                      <input
+                                        className="form-control"
+                                        type="text"
+                                        value={title}
+                                        onChange={this.handleChange("title")}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="row mt-3">
+                                    <div className="col-sm-10 offset-1">
+                                      <label>
+                                        <big>Description of the Project</big>
+                                      </label>
+                                      <input
+                                        className="form-control"
+                                        type="text"
+                                        value={description}
+                                        onChange={this.handleChange(
+                                          "description"
+                                        )}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="row">
+                                    <button
+                                      onClick={this.clickSubmit}
+                                      className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
+                                    >
+                                      Create Project!
+                                    </button>
+                                    <Modal show={this.state.show}>
+                                      <Modal.Header>
+                                        <Modal.Title>
+                                          Similar projects
+                                        </Modal.Title>
+                                        <Button
+                                          onClick={this.handleClose.bind(this)}
+                                        >
+                                          x
+                                        </Button>
+                                      </Modal.Header>
+                                      <ModalBody>
+                                        {similar === undefined ? (
+                                          <h1>No similar projects found</h1>
+                                        ) : (
+                                          similar.map((project) => (
+                                            <p>
+                                              <h3>{project.title}</h3>
+                                              <h4>{project.description}</h4>
+                                              {/* <p>{_id}</p> */}
+                                              <Link
+                                                className="btn btn-info mr-2"
+                                                to={{
+                                                  pathname: `/joinproject`,
+                                                  state: { project: project },
+                                                }}
+                                              >
+                                                Go to project
+                                              </Link>
+                                            </p>
+                                          ))
+                                        )}
+                                      </ModalBody>
+                                    </Modal>
+                                  </div>
+                                </div>
+                              </form>
                             </Tab.Pane>
                           </Tab.Content>
                         </div>
