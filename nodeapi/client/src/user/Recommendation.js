@@ -14,6 +14,7 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { DropzoneArea } from "material-ui-dropzone";
 import { PdfDropZone } from "./PdfDropZone";
 import { checkProject } from "./../project/apiProject";
+import UserRecommender from "./UserRecommender";
 class Recommendation extends Component {
   state = {
     key: "Database",
@@ -202,7 +203,7 @@ class Recommendation extends Component {
                             </Tab.Pane>
                             <Tab.Pane eventKey="UserRecommender">
                               <div className="row row-cols-1 ">
-                                User Recommender
+                                <UserRecommender />
                               </div>
                             </Tab.Pane>
                             <Tab.Pane eventKey="ProjectChecker">
