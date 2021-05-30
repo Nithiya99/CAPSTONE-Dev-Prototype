@@ -28,7 +28,7 @@ import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
 import DonutChart from "react-donut-chart";
 import { listmyprojects } from "./../project/apiProject";
 import { connect } from "react-redux";
-import { updateFollowing } from "../store/user";
+import { updateFollowers, updateFollowing } from "../store/user";
 import Post from "./../posts/Post";
 import VideoPost from "./../posts/VideoPost";
 import TextPostView from "./../posts/TextPostView";
@@ -73,6 +73,9 @@ class Profile extends Component {
       this.props.updateFollowing({
         following: data.user.following,
       });
+      this.props.updateFollowers({
+        followers: data.user.followers,
+      });
     });
     getPostsOfUser(userId)
       .then((res) => res.json())
@@ -107,6 +110,7 @@ class Profile extends Component {
     }
     const { posts } = this.state;
     if (posts === undefined) return null;
+    // const { following } = this.props;
     return (
       <div className="container mt-5">
         <ToastContainer />
@@ -152,11 +156,14 @@ class Profile extends Component {
                               <button
                                 className="btn btn-raised btn-primary"
                                 onClick={(e) =>
-                                  unfollowUser(e, user._id).then((data) =>
+                                  unfollowUser(e, user._id).then((data) => {
                                     this.props.updateFollowing({
                                       following: data.user.following,
-                                    })
-                                  )
+                                    });
+                                    this.props.updateFollowers({
+                                      followers: data.user.followers,
+                                    });
+                                  })
                                 }
                               >
                                 UnFollow <PersonAddDisabledIcon />
@@ -168,6 +175,9 @@ class Profile extends Component {
                                   followUser(e, user._id).then((data) => {
                                     this.props.updateFollowing({
                                       following: data.user.following,
+                                    });
+                                    this.props.updateFollowers({
+                                      followers: data.user.followers,
                                     });
                                     this.props.notificationAdded({
                                       userId: user._id,
@@ -218,7 +228,7 @@ class Profile extends Component {
                     {user._id === getCurrentUser()._id && (
                       <div className="d-flex align-items-center justify-content-between mb-2">
                         <button className="btn btn-clean">
-                          <Following following_users={user.following} />
+                          <Following />
                         </button>
                         <button className="btn btn-clean">
                           <Followers followers_users={user.followers} />
@@ -491,10 +501,12 @@ class Profile extends Component {
 
 const mapStateToProps = (state) => ({
   following: state.user.following,
+  followers: state.user.followers,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   updateFollowing: (params) => dispatch(updateFollowing(params)),
+  updateFollowers: (params) => dispatch(updateFollowers(params)),
   notificationAdded: (params) => dispatch(notificationAdded(params)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

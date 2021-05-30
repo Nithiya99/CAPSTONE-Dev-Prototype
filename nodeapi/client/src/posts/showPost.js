@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ShareIcon from "@material-ui/icons/Share";
 import { ToastContainer, toast } from "react-toastify";
 import Heart from "react-animated-heart";
-import { getCurrentUser } from "./../user/apiUser";
+import { getCurrentUser, getProfilePic } from "./../user/apiUser";
 import { Link, Redirect } from "react-router-dom";
 import DefaultProfile from "../images/avatar.png";
 import {
@@ -43,11 +43,19 @@ class showPost extends Component {
     show: false,
     redirect: false,
     disabled: false,
+    profilePictures: {},
   };
-
+  checkIfUserIdExistsInObject(checkObject, userId) {
+    Object.keys(checkObject).map((key) => {
+      if (key.toString() === userId.toString()) {
+        return true;
+      }
+    });
+    return false;
+  }
   componentDidMount() {
     let post_id = this.props.match.params.postId;
-    getpost(post_id).then((data) => {
+    getpost(post_id).then(async (data) => {
       this.setState({
         post: data,
         post_id: post_id,
@@ -56,14 +64,44 @@ class showPost extends Component {
       });
       if (isAuthenticated()) {
         this.setState({ loggedin: true, id: getCurrentUser()._id });
+        let post = data;
         let users = [...this.state.post.post.liked_by];
         if (users !== undefined && users !== null && users !== [])
           if (users.indexOf(getCurrentUser()._id) > -1)
             this.setState({ isClick: true });
       }
+      // let users = data.liked_by;
+      let comments = data.post.comments;
+      let pictures = {};
+      let picture = {};
+      picture = await this.setProfilePicture(getCurrentUser()._id);
+      // console.log(picture);
+      Object.assign(pictures, picture);
+      // console.log(pictures);
+      this.setState({ profilePictures: pictures });
+      comments.map(async (comment) => {
+        // const { profilePictures } = this.state;
+        // if (this.checkIfUserIdExistsInObject(profilePictures, comment.userId)) {
+        //   this.setProfilePicture(comment.userId);
+        // }
+        const { profilePictures } = this.state;
+        if (
+          !this.checkIfUserIdExistsInObject(profilePictures, comment.userId)
+        ) {
+          let picture = await this.setProfilePicture(comment.userId);
+          Object.assign(pictures, picture);
+          console.log(pictures);
+          this.setState({ profilePictures: pictures });
+        }
+      });
     });
   }
-
+  setProfilePicture = (userId) => {
+    // let picture = {};
+    return getProfilePic(userId).then((data) => {
+      return { [userId]: data.profilePic };
+    });
+  };
   handleSubmitClicked = () => {
     reportpost(this.state.post_id).then((data) => {
       if (data.message === "Post is Deleted.") {
@@ -141,12 +179,20 @@ class showPost extends Component {
 
   rendercomments = (comments) => {
     let reverseComments = [...comments].reverse();
+    const { profilePictures } = this.state;
     return reverseComments.map(
       ({ PostedOn, comment, userName, _id, userId }, index) => (
         <div className="d-flex py-5">
           <div className="symbol symbol-40 symbol-light-warning mr-5">
             <span className="symbol-label">
-              <img src={DefaultProfile} className="h-75 align-self-end" />
+              <img
+                src={
+                  profilePictures[userId] !== undefined
+                    ? profilePictures[userId]
+                    : DefaultProfile
+                }
+                className="h-75 align-self-end"
+              />
             </span>
           </div>
           <div className="d-flex flex-column flex-row-fluid">
@@ -182,12 +228,14 @@ class showPost extends Component {
     const { redirect } = this.state;
     if (redirect === true) return <Redirect to={`/home`} />;
     let post = this.state.post.post;
+    const { profilePictures } = this.state;
     const current_post = { ...post };
     let type = current_post.postType;
     if (current_post.reportCounter === undefined) return null;
     const reportCounter = [...current_post.reportCounter];
     // console.log(current_post.reportCounter);
     const posted_by = { ...current_post.postedBy };
+    let id = current_post._id;
     let counts = collect(current_post.liked_by).count();
     let imageUrl = [];
     if (current_post === undefined) return null;
@@ -203,7 +251,14 @@ class showPost extends Component {
             <div className="d-flex align-items-center pb-4">
               <div className="symbol symbol-40 symbol-light-warning mr-5">
                 <span className="symbol-label">
-                  <img src={DefaultProfile} className="h-75 align-self-end" />
+                  <img
+                    src={
+                      profilePictures[posted_by._id] !== undefined
+                        ? profilePictures[posted_by._id]
+                        : DefaultProfile
+                    }
+                    className="h-75 align-self-end"
+                  />
                 </span>
               </div>
               <div className="d-flex flex-column flex-grow-1">

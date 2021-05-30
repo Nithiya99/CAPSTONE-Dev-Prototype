@@ -37,28 +37,25 @@ class Requests extends Component {
           <div className="ml-1">
             <Button
               onClick={() => {
-                acceptRequest(
-                  getCurrentUser()._id,
-                  projectId,
-                  user._id,
-                  roleId
-                ).then((res) => {
-                  console.log(res);
-                  this.props.notificationAdded({
-                    userId: user._id,
-                    message: `New Role Accepted by ${
-                      getCurrentUser().name
-                    }, Time to show off my skills B)`,
-                    type: "RoleAccepted",
-                    projectId: projectId,
-                  });
-                  this.props.notificationAdded({
-                    userId: getCurrentUser()._id,
-                    message: `@${user.username} added to project! Welcome the new Member`,
-                    type: "NewMember",
-                    projectId: projectId,
-                  });
-                });
+                acceptRequest(getCurrentUser()._id, projectId, user._id, roleId)
+                  .then((res) => {
+                    console.log(res);
+                    this.props.notificationAdded({
+                      userId: user._id,
+                      message: `New Role Accepted by ${
+                        getCurrentUser().name
+                      }, Time to show off my skills B)`,
+                      type: "RoleAccepted",
+                      projectId: projectId,
+                    });
+                    this.props.notificationAdded({
+                      userId: getCurrentUser()._id,
+                      message: `@${user.username} added to project! Welcome the new Member`,
+                      type: "NewMember",
+                      projectId: projectId,
+                    });
+                  })
+                  .then(() => window.location.reload());
               }}
             >
               Accept
@@ -72,15 +69,17 @@ class Requests extends Component {
                   projectId,
                   user._id,
                   roleId
-                ).then((res) => {
-                  console.log(res);
-                  this.props.notificationAdded({
-                    userId: user._id,
-                    message: `Role Declined by ${getCurrentUser().name} :(`,
-                    type: "RoleDeclined",
-                    projectId: projectId,
-                  });
-                });
+                )
+                  .then((res) => {
+                    console.log(res);
+                    this.props.notificationAdded({
+                      userId: user._id,
+                      message: `Role Declined by ${getCurrentUser().name} :(`,
+                      type: "RoleDeclined",
+                      projectId: projectId,
+                    });
+                  })
+                  .then(() => window.location.reload());
               }}
             >
               Decline

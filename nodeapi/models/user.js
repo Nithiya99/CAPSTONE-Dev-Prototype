@@ -179,7 +179,13 @@ var userSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  profilePictures: [String],
+  profilePictures: [
+    {
+      type: String,
+      default:
+        "http://res.cloudinary.com/workshaketrial/image/upload/v1622131040/DefaultProfile.png",
+    },
+  ],
 });
 
 userSchema

@@ -106,9 +106,9 @@ class Home extends Component {
     // notifications.map((notif) => {
     //   console.log(notif);
     // });
-    console.log(posts);
+    // console.log(posts);
     const { profilePic } = this.props;
-    console.log(profilePic);
+    // console.log(profilePic);
     Object.keys(notificationGroupedObject).length > 0 &&
       console.log(Object.keys(notificationGroupedObject));
     // console.log(projects);

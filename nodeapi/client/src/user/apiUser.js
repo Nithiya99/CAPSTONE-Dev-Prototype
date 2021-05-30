@@ -316,3 +316,16 @@ export const processResumes = async (file) => {
   if (result !== undefined) return result;
   // });
 };
+
+export const getProfilePic = (userId) => {
+  return fetch(`http://localhost:3000/user/profilePic/${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json",
+    },
+  })
+    .then((data) => data.json())
+    .then((url) => {
+      return url;
+    });
+};

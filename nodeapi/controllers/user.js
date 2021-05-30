@@ -267,28 +267,33 @@ exports.addProfilePic = (req, res) => {
     api_key: "141328859214936",
     api_secret: "ped5_kvwuwzIV2YJxxkFkDKmKHw",
   });
-  sharp("file.destination + file.filename")
+  sharp(file.destination + file.filename)
     .resize(1000, 1000)
-    .toFile(file.destination + file.filename, (data) => {
+    .webp()
+    .toFile(file.destination + file.filename + " edited.webp", (data) => {
+      console.log(data);
       cloudinary.uploader.upload(
-        file.destination + file.filename,
+        file.destination + file.filename + " edited.webp",
         (err, result) => {
           if (err) {
             console.log("error:", err);
             return res.status(400).json({ err });
           }
           console.log("result:", result);
-          fs.unlink(file.destination + file.filename, function (err) {
-            if (err && err.code == "ENOENT") {
-              // file doens't exist
-              console.info("File doesn't exist, won't remove it.");
-            } else if (err) {
-              // other errors, e.g. maybe we don't have enough permission
-              console.error("Error occurred while trying to remove file");
-            } else {
-              console.info(`removed`);
+          fs.unlink(
+            file.destination + file.filename + " edited.webp",
+            function (err) {
+              if (err && err.code == "ENOENT") {
+                // file doens't exist
+                console.info("File doesn't exist, won't remove it.");
+              } else if (err) {
+                // other errors, e.g. maybe we don't have enough permission
+                console.error("Error occurred while trying to remove file");
+              } else {
+                console.info(`removed`);
+              }
             }
-          });
+          );
           let user = req.profile;
           user.profilePictures.push(result.url);
           user.save((err, result) => {
@@ -321,7 +326,11 @@ exports.blockfollower = (req, res) => {
       user.save();
     }
   });
-  return res.status(200).json("User Blocked");
+  User.findById(req.body.currentUser).exec((err, user) => {
+    if (err || !user) return res.status(400).json({ error: "user not found" });
+    return res.status(200).json({ user });
+  });
+  // return res.status(200).json("User Blocked");
 };
 
 exports.processResumes = (req, res) => {
@@ -381,4 +390,14 @@ exports.removeProfilePic = (req, res) => {
     if (err) return res.status(400).json({ error: "cannot save dp" });
     return res.status(200).json({ user: result });
   });
+};
+
+exports.getProfilePic = (req, res) => {
+  let profilePictures = req.profile.profilePictures;
+  if (profilePictures.length !== 0) {
+    return res
+      .status(200)
+      .json({ profilePic: profilePictures[profilePictures.length - 1] });
+  }
+  return res.status(400).json({ profilePic: undefined });
 };

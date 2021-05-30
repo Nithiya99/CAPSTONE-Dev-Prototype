@@ -1,51 +1,75 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { getUserById, unfollowUser } from "./apiUser";
+import { getUserById, getCurrentUser, unfollowUser } from "./apiUser";
 import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
-
-const Following = ({ following_users }) => {
+import { useDispatch, useSelector } from "react-redux";
+import { updateFollowing } from "../store/user";
+const Following = () => {
+  const dispatch = useDispatch();
   const [show, setShow] = useState(false);
-  const [users, setusers] = useState([]);
-
+  const [users, setusers] = useState({});
+  const following = useSelector((state) => state.user.following);
+  const [followingUsers, setFollowingUsers] = useState([]);
   useEffect(() => {
-    let profiles = [];
-    following_users.map((user) => {
+    getUserById(getCurrentUser()._id).then((data) =>
+      dispatch(updateFollowing({ following: data.user.following }))
+    );
+    let profiles = {};
+    following.map((user) => {
       getUserById(user).then((data) => {
         console.log(data.user);
-        profiles.push(data.user);
+        profiles[data.user._id] = data.user;
+        setusers(profiles);
       });
-      setusers(profiles);
     });
-  }, [null]);
-
+    setFollowingUsers(following);
+  }, []);
+  // useEffect(() => {
+  //   let profiles = {};
+  //   following.map((user) => {
+  //     getUserById(user).then((data) => {
+  //       console.log(data.user);
+  //       profiles[data.user._id] = data.user;
+  //     });
+  //     setusers(profiles);
+  //   });
+  //   setFollowingUsers(following);
+  // }, [following]);
+  console.log(users);
   return (
     <>
       <div
         onClick={() => setShow(true)}
-      >{` ${following_users.length} Following`}</div>
+      >{` ${following.length} Following`}</div>
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header>Following</Modal.Header>
         <Modal.Body>
           <div>
-            {users.map((user, i) => (
+            {Object.keys(users).map((user, i) => (
               <div className="col">
                 <div className="card mb-3" key={i}>
                   <div className="card-body">
-                    <p className="card-text">{user.name}</p>
+                    <p className="card-text">{users[user].name}</p>
                     <button
                       className="btn btn-raised btn-primary ml-3"
                       onClick={(e) => {
-                        unfollowUser(e, user._id).then((data) =>
-                          console.log(data)
-                        );
+                        unfollowUser(e, user).then((data) => {
+                          console.log(data);
+                          dispatch(
+                            updateFollowing({
+                              following: data.user.following,
+                            })
+                          );
+                          delete users[user];
+                        });
                       }}
                     >
                       UnFollow
                       <PersonAddDisabledIcon />
                     </button>
                     <Link
-                      to={`/user/${user._id}`}
+                      to={`/user/${user}`}
                       className="btn btn-raised btn-small btn-primary"
                     >
                       View Profile

@@ -85,8 +85,8 @@ const SearchBar = () => {
     // console.log("Focused");
   };
   //   const suggestions = [...users];
-  console.log(suggestions);
-  console.log("myProjectState", myProjectState);
+  // console.log(suggestions);
+  // console.log("myProjectState", myProjectState);
   //   if (url !== "" && myProjectState !== {})
   //     return <Redirect to={{ url: url, state: { project: myProjectState } }} />;
   if (url !== "") {

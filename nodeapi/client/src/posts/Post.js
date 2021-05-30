@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ShareIcon from "@material-ui/icons/Share";
 import { ToastContainer, toast } from "react-toastify";
 import Heart from "react-animated-heart";
-import { getCurrentUser } from "./../user/apiUser";
+import { getCurrentUser, getProfilePic } from "./../user/apiUser";
 import DefaultProfile from "../images/avatar.png";
 import {
   likepost,
@@ -51,14 +51,54 @@ class Post extends Component {
     sentimentScore: null,
     show: false,
     disabled: false,
+    profilePictures: {},
   };
-
-  componentDidMount() {
+  checkIfUserIdExistsInObject(checkObject, userId) {
+    Object.keys(checkObject).map((key) => {
+      if (key.toString() === userId.toString()) {
+        return true;
+      }
+    });
+    return false;
+  }
+  async componentDidMount() {
     let users = this.props.liked_by;
+    const { comments } = this.props;
     if (users !== undefined && users !== null && users !== [])
       if (users.indexOf(getCurrentUser()._id) > -1)
         this.setState({ isClick: true });
+    let pictures = {};
+    let picture = {};
+    picture = await this.setProfilePicture(getCurrentUser()._id);
+    // console.log(picture);
+    Object.assign(pictures, picture);
+    // console.log(pictures);
+    this.setState({ profilePictures: pictures });
+    comments.map(async (comment) => {
+      // const { profilePictures } = this.state;
+      // if (this.checkIfUserIdExistsInObject(profilePictures, comment.userId)) {
+      //   this.setProfilePicture(comment.userId);
+      // }
+      const { profilePictures } = this.state;
+      if (!this.checkIfUserIdExistsInObject(profilePictures, comment.userId)) {
+        let picture = await this.setProfilePicture(comment.userId);
+        Object.assign(pictures, picture);
+        // console.log(pictures);
+        this.setState({ profilePictures: pictures });
+      }
+    });
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.comments.length !== prevProps.comments.length) {
+      this.props.changePosts(this.props._id);
+    }
+  }
+  setProfilePicture = (userId) => {
+    let picture = {};
+    return getProfilePic(userId).then((data) => {
+      return { [userId]: data.profilePic };
+    });
+  };
   postliked = () => {
     this.setState({ isClick: !this.state.isClick });
     if (this.state.isClick)
@@ -111,9 +151,9 @@ class Post extends Component {
     this.setState({ show: true });
   }
   submitcomment = () => {
-    addcomment(this.props._id, this.state.comment).then(async (data) => {
-      await this.props.changePosts(this.props._id);
-    });
+    addcomment(this.props._id, this.state.comment)
+      .then((data) => console.log(data))
+      .then(() => this.props.changePosts(this.props._id));
   };
 
   findSentiment(comment) {
@@ -127,20 +167,27 @@ class Post extends Component {
     e.preventDefault();
     deleteComment(commentId, this.props._id)
       .then((data) => console.log(data))
-      .then(async () => {
-        await this.props.changePosts(this.props._id);
-        toast.success("deleted comment successfully");
+      .then(() => {
+        this.props.changePosts(this.props._id);
       });
   }
 
   rendercomments = (comments) => {
     let reverseComments = [...comments].reverse();
+    const { profilePictures } = this.state;
     return reverseComments.map(
       ({ PostedOn, comment, userName, _id, userId }, index) => (
         <div className="d-flex py-5">
           <div className="symbol symbol-40 symbol-light-warning mr-5">
             <span className="symbol-label">
-              <img src={DefaultProfile} className="h-75 align-self-end" />
+              <img
+                src={
+                  profilePictures[userId] !== undefined
+                    ? profilePictures[userId]
+                    : DefaultProfile
+                }
+                className="h-75 align-self-end"
+              />
             </span>
           </div>
           <div className="d-flex flex-column flex-row-fluid">
@@ -186,8 +233,11 @@ class Post extends Component {
       postedBy,
       reportCounter,
     } = this.props;
-    console.log(reportCounter);
+    // console.log(reportCounter);
+    const { profilePictures } = this.state;
+
     let counts = collect(liked_by).count();
+
     return (
       <>
         <ToastContainer />
@@ -196,7 +246,14 @@ class Post extends Component {
             <div className="d-flex align-items-center pb-4">
               <div className="symbol symbol-40 symbol-light-warning mr-5">
                 <span className="symbol-label">
-                  <img src={DefaultProfile} className="h-75 align-self-end" />
+                  <img
+                    src={
+                      profilePictures[this.props.postedBy._id] !== undefined
+                        ? profilePictures[this.props.postedBy._id]
+                        : DefaultProfile
+                    }
+                    className="h-75 align-self-end"
+                  />
                 </span>
               </div>
               <div className="d-flex flex-column flex-grow-1">

@@ -13,12 +13,7 @@ const RoleReq = (props) => {
       <Button variant="outline-primary" size="sm" onClick={handleShow}>
         Assign
       </Button>
-      <Modal
-        show={show}
-        onHide={handleClose}
-        backdrop="static"
-        keyboard={false}
-      >
+      <Modal show={show} onHide={() => handleClose()}>
         <Modal.Header closeButton>
           <Modal.Title>Requests for this role</Modal.Title>
         </Modal.Header>

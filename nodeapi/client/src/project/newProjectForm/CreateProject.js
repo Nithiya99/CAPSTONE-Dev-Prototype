@@ -70,38 +70,49 @@ class CreateProject extends Component {
     event.preventDefault();
     this.setState({ loading: true });
     let { title, description, skills, roleDetails } = this.state;
+    roleDetails.map((role, i) => {
+      if (role.roleName === "")
+        this.setState({ error: "Empty role title at " + (i + 1) });
+      if (role.roleSkills.length === 0) {
+        this.setState({ error: "Empty skills for role Number " + (i + 1) });
+      }
+    });
     let project = {
       title,
       description,
       skills,
       roleDetails,
     };
+
     // newProject(project);
     try {
-      newProject(project).then((data) => {
-        if (data === undefined) return;
-        if (data.error) {
-          if (data.similar) {
-            this.setState({ similar: data.similar });
-            console.log(this.state.similar);
-          }
-          this.setState({ error: data.error });
-        } else
-          this.setState({
-            title: "",
-            description: "",
-            skills: [""],
-            roleDetails: [
-              {
-                index: Math.random(),
-                roleName: "",
-                roleSkills: [],
-              },
-            ],
-            error: "",
-            open: true,
-          });
-      });
+      // console.log(this.state.error);
+      if (this.state.error !== "" && this.state.error !== undefined) {
+        newProject(project).then((data) => {
+          if (data === undefined) return;
+          if (data.error) {
+            if (data.similar) {
+              this.setState({ similar: data.similar });
+              console.log(this.state.similar);
+            }
+            this.setState({ error: data.error });
+          } else
+            this.setState({
+              title: "",
+              description: "",
+              skills: [""],
+              roleDetails: [
+                {
+                  index: Math.random(),
+                  roleName: "",
+                  roleSkills: [],
+                },
+              ],
+              error: "",
+              open: true,
+            });
+        });
+      }
     } catch (error) {
       console.log(error);
     }

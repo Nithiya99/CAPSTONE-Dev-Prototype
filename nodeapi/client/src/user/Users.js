@@ -27,9 +27,11 @@ const onUnBlockUser = (e, user) => {
   let current_user_id = getCurrentUser()._id;
   let client_user_id = user._id;
   console.log(user);
-  unblockUser(current_user_id, client_user_id).then((data) => {
-    console.log(data);
-  });
+  unblockUser(current_user_id, client_user_id)
+    .then((data) => {
+      console.log(data);
+    })
+    .then(() => window.location.reload());
   e.preventDefault();
 };
 
@@ -189,7 +191,9 @@ class Users extends Component {
                   <div className="text-muted pb-3">@{user.username}</div>
                   <button
                     className="btn btn-primary"
-                    onClick={(e) => onUnBlockUser(e, user)}
+                    onClick={async (e) => {
+                      onUnBlockUser(e, user);
+                    }}
                   >
                     UnBlock
                     <CheckCircleOutlineIcon />
