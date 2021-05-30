@@ -208,8 +208,7 @@ class Recommendation extends Component {
                             </Tab.Pane>
                             <Tab.Pane eventKey="ProjectChecker">
                               <div className="row row-cols-1 ">
-                                Want to check if the desired job is available?
-                                check here!
+                                Similar Projects
                               </div>
                               <form className="mt-5">
                                 <div className="form-group">
@@ -246,7 +245,7 @@ class Recommendation extends Component {
                                       onClick={this.clickSubmit}
                                       className="btn btn-raised btn-primary mx-auto mt-3 mb-2 col-sm-3"
                                     >
-                                      Create Project!
+                                      Check for Projects
                                     </button>
                                     <Modal show={this.state.show}>
                                       <Modal.Header>

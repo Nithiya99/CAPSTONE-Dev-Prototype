@@ -357,9 +357,12 @@ exports.processResumes = (req, res) => {
       // console.log(obj["0"], obj["1"], obj["2"], obj["3"]);
       let newObj = {
         name: obj["0"],
-        skills: obj["1"].split(","),
-        experience: obj["2"].split(","),
-        college: obj["3"],
+        experience: obj["1"],
+        cgpa: obj["2"],
+        skills: obj["3"].split(","),
+        college: obj["4"],
+        projects: [obj["5"], obj["6"], obj["7"]],
+        publications: [obj["8"], obj["9"], obj["10"]],
       };
       return newObj;
     });

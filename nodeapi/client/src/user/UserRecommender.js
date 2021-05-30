@@ -13,12 +13,13 @@ class UserRecommender extends Component {
       roleDetails: [
         {
           roleName: "",
-          roleSkills: [""],
+          roleSkills: [],
         },
       ],
       users: [],
       final_users: [],
       show: false,
+      error: "",
     };
   }
 
@@ -65,55 +66,64 @@ class UserRecommender extends Component {
     this.setState({ show: true });
   }
 
-  calculate = (e) => {
+  calculate = async (e) => {
     e.preventDefault();
     let { roleDetails, users } = this.state;
-    let final_users = [];
-    roleDetails.map((role) => {
-      let final_out = [];
-      let role_skills = role.roleSkills;
-      users.sort(function (a, b) {
-        return (
-          b.projects.length +
-          b.completed_projects.length -
-          (a.projects.length + a.completed_projects.length)
-        );
-      });
-
-      let max_proj = 1;
-      if (users.length > 0)
-        max_proj =
-          users[0].projects.length + users[0].completed_projects.length;
-      let winkOpts = {
-        f: similarityScore.winklerMetaphone,
-        options: { threshold: 0 },
-      };
-      if (role_skills !== undefined) {
-        users.forEach((user) => {
-          let out = {};
-          let score = similarity(user.skills, role_skills, winkOpts);
-          out = user;
-          let total_projects =
-            user.projects.length + user.completed_projects.length;
-          let final_value =
-            ((total_projects / max_proj) * user.rating) / 10 +
-            score.exact / role_skills.length +
-            -0.04 * user.projects.length +
-            0.01 * user.completion_percentage_of_all_projects;
-          out["exact"] = score.exact;
-          out["final_value"] = final_value;
-          final_out.push(out);
-        });
-        final_out.sort(function (a, b) {
-          return b.final_value - a.final_value;
-        });
-        // final_out = final_out.filter((x) => x.exact != 0);
-        final_out = final_out.slice(0, 5);
-      }
-      let obj = { role: role, users: final_out };
-      final_users.push(obj);
+    this.setState({ error: "" });
+    await roleDetails.map((role, i) => {
+      if (role.roleSkills.length === 0)
+        this.setState({ error: "Pls enter Role Skills of Role " + (i + 1) });
+      if (role.roleName === "")
+        this.setState({ error: "Pls enter Role Name at " + (i + 1) });
     });
-    this.setState({ final_users: final_users, show: true });
+    if (this.state.error === "" && this.state.error !== undefined) {
+      let final_users = [];
+      roleDetails.map((role) => {
+        let final_out = [];
+        let role_skills = role.roleSkills;
+        users.sort(function (a, b) {
+          return (
+            b.projects.length +
+            b.completed_projects.length -
+            (a.projects.length + a.completed_projects.length)
+          );
+        });
+
+        let max_proj = 1;
+        if (users.length > 0)
+          max_proj =
+            users[0].projects.length + users[0].completed_projects.length;
+        let winkOpts = {
+          f: similarityScore.winklerMetaphone,
+          options: { threshold: 0 },
+        };
+        if (role_skills !== undefined) {
+          users.forEach((user) => {
+            let out = {};
+            let score = similarity(user.skills, role_skills, winkOpts);
+            out = user;
+            let total_projects =
+              user.projects.length + user.completed_projects.length;
+            let final_value =
+              ((total_projects / max_proj) * user.rating) / 10 +
+              score.exact / role_skills.length +
+              -0.04 * user.projects.length +
+              0.01 * user.completion_percentage_of_all_projects;
+            out["exact"] = score.exact;
+            out["final_value"] = final_value;
+            final_out.push(out);
+          });
+          final_out.sort(function (a, b) {
+            return b.final_value - a.final_value;
+          });
+          // final_out = final_out.filter((x) => x.exact != 0);
+          final_out = final_out.slice(0, 5);
+        }
+        let obj = { role: role, users: final_out };
+        final_users.push(obj);
+      });
+      this.setState({ final_users: final_users, show: true });
+    }
   };
 
   renderUsers(users) {
@@ -154,11 +164,17 @@ class UserRecommender extends Component {
   }
 
   render() {
-    const { roleDetails } = this.state;
+    const { roleDetails, error } = this.state;
     const users = this.state.final_users;
     // console.log(this.state.final_users);
     return (
       <div>
+        <div
+          className="alert alert-danger"
+          style={{ display: error ? "" : "none" }}
+        >
+          {error}
+        </div>
         <form className="mt-5">
           <div className="form-group">
             <RoleList

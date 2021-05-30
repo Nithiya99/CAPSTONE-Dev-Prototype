@@ -18,7 +18,7 @@ class CreateProject extends Component {
         {
           index: Math.random(),
           roleName: "",
-          roleSkills: [""],
+          roleSkills: [],
         },
       ],
       open: false,
@@ -71,11 +71,11 @@ class CreateProject extends Component {
     this.setState({ loading: true });
     let { title, description, skills, roleDetails } = this.state;
     roleDetails.map((role, i) => {
-      if (role.roleName === "")
-        this.setState({ error: "Empty role title at " + (i + 1) });
       if (role.roleSkills.length === 0) {
         this.setState({ error: "Empty skills for role Number " + (i + 1) });
       }
+      if (role.roleName === "")
+        this.setState({ error: "Empty role title at " + (i + 1) });
     });
     let project = {
       title,
@@ -87,7 +87,7 @@ class CreateProject extends Component {
     // newProject(project);
     try {
       // console.log(this.state.error);
-      if (this.state.error !== "" && this.state.error !== undefined) {
+      if (this.state.error === "" && this.state.error !== undefined) {
         newProject(project).then((data) => {
           if (data === undefined) return;
           if (data.error) {
