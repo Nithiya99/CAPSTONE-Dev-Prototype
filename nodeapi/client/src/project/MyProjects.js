@@ -32,6 +32,7 @@ import ErrorTwoToneIcon from "@material-ui/icons/ErrorTwoTone";
 import CheckCircleTwoToneIcon from "@material-ui/icons/CheckCircleTwoTone";
 import RecommendedRolePeople from "./RecommendedRolePeople";
 import moment from "moment";
+import KickUser from "./KickUser";
 class MyProjects extends Component {
   state = {
     myProjects: [],
@@ -348,7 +349,13 @@ class MyProjects extends Component {
                                     <th key={"rolename"}>Role Name</th>
                                     <th key={"skills"}>Skills Required</th>
                                     <th key={"assigned"}>Assigned To</th>
-                                    <th key={"invite"}>Send Invite</th>
+                                    {getCurrentUser()._id ===
+                                      project.leader && (
+                                      <>
+                                        <th key={"invite"}>Send Invite</th>
+                                        <th key={"kick"}>Kick out</th>
+                                      </>
+                                    )}
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -400,6 +407,18 @@ class MyProjects extends Component {
                                                 role={role}
                                               />
                                             </button>
+                                          ) : (
+                                            <></>
+                                          )}
+                                        </td>
+                                        <td>
+                                          {getCurrentUser()._id ===
+                                            project.leader &&
+                                          role.assignedTo !== undefined ? (
+                                            <KickUser
+                                              project={project}
+                                              user={role.assignedTo}
+                                            />
                                           ) : (
                                             <></>
                                           )}
