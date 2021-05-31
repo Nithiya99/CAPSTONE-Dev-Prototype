@@ -191,6 +191,7 @@ class TrelloTask extends Component {
         id: task._id,
         title: task.taskName,
         // label: this.get_card_label(slackObject, task),
+        task_description: task.taskDescription,
         description: (
           <>
             <div className="lead">{task.taskDescription}</div>
