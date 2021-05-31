@@ -405,7 +405,7 @@ class Notifications extends Component {
               if (val.notifType === "InviteToRole") {
                 // console.log("StartedFollowing:", val);
                 // console.log("Current user id: ", getCurrentUser()._id);
-                console.log(val);
+                // console.log(val);
                 return (
                   <>
                     <>
@@ -546,7 +546,12 @@ class Notifications extends Component {
                   </>
                 );
               }
-
+              if (val.notifType === "RoleAcceptedInNotif") {
+                //notif type Role accepted
+              }
+              if (val.notifType === "PostReported") {
+                // Reported post
+              }
               return (
                 <div
                   className="alert alert-custom alert-notice alert-light-danger "

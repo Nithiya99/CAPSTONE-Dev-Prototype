@@ -187,31 +187,33 @@ class TrelloTask extends Component {
     mytasks.forEach((task) => {
       // if (slackObject[task.taskName] !== undefined)
       //   console.log("Overdue:", slackObject[task.taskName].overdue);
+      // let cardDescription =
       var card = {
         id: task._id,
         title: task.taskName,
         // label: this.get_card_label(slackObject, task),
-        description: (
-          <>
-            <div className="lead">{task.taskDescription}</div>
-            <p>{this.get_card_label(slackObject, task)}</p>
-            {/* {slackObject[task.taskName].map((startDate) => (
-              <p>{startDate.earliestStartDate}</p>
-            ))} */}
-            {/* <p>
-              Start By:{" "}
-              {moment(slackObject[task.taskName].earliestStartDate).format(
-                "DD-MM-YYYY"
-              )}
-            </p>
-            <p>
-              Finish By:{" "}
-              {moment(slackObject[task.taskName].earliestFinishDate).format(
-                "DD-MM-YYYY"
-              )}
-            </p> */}
-          </>
-        ),
+        description: task.taskDescription,
+        //  (
+        //   <>
+        //     <div className="lead">{task.taskDescription}</div>
+        //     <p>{this.get_card_label(slackObject, task)}</p>
+        //     {/* {slackObject[task.taskName].map((startDate) => (
+        //       <p>{startDate.earliestStartDate}</p>
+        //     ))} */}
+        //     {/* <p>
+        //       Start By:{" "}
+        //       {moment(slackObject[task.taskName].earliestStartDate).format(
+        //         "DD-MM-YYYY"
+        //       )}
+        //     </p>
+        //     <p>
+        //       Finish By:{" "}
+        //       {moment(slackObject[task.taskName].earliestFinishDate).format(
+        //         "DD-MM-YYYY"
+        //       )}
+        //     </p> */}
+        //   </>
+        // ),
         pessimisticTime: task.pessimisticTime,
         optimisticTime: task.optimisticTime,
         assigned: task.assignedTo,
