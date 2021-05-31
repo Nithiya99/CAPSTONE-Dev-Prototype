@@ -39,6 +39,9 @@ import "bootstrap/dist/css/bootstrap.css";
 import Sentiment from "sentiment";
 import Dropdown from "react-bootstrap/Dropdown";
 import ReportTwoToneIcon from "@material-ui/icons/ReportTwoTone";
+import { changePosts } from "../store/posts";
+import { notificationAdded } from "../store/notifications";
+import { connect } from "react-redux";
 const sentiment = new Sentiment();
 
 class showPost extends Component {
@@ -65,7 +68,14 @@ class showPost extends Component {
     });
     return false;
   }
-  componentDidMount() {
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.post.post !== undefined &&
+      this.state.post.post.comments !== undefined
+    )
+      console.log(prevState.post.post.comments, this.state.post.post.comments);
+  }
+  setPost() {
     let post_id = this.props.match.params.postId;
     getpost(post_id).then(async (data) => {
       this.setState({
@@ -102,11 +112,14 @@ class showPost extends Component {
         ) {
           let picture = await this.setProfilePicture(comment.userId);
           Object.assign(pictures, picture);
-          console.log(pictures);
+          // console.log(pictures);
           this.setState({ profilePictures: pictures });
         }
       });
     });
+  }
+  componentDidMount() {
+    this.setPost();
   }
   setProfilePicture = (userId) => {
     // let picture = {};
@@ -153,8 +166,15 @@ class showPost extends Component {
     if (this.state.loggedin) {
       this.setState({ isClick: !this.state.isClick });
       if (this.state.isClick)
-        dislikepost(this.state.post_id).then((data) => console.log(data));
-      else likepost(this.state.post_id).then((data) => console.log(data));
+        dislikepost(this.state.post_id).then((data) => {
+          this.setPost();
+          console.log(data);
+        });
+      else
+        likepost(this.state.post_id).then((data) => {
+          this.setPost();
+          console.log(data);
+        });
     } else return toast.error("Please login-In");
   };
 
@@ -165,9 +185,11 @@ class showPost extends Component {
 
   submitcomment = () => {
     if (this.state.loggedin) {
-      addcomment(this.state.post_id, this.state.comment).then((data) =>
-        console.log(data)
-      );
+      addcomment(this.state.post_id, this.state.comment).then((data) => {
+        console.log(data);
+        this.setPost();
+      });
+      // .then(() => this.props.changePosts(this.props.match.params.postId));
     } else return toast.error("Please login-In ");
   };
 
@@ -181,12 +203,13 @@ class showPost extends Component {
   deletecomment(e, commentId) {
     e.preventDefault();
     // console.log(this.state.post.post._id, commentId);
-    deleteComment(commentId, this.state.post.post._id)
-      .then((data) => console.log(data))
-      .then(async () => {
-        await this.props.changePosts(this.props._id);
-        toast.success("deleted comment successfully");
-      });
+    deleteComment(commentId, this.state.post.post._id).then((data) => {
+      console.log(data);
+      this.setPost();
+    });
+    // .then(() => {
+    //   this.props.changePosts(this.props.match.params.postId);
+    // });
   }
 
   rendercomments = (comments) => {
@@ -531,5 +554,12 @@ class showPost extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  posts: state.posts.posts,
+});
 
-export default showPost;
+const mapDispatchToProps = (dispatch) => ({
+  changePosts: (params) => dispatch(changePosts(params)),
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(showPost);

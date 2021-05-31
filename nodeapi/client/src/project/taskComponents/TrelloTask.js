@@ -59,7 +59,7 @@ class TrelloTask extends Component {
   };
   handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
     console.log("drag ended");
-
+    // this.updateBoard();
     if (sourceLaneId === targetLaneId) this.setState({ flag: true });
 
     if (this.state.flag === false) {
@@ -292,16 +292,55 @@ class TrelloTask extends Component {
   };
   shouldReceiveNewData = (nextData) => {
     let cards = [];
+    //  await getTasks(projectId).then((data) => {
+    //    this.props.updateTasks({ tasks: data.tasks });
+    //    // console.log(data);
+    //  });
+    const { mytasks } = this.state;
+    const { slackObject } = this.props;
     nextData.lanes.forEach((data) => {
       data.cards.forEach((card) => {
         if (this.state.flag === true) card.status = card.laneId;
         else card.laneId = card.status;
         cards.push(card);
+        // console.log("new cards:", cards, "old cards:", mytasks);
       });
     });
     tasks = cards;
     cards.forEach((card) => {
       updateTask(card, this.props.projectId);
+    });
+    cards.forEach((card, i) => {
+      // console.log(
+      //   "card:",
+      //   cards[i].description,
+      //   "mytasks:",
+      //   mytasks[i].description
+      // );
+      // console.log(mytasks[i].description === cards[i].description);
+      if (mytasks[i].status !== cards[i].status) {
+        cards[i].description = (
+          <>
+            <div className="lead">{cards.taskDescription}</div>
+            <p>{this.get_card_label(slackObject, cards[i])}</p>
+            {/* {slackObject[task.taskName].map((startDate) => (
+              <p>{startDate.earliestStartDate}</p>
+            ))} */}
+            {/* <p>
+              Start By:{" "}
+              {moment(slackObject[task.taskName].earliestStartDate).format(
+                "DD-MM-YYYY"
+              )}
+            </p>
+            <p>
+              Finish By:{" "}
+              {moment(slackObject[task.taskName].earliestFinishDate).format(
+                "DD-MM-YYYY"
+              )}
+            </p> */}
+          </>
+        );
+      }
     });
     this.setState({ mytasks: cards });
   };
