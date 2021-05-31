@@ -546,22 +546,56 @@ class Notifications extends Component {
                   </>
                 );
               }
-
-              return (
-                <div
-                  className="alert alert-custom alert-notice alert-light-danger "
-                  role="alert"
-                >
-                  <div className="alert-icon">
-                    <img
-                      src={ReportIcon}
-                      alt="Logo"
-                      style={{ height: "40px" }}
-                    />
+              if (val.notifType === "RoleAcceptedInNotif") {
+                return (
+                  <div
+                    className="alert alert-custom alert-notice alert-light-success"
+                    role="alert"
+                  >
+                    <div className="alert-icon">
+                      <img
+                        src={AcceptIcon}
+                        alt="Icon"
+                        style={{ height: "40px" }}
+                      />
+                    </div>
+                    <div className="alert-text">{val.message}</div>
                   </div>
-                  <div className="alert-text">{val.message}</div>
-                </div>
-              );
+                );
+              }
+              if (val.notifType === "PostReported") {
+                return (
+                  <div
+                    className="alert alert-custom alert-notice alert-light-danger "
+                    role="alert"
+                  >
+                    <div className="alert-icon">
+                      <img
+                        src={ReportIcon}
+                        alt="Logo"
+                        style={{ height: "40px" }}
+                      />
+                    </div>
+                    <div className="alert-text">{val.message}</div>
+                  </div>
+                );
+              }
+
+              // return (
+              //   <div
+              //     className="alert alert-custom alert-notice alert-light-danger "
+              //     role="alert"
+              //   >
+              //     <div className="alert-icon">
+              //       <img
+              //         src={ReportIcon}
+              //         alt="Logo"
+              //         style={{ height: "40px" }}
+              //       />
+              //     </div>
+              //     <div className="alert-text">{val.message}</div>
+              //   </div>
+              // );
             })}
           </div>
         ))}
