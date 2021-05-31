@@ -97,7 +97,9 @@ exports.updateProject = (req, res) => {
   project.roles = editedRoleProject.roles;
   project.team = editedRoleProject.team;
   project.tasks = editedRoleProject.tasks;
+  console.log(project, editedRoleProject.roles);
   project.save((err) => {
+    console.log(project.roles);
     if (err) res.status(400).json({ err });
     res.status(200).json({ message: "project updated" });
   });

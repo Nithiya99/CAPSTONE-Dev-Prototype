@@ -36,7 +36,9 @@ class LeaveProject extends Component {
 
     let roles = project.roles;
     roles.map((role) => {
-      if (role.assignedTo !== getCurrentUser()._id) final_roles.push(role);
+      let r = role;
+      if (r.assignedTo === getCurrentUser()._id) r.assignedTo = undefined;
+      final_roles.push(r);
     });
 
     let proj = {
@@ -47,6 +49,7 @@ class LeaveProject extends Component {
       team: final_team,
       tasks: final_tasks,
     };
+    console.log(proj.roleDetails);
     updateProject(proj, project._id).then((data) => {
       if (data.error) {
         console.log(data.error);
