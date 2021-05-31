@@ -474,7 +474,7 @@ export const updateTask = (task, projectId) => {
   let Obj = {
     id: task.id,
     taskName: task.title,
-    taskDescription: task.description,
+    taskDescription: task.task_description,
     pessimisticTime: parseInt(task.pessimisticTime),
     optimisticTime: parseInt(task.optimisticTime),
     mostLikelyTime: parseInt(task.mostLikelyTime),

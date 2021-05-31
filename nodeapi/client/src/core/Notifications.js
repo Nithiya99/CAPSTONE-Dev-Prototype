@@ -547,26 +547,55 @@ class Notifications extends Component {
                 );
               }
               if (val.notifType === "RoleAcceptedInNotif") {
-                //notif type Role accepted
+                return (
+                  <div
+                    className="alert alert-custom alert-notice alert-light-success"
+                    role="alert"
+                  >
+                    <div className="alert-icon">
+                      <img
+                        src={AcceptIcon}
+                        alt="Icon"
+                        style={{ height: "40px" }}
+                      />
+                    </div>
+                    <div className="alert-text">{val.message}</div>
+                  </div>
+                );
               }
               if (val.notifType === "PostReported") {
-                // Reported post
-              }
-              return (
-                <div
-                  className="alert alert-custom alert-notice alert-light-danger "
-                  role="alert"
-                >
-                  <div className="alert-icon">
-                    <img
-                      src={ReportIcon}
-                      alt="Logo"
-                      style={{ height: "40px" }}
-                    />
+                return (
+                  <div
+                    className="alert alert-custom alert-notice alert-light-danger "
+                    role="alert"
+                  >
+                    <div className="alert-icon">
+                      <img
+                        src={ReportIcon}
+                        alt="Logo"
+                        style={{ height: "40px" }}
+                      />
+                    </div>
+                    <div className="alert-text">{val.message}</div>
                   </div>
-                  <div className="alert-text">{val.message}</div>
-                </div>
-              );
+                );
+              }
+
+              // return (
+              //   <div
+              //     className="alert alert-custom alert-notice alert-light-danger "
+              //     role="alert"
+              //   >
+              //     <div className="alert-icon">
+              //       <img
+              //         src={ReportIcon}
+              //         alt="Logo"
+              //         style={{ height: "40px" }}
+              //       />
+              //     </div>
+              //     <div className="alert-text">{val.message}</div>
+              //   </div>
+              // );
             })}
           </div>
         ))}
