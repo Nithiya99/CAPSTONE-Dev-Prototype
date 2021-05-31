@@ -15,9 +15,12 @@ import { DropzoneArea } from "material-ui-dropzone";
 import { PdfDropZone } from "./PdfDropZone";
 import { checkProject } from "./../project/apiProject";
 import UserRecommender from "./UserRecommender";
+import RecommendationProject2 from "./RecommendationProject2";
+import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
 class Recommendation extends Component {
   state = {
     key: "Database",
+    projectSkills: [],
     show: false,
     title: "",
     description: "",
@@ -197,9 +200,20 @@ class Recommendation extends Component {
                         <div className="card-body">
                           <Tab.Content>
                             <Tab.Pane eventKey="ProjectRecommender">
-                              <div className="row row-cols-1 ">
-                                Project Recommender
-                              </div>
+                              <SkillsInput
+                                label={"Skills"}
+                                name={"skillsInput"}
+                                value={""}
+                                setSkills={(arr) => {
+                                  console.log(arr);
+                                  this.setState({
+                                    projectSkills: arr,
+                                  });
+                                }}
+                              />
+                              <RecommendationProject2
+                                skills={this.state.projectSkills}
+                              />
                             </Tab.Pane>
                             <Tab.Pane eventKey="UserRecommender">
                               <div className="row row-cols-1 ">
