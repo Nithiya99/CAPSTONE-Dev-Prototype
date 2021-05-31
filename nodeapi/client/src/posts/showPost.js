@@ -15,13 +15,25 @@ import {
 } from "./apiPosts";
 import { collect } from "collect.js";
 import CommentIcon from "@material-ui/icons/Comment";
+import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import moment from "moment";
-import { Accordion, Button, Card, Modal, ModalBody } from "react-bootstrap";
+import DeletePost from "./DeletePost";
+import {
+  Accordion,
+  Button,
+  Card,
+  Modal,
+  ModalBody,
+  Popover,
+  OverlayTrigger,
+} from "react-bootstrap";
 import { TextField } from "@material-ui/core";
 import { isAuthenticated } from "../auth";
 import { Carousel } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import YouTubeIcon from "@material-ui/icons/YouTube";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import VisibilityTwoToneIcon from "@material-ui/icons/VisibilityTwoTone";
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import "bootstrap/dist/css/bootstrap.css";
 import Sentiment from "sentiment";
@@ -207,13 +219,14 @@ class showPost extends Component {
                 {moment(PostedOn).format("DD-MM-YYYY h:mm a")}
               </span>
             </div>
+
             <span className="text-dark-75 font-size-sm font-weight-normal pt-1">
               {comment}
             </span>
           </div>
           {this.state.id === userId && (
             <button
-              className="btn btn-danger"
+              className="btn btn-clear"
               onClick={(e) => this.deletecomment(e, _id)}
             >
               <DeleteTwoToneIcon />
@@ -272,52 +285,143 @@ class showPost extends Component {
                   {moment(current_post.created).format("DD-MM-YYYY h:mm a")}
                 </span>
               </div>
+              <div className="ml-auto">
+                <OverlayTrigger
+                  trigger="click"
+                  placement="right"
+                  overlay={
+                    <Popover id="popover-basic">
+                      <Popover.Content>
+                        {getCurrentUser()._id === posted_by ? (
+                          <></>
+                        ) : reportCounter.includes(getCurrentUser()._id) ? (
+                          <>
+                            <button className="btn btn-clean" disabled={true}>
+                              <ReportTwoToneIcon /> Post Reported
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              className="btn btn-clean"
+                              onClick={() => {
+                                this.handleShow();
+                                this.setState({ disabled: true });
+                              }}
+                              disabled={this.state.disabled}
+                            >
+                              <ReportTwoToneIcon /> Report
+                            </button>
+                            <Modal
+                              show={this.state.show}
+                              onHide={this.handleClose.bind(this)}
+                            >
+                              <Modal.Header>
+                                <Modal.Title>
+                                  Are you Sure to report this post?
+                                </Modal.Title>
+                                <Button onClick={this.handleClose.bind(this)}>
+                                  x
+                                </Button>
+                              </Modal.Header>
+                              <ModalBody>
+                                <Button
+                                  disabled={this.state.isDisabled}
+                                  onClick={this.handleSubmitClicked}
+                                >
+                                  Yes
+                                </Button>
+                              </ModalBody>
+                            </Modal>
+                          </>
+                        )}
+
+                        <div>
+                          <button
+                            className="btn btn-clean"
+                            onClick={() => {
+                              getpost(current_post._id).then((data) => {
+                                let link = `http://localhost:3000/post/${data.post._id}`;
+                                navigator.clipboard.writeText(link);
+                                toast.success("Link copied to clipboard");
+                              });
+                            }}
+                          >
+                            <ShareIcon /> Share Post
+                          </button>
+                        </div>
+                        {/* {delete_button === "enabled" ? (
+                          <DeletePost postId={_id} />
+                        ) : (
+                          <div></div>
+                        )} */}
+                      </Popover.Content>
+                    </Popover>
+                  }
+                >
+                  <button className="btn btn-custom">
+                    <MoreVertIcon />
+                  </button>
+                </OverlayTrigger>
+              </div>
             </div>
             <div>
               {(type === "image" &&
                 (imageUrl !== "undefined" && imageUrl.length > 1 ? (
-                  <Carousel interval={null}>
-                    {imageUrl.map((url, i) => {
-                      return (
-                        <Carousel.Item>
-                          <img
-                            className="d-block w-100"
-                            style={{
-                              width: "45vw",
-                              height: "30vw",
-                              "object-fit": "cover",
-                            }}
-                            src={url}
-                            alt={url}
-                          />
-                        </Carousel.Item>
-                      );
-                    })}
-                  </Carousel>
+                  <center>
+                    <Carousel interval={null}>
+                      {imageUrl.map((url, i) => {
+                        return (
+                          <Carousel.Item>
+                            <img
+                              className="d-block w-100"
+                              style={{
+                                width: "45vw",
+                                height: "30vw",
+                                "object-fit": "cover",
+                              }}
+                              src={url}
+                              alt={url}
+                            />
+                          </Carousel.Item>
+                        );
+                      })}
+                    </Carousel>
+                  </center>
                 ) : (
-                  <Card.Img
-                    style={{
-                      width: "45vw",
-                      height: "30vw",
-                      "object-fit": "cover",
-                    }}
-                    variant="top"
-                    src={imageUrl[0]}
-                  />
+                  <center>
+                    <Card.Img
+                      style={{
+                        width: "45vw",
+                        height: "30vw",
+                        "object-fit": "cover",
+                      }}
+                      variant="top"
+                      src={imageUrl[0]}
+                    />
+                  </center>
                 ))) ||
                 (type === "video" && (
-                  <ReactPlayer
-                    url={current_post.video}
-                    controls={true}
-                    volume={1}
-                    muted={false}
-                  />
+                  <center>
+                    <ReactPlayer
+                      url={current_post.video}
+                      controls={true}
+                      volume={1}
+                      muted={false}
+                    />
+                  </center>
                 )) ||
                 (type === "text" && current_post.title) ||
                 (type === "youtubeVideo" && (
                   <>
-                    <YouTubeIcon />
-                    <div>{current_post.metadataTitle}</div>
+                    <YouTubeIcon
+                      fontSize="large"
+                      className="text-danger display-3 mr-5 ml-2"
+                    />
+                    <span>
+                      <strong>{current_post.metadataTitle}</strong>
+                      By {current_post.metadataAuthor}
+                    </span>
                     <center>
                       <ReactPlayer
                         url={current_post.video}
@@ -325,11 +429,12 @@ class showPost extends Component {
                         width={window.width}
                       />
                     </center>
-                    <div>By {current_post.metadataAuthor}</div>
+                    {/* <div>By {current_post.metadataAuthor}</div> */}
                   </>
                 ))}
+
               <div className="d-flex align-items-center">
-                {getCurrentUser()._id === posted_by ? (
+                {/* {getCurrentUser()._id === posted_by ? (
                   <></>
                 ) : reportCounter.includes(getCurrentUser()._id) ? (
                   <>
@@ -369,8 +474,8 @@ class showPost extends Component {
                       </ModalBody>
                     </Modal>
                   </>
-                )}
-                <button
+                )} */}
+                {/* <button
                   onClick={() => {
                     getpost(current_post._id).then((data) => {
                       let link = `http://localhost:3000/post/${data.post._id}`;
@@ -380,11 +485,27 @@ class showPost extends Component {
                   }}
                 >
                   <ShareIcon />
-                </button>
+                </button> */}
                 <Heart isClick={this.state.isClick} onClick={this.postliked} />
                 {counts + " likes"}
               </div>
-              <TextField
+              <div className="d-flex align-items-center">
+                <TextField
+                  name="comment"
+                  onChange={(e) => this.onTextChange(e)}
+                  id="standard-basic"
+                  label="Add a Comment"
+                  fullWidth
+                />
+                <button
+                  onClick={this.submitcomment}
+                  className="btn btn-light-primary mr-5 ml-5 "
+                  disabled={this.state.sentimentScore < -3 ? true : false}
+                >
+                  <SendRoundedIcon />
+                </button>
+              </div>
+              {/* <TextField
                 name="comment"
                 onChange={(e) => this.onTextChange(e)}
                 id="standard-basic"
@@ -397,7 +518,7 @@ class showPost extends Component {
                 disabled={this.state.sentimentScore < -3 ? true : false}
               >
                 Submit
-              </button>
+              </button> */}
               {collect(current_post.comments).count() > 0 ? (
                 this.rendercomments(current_post.comments)
               ) : (
