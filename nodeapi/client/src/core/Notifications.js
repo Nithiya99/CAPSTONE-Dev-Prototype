@@ -5,9 +5,12 @@ import { getProject } from "../project/apiProject";
 import { Button } from "react-bootstrap";
 import { getNotifications } from "../apiNotifications";
 import ReqIcon from "../images/request.png";
+import ReportIcon from "../images/report.png";
 import NewAddIcon from "../images/working.png";
 import AcceptIcon from "../images/accepted.png";
 import DeclineIcon from "../images/remove.png";
+import InviteIcon from "../images/invite.png";
+import FollowIcon from "../images/follow.png";
 import LiveClock from "react-live-clock";
 import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
@@ -378,7 +381,7 @@ class Notifications extends Component {
                     >
                       <div className="alert-icon">
                         <img
-                          src={NewAddIcon}
+                          src={FollowIcon}
                           alt="Logo"
                           style={{ height: "40px" }}
                         />
@@ -413,7 +416,7 @@ class Notifications extends Component {
                       >
                         <div className="alert-icon">
                           <img
-                            src={NewAddIcon}
+                            src={InviteIcon}
                             alt="Logo"
                             style={{ height: "40px" }}
                           />
@@ -429,110 +432,114 @@ class Notifications extends Component {
                           >
                             {val.message}
                           </Link>
-                          <Button
-                            onClick={() => {
-                              // console.log(
-                              //   val.sentBy,
-                              //   val.projectId,
-                              //   val.sentTo,
-                              //   val.roleId
-                              // );
-                              acceptRequest(
-                                val.sentBy,
-                                val.projectId,
-                                val.sentTo,
-                                val.roleId
-                              )
-                                .then((res) => {
-                                  console.log(res);
-                                  this.props.notificationAdded({
-                                    userId: val.sentBy,
-                                    message: `New Role (${
-                                      res.role.roleName
-                                    }) Accepted by ${
-                                      getCurrentUser().name
-                                    }, Congrats on the new Member!`,
-                                    type: "RoleAcceptedInNotif",
-                                    projectId: val.projectId,
+                          <div className="mr-auto">
+                            <button
+                              className="btn btn-success mr-5"
+                              onClick={() => {
+                                // console.log(
+                                //   val.sentBy,
+                                //   val.projectId,
+                                //   val.sentTo,
+                                //   val.roleId
+                                // );
+                                acceptRequest(
+                                  val.sentBy,
+                                  val.projectId,
+                                  val.sentTo,
+                                  val.roleId
+                                )
+                                  .then((res) => {
+                                    console.log(res);
+                                    this.props.notificationAdded({
+                                      userId: val.sentBy,
+                                      message: `New Role (${
+                                        res.role.roleName
+                                      }) Accepted by ${
+                                        getCurrentUser().name
+                                      }, Congrats on the new Member!`,
+                                      type: "RoleAcceptedInNotif",
+                                      projectId: val.projectId,
+                                    });
+                                    this.props.notificationAdded({
+                                      userId: getCurrentUser()._id,
+                                      message: `New Role (${res.role.roleName})! time to show off my skills B)`,
+                                      type: "RoleAcceptedInNotif",
+                                      projectId: val.projectId,
+                                    });
+                                  })
+                                  .then(() => {
+                                    removeNotificationId(
+                                      getCurrentUser()._id,
+                                      val._id
+                                    ).then((data) => {
+                                      if (data.user !== undefined) {
+                                        console.log("removed notif");
+                                        window.location.reload();
+                                      }
+                                    });
                                   });
-                                  this.props.notificationAdded({
-                                    userId: getCurrentUser()._id,
-                                    message: `New Role (${res.role.roleName})! time to show off my skills B)`,
-                                    type: "RoleAcceptedInNotif",
-                                    projectId: val.projectId,
+                              }}
+                            >
+                              Accept
+                            </button>
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => {
+                                //  declineRequest(
+                                //     getCurrentUser()._id,
+                                //     projectId,
+                                //     user._id,
+                                //     roleId
+                                //   ).then((res) => {
+                                //     console.log(res);
+                                //     this.props.notificationAdded({
+                                //       userId: user._id,
+                                //       message: `Role Declined by ${getCurrentUser().name} :(`,
+                                //       type: "RoleDeclined",
+                                //       projectId: projectId,
+                                //     });
+                                //   });
+                                // }}
+                                declineRequest(
+                                  val.sentBy,
+                                  val.projectId,
+                                  val.sentTo,
+                                  val.roleId
+                                )
+                                  .then((res) => {
+                                    console.log(res);
+                                    this.props.notificationAdded({
+                                      userId: val.sentBy,
+                                      message: `Role (${
+                                        res.role.roleName
+                                      }) declined by ${getCurrentUser().name}`,
+                                      type: "RoleDeclinedInNotif",
+                                      projectId: val.projectId,
+                                    });
+                                    toast.warning(
+                                      `Rejected role (${res.role.roleName}) successfully!`
+                                    );
+                                    // this.props.removeAndUpdateNotifications({
+                                    //   userId: getCurrentUser()._id,
+                                    //   notifId: val._id,
+                                    // });
+                                  })
+                                  .then(() => {
+                                    removeNotificationId(
+                                      getCurrentUser()._id,
+                                      val._id
+                                    ).then((data) => {
+                                      if (data.user !== undefined) {
+                                        console.log("removed notif");
+                                        window.location.reload();
+                                      }
+                                    });
                                   });
-                                })
-                                .then(() => {
-                                  removeNotificationId(
-                                    getCurrentUser()._id,
-                                    val._id
-                                  ).then((data) => {
-                                    if (data.user !== undefined) {
-                                      console.log("removed notif");
-                                      window.location.reload();
-                                    }
-                                  });
-                                });
-                            }}
-                          >
-                            Accept
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              //  declineRequest(
-                              //     getCurrentUser()._id,
-                              //     projectId,
-                              //     user._id,
-                              //     roleId
-                              //   ).then((res) => {
-                              //     console.log(res);
-                              //     this.props.notificationAdded({
-                              //       userId: user._id,
-                              //       message: `Role Declined by ${getCurrentUser().name} :(`,
-                              //       type: "RoleDeclined",
-                              //       projectId: projectId,
-                              //     });
-                              //   });
-                              // }}
-                              declineRequest(
-                                val.sentBy,
-                                val.projectId,
-                                val.sentTo,
-                                val.roleId
-                              )
-                                .then((res) => {
-                                  console.log(res);
-                                  this.props.notificationAdded({
-                                    userId: val.sentBy,
-                                    message: `Role (${
-                                      res.role.roleName
-                                    }) declined by ${getCurrentUser().name}`,
-                                    type: "RoleDeclinedInNotif",
-                                    projectId: val.projectId,
-                                  });
-                                  toast.warning(
-                                    `Rejected role (${res.role.roleName}) successfully!`
-                                  );
-                                  // this.props.removeAndUpdateNotifications({
-                                  //   userId: getCurrentUser()._id,
-                                  //   notifId: val._id,
-                                  // });
-                                })
-                                .then(() => {
-                                  removeNotificationId(
-                                    getCurrentUser()._id,
-                                    val._id
-                                  ).then((data) => {
-                                    if (data.user !== undefined) {
-                                      console.log("removed notif");
-                                      window.location.reload();
-                                    }
-                                  });
-                                });
-                            }}
-                          >
-                            Decline
-                          </Button>
+                              }}
+                            >
+                              Decline
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </>
@@ -542,10 +549,17 @@ class Notifications extends Component {
 
               return (
                 <div
-                  className="card-text ml-3 mt-1 mb-2 p-1"
-                  style={{ width: "50rem" }}
+                  className="alert alert-custom alert-notice alert-light-danger "
+                  role="alert"
                 >
-                  {val.message}
+                  <div className="alert-icon">
+                    <img
+                      src={ReportIcon}
+                      alt="Logo"
+                      style={{ height: "40px" }}
+                    />
+                  </div>
+                  <div className="alert-text">{val.message}</div>
                 </div>
               );
             })}
