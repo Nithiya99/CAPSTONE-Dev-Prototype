@@ -512,6 +512,7 @@ class ProjectDashboard extends Component {
                                   _id={post._id}
                                   comments={post.comments}
                                   tags={post.tags}
+                                  postedBy={post.postedBy}
                                 />
                               );
                             if (post.postType === "image")
@@ -525,6 +526,7 @@ class ProjectDashboard extends Component {
                                   _id={post._id}
                                   comments={post.comments}
                                   tags={post.tags}
+                                  postedBy={post.postedBy}
                                 />
                               );
                           }
