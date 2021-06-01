@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import { listprojects, request } from "./apiProject";
 import { getCurrentUser, getUserById } from "../user/apiUser";
 import { connect } from "react-redux";
@@ -112,9 +113,15 @@ class JoinProject extends Component {
                     <div className="flex-grow-1">
                       <div className="d-flex align-items-center justify-content-between flex-wrap">
                         <div className="mr-3">
-                          <p className="d-flex align-items-center text-dark font-size-h5 font-weight-bold mr-3">
+                          <Link
+                            to={{
+                              pathname: `/project/${project._id}`,
+                              state: { project: project },
+                            }}
+                            className="text-dark-75 text-hover-primary mb-1 font-size-lg font-weight-bolder"
+                          >
                             {project.title}
-                          </p>
+                          </Link>
                           <div className="d-flex flex-wrap my-2">
                             <p className="text-muted font-weight-bold mr-lg-8 mr-5 mb-lg-0 mb-2">
                               {projectLeaderNames[project._id]}

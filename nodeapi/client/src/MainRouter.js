@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import { Badge } from "react-bootstrap";
 import showPost from "./posts/showPost";
 import Recommendation from "./user/Recommendation";
+import viewProject from "./project/viewProject";
 
 const MainRouter = () => {
   const dispatch = useDispatch();
@@ -60,6 +61,7 @@ const MainRouter = () => {
               <Route path="/user/edit/:userId" component={EditProfile}></Route>
               <Route path="/user/:userId" component={Profile}></Route>
               <Route path="/post/:postId" component={showPost}></Route>
+              <Route path="/project/:projectId" component={viewProject}></Route>
               <Route path="/recommendation" component={Recommendation}></Route>
             </Switch>
           </div>

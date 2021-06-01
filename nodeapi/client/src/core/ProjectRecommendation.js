@@ -59,7 +59,10 @@ class ProjectRecommendation extends Component {
               </div>
               <div className="mt-9">
                 <Link
-                  to={`/joinProject/`}
+                  to={{
+                    pathname: `/project/${project._id}`,
+                    state: { project: project },
+                  }}
                   className="btn btn-light-primary font-weight-bolder btn-sm py-3 px-6 text-uppercase"
                 >
                   view project
