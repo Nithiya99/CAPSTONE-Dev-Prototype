@@ -7,6 +7,13 @@ const sharp = require("sharp");
 const multer = require("multer");
 const path = require("path");
 const e = require("cors");
+// const fs = require("fs");
+// const sharp = require("sharp");
+const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
+const ffmpeg = require("fluent-ffmpeg");
+var ffprobe = require("ffprobe-static");
+ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfprobePath(ffprobe.path);
 webp.grant_permission();
 
 exports.postById = (req, res, next, id) => {
@@ -278,6 +285,7 @@ function decodeBase64Image(dataString) {
 
   return response;
 }
+
 exports.convertToWebp = (req, res) => {
   const cloudinary = require("cloudinary").v2;
   cloudinary.config({
@@ -302,43 +310,44 @@ exports.convertToWebp = (req, res) => {
       if (err) console.log(err);
       else {
         console.log(info);
-        cloudinary.uploader.upload(
-          file.destination + file.filename + " edited.webp",
-          (err, result) => {
-            if (err) {
-              console.log("error:", err);
-              return res.status(400).json({ err });
-            }
-            console.log("result:", result);
-            fs.unlink(
-              file.destination + file.filename + " edited.webp",
-              function (err) {
-                if (err && err.code == "ENOENT") {
-                  // file doens't exist
-                  console.info("File doesn't exist, won't remove it.");
-                } else if (err) {
-                  // other errors, e.g. maybe we don't have enough permission
-                  console.error("Error occurred while trying to remove file");
-                } else {
-                  console.info(`removed`);
-                }
-              }
-            );
-            fs.unlink(file.destination + file.filename, function (err) {
-              if (err && err.code == "ENOENT") {
-                // file doens't exist
-                console.info("File doesn't exist, won't remove it.");
-              } else if (err) {
-                // other errors, e.g. maybe we don't have enough permission
-                console.error("Error occurred while trying to remove file");
-              } else {
-                console.info(`removed`);
-              }
-            });
+        checkImage(file.destination + file.filename + " edited.webp");
+        // cloudinary.uploader.upload(
+        //   file.destination + file.filename + " edited.webp",
+        //   (err, result) => {
+        //     if (err) {
+        //       console.log("error:", err);
+        //       return res.status(400).json({ err });
+        //     }
+        //     console.log("result:", result);
+        //     fs.unlink(
+        //       file.destination + file.filename + " edited.webp",
+        //       function (err) {
+        //         if (err && err.code == "ENOENT") {
+        //           // file doens't exist
+        //           console.info("File doesn't exist, won't remove it.");
+        //         } else if (err) {
+        //           // other errors, e.g. maybe we don't have enough permission
+        //           console.error("Error occurred while trying to remove file");
+        //         } else {
+        //           console.info(`removed`);
+        //         }
+        //       }
+        //     );
+        //     fs.unlink(file.destination + file.filename, function (err) {
+        //       if (err && err.code == "ENOENT") {
+        //         // file doens't exist
+        //         console.info("File doesn't exist, won't remove it.");
+        //       } else if (err) {
+        //         // other errors, e.g. maybe we don't have enough permission
+        //         console.error("Error occurred while trying to remove file");
+        //       } else {
+        //         console.info(`removed`);
+        //       }
+        //     });
 
-            return res.status(200).json({ result });
-          }
-        );
+        //     return res.status(200).json({ result });
+        //   }
+        // );
         // fs.unlink(file.destination + file.filename);
         // fs.unlink(file.destination + file.filename + " edited.webp");
       }
@@ -528,4 +537,139 @@ exports.deleteComment = (req, res) => {
     post.save();
     res.status(200).json({ message: "Comment Deleted" });
   });
+};
+makeScreenshots = async (filePath) => {
+  try {
+    await ffmpeg(filePath).screenshots({
+      timestamps: ["20%", "40%", "60%", "80%", "99%"],
+      filename: "thumbnail-at-%s-seconds.png",
+      folder: "./videoScreenshots/",
+      size: "224x224",
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+checkImage = async (path) => {
+  // let path = "./gun.webp";
+  let inappropriate = {};
+  // await checkNudity(path).then((data) => {
+  //   console.log(data);
+  //   // Object.assign(inappropriate, data);
+  // });
+  // let val = await checkNudity(path);
+  // console.log(val);
+  checkViolence(path).then((data) => {
+    console.log(data);
+    // Object.assign(inappropriate, data);
+  });
+  // console.log(inappropriate);
+};
+checkVideo = async (filePath) => {
+  await makeScreenshots(filePath);
+  let folderpath = path.join(__dirname, "videoScreenshots");
+  fs.readdir(folderpath, function (err, files) {
+    //listing all files using forEach
+    files.forEach(function (fileName) {
+      // Do whatever you want to do with the file
+      let path = folderpath + "/" + fileName;
+      checkNudity(path).then(() => checkViolence(path));
+    });
+  });
+};
+processData = async (path, model, tfn) => {
+  await fs.readFile(path, async (err, data) => {
+    if (err) throw err;
+    let tensor = await tfn.node.decodeJpeg(data).expandDims(0);
+    let output = await model.predict(tensor);
+    const values = await output.dataSync();
+    const array1 = await Array.from(values);
+    console.log("in function", array1[0]);
+    return { violence: array1[0] };
+  });
+};
+checkViolence = async (path) => {
+  const tf = require("@tensorflow/tfjs");
+  const tfn = require("@tensorflow/tfjs-node");
+  const handler = tfn.io.fileSystem("./model1/model.json");
+  try {
+    let value = {};
+    const model = await tf.loadLayersModel(handler);
+    // var fileContent =
+    // const model = await tfn.node.loadModal("./min_nsfwjs/model.json");
+    // fs.readFile("./trial.jpg", (err, data) => {
+    //   console.log();
+    //   console.log(model.predict(tfn.node.decodeImage(data)));
+    // });
+    await sharp(path)
+      .resize({ height: 224, width: 224 })
+      .jpeg()
+      .toFile(path + " forChecking.jpg", async (err, data) => {
+        if (err) throw err;
+        console.log(data);
+        // let returnedVal = {};
+        //  function (path, cb) {
+        //   fs.readFile(path, async (err, data) => {
+        //     // console.log(data);
+        //     if (err) throw err;
+        //     let tensor = tfn.node.decodeJpeg(data).expandDims(0);
+        //     let output = await model.predict(tensor);
+        //     const values = output.dataSync();
+        //     const array1 = Array.from(values);
+        //     //   const v = output.argMax().dataSync()[0];
+        //     // console.log("Violence:", array1[0]);
+        //     value = { violence: array1[0] };
+        //     // return value;
+        //     cb(value);
+        //   });
+        // };
+        // console.log(processedData);
+        // processedData(path + " forChecking.jpg", function (data) {
+        //   return data;
+        //   // res.end(page);
+        // });
+        // return processedData;
+        // console.log("Violence:", returnVal);
+        var processedData = await processData(
+          path + " forChecking.jpg",
+          model,
+          tfn
+        );
+        console.log(processedData);
+      });
+    // console.log(value);
+  } catch (e) {
+    console.log(e);
+  }
+};
+checkNudity = async (path) => {
+  const tf = require("@tensorflow/tfjs");
+  const tfn = require("@tensorflow/tfjs-node");
+  const handler = tfn.io.fileSystem("./model2/model.json");
+  try {
+    const model = await tf.loadLayersModel(handler);
+    // const model = await tfn.node.loadModal("./min_nsfwjs/model.json");
+    // fs.readFile("./trial.jpg", (err, data) => {
+    //   console.log();
+    //   console.log(model.predict(tfn.node.decodeImage(data)));
+    // });
+    sharp(path)
+      .resize({ height: 224, width: 224 })
+      .jpeg()
+      .toFile(path + " forChecking.jpg", (err, data) => {
+        fs.readFile(path + " forChecking.jpg", async (err, data) => {
+          console.log(data);
+          let tensor = tfn.node.decodeJpeg(data).expandDims(0);
+          let output = await model.predict(tensor);
+          // console.log(output);
+          const values = output.dataSync();
+          const array1 = Array.from(values);
+          //   const v = output.argMax().dataSync()[0];
+          console.log("Nudity:", array1[0]);
+          return array1[0];
+        });
+      });
+  } catch (e) {
+    console.log(e);
+  }
 };
