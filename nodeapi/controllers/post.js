@@ -7,11 +7,13 @@ const sharp = require("sharp");
 const multer = require("multer");
 const path = require("path");
 const e = require("cors");
+const fsPromises = require("fs").promises;
 // const fs = require("fs");
 // const sharp = require("sharp");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require("fluent-ffmpeg");
 var ffprobe = require("ffprobe-static");
+const { keys } = require("lodash");
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobe.path);
 webp.grant_permission();
@@ -59,7 +61,7 @@ exports.getPosts = (req, res) => {
     })
     .catch((err) => console.log(err));
 };
-exports.postVideo = (req, res) => {
+exports.postVideo = async (req, res) => {
   const cloudinaryVideo = require("cloudinary").v2;
   cloudinaryVideo.config({
     cloud_name: "workshake-video-trial",
@@ -70,32 +72,35 @@ exports.postVideo = (req, res) => {
   console.log(req.body);
   let file = req.file;
   let path = file.destination + file.filename;
-  cloudinaryVideo.uploader.upload(
-    path,
-    {
-      resource_type: "video",
-      chunk_size: 6000000,
-    },
-    (err, result) => {
-      if (err) {
-        console.log("error:", err);
-        return res.status(400).json({ err });
-      }
-      console.log("result:", result);
-      fs.unlink(path, function (err) {
-        if (err && err.code == "ENOENT") {
-          // file doens't exist
-          console.info("File doesn't exist, won't remove it.");
-        } else if (err) {
-          // other errors, e.g. maybe we don't have enough permission
-          console.error("Error occurred while trying to remove file");
-        } else {
-          console.info(`removed`);
-        }
-      });
-      return res.status(200).json({ result });
-    }
-  );
+  await makeScreenshots(path);
+  let obj = await checkVideo(path);
+  console.log(obj);
+  // cloudinaryVideo.uploader.upload(
+  //   path,
+  //   {
+  //     resource_type: "video",
+  //     chunk_size: 6000000,
+  //   },
+  //   (err, result) => {
+  //     if (err) {
+  //       console.log("error:", err);
+  //       return res.status(400).json({ err });
+  //     }
+  //     console.log("result:", result);
+  //     fs.unlink(path, function (err) {
+  //       if (err && err.code == "ENOENT") {
+  //         // file doens't exist
+  //         console.info("File doesn't exist, won't remove it.");
+  //       } else if (err) {
+  //         // other errors, e.g. maybe we don't have enough permission
+  //         console.error("Error occurred while trying to remove file");
+  //       } else {
+  //         console.info(`removed`);
+  //       }
+  //     });
+  //     return res.status(200).json({ result });
+  //   }
+  // );
 };
 exports.videoPostMongo = (req, res) => {
   // console.log(req.body);
@@ -293,52 +298,66 @@ exports.convertToWebp = (req, res) => {
   sharp(file.destination + file.filename)
     .resize(1280, 720)
     .webp()
-    .toFile(file.destination + file.filename + " edited.webp", (err, info) => {
-      if (err) console.log(err);
-      else {
-        console.log(info);
-        checkImage(file.destination + file.filename + " edited.webp");
-        // cloudinary.uploader.upload(
-        //   file.destination + file.filename + " edited.webp",
-        //   (err, result) => {
-        //     if (err) {
-        //       console.log("error:", err);
-        //       return res.status(400).json({ err });
-        //     }
-        //     console.log("result:", result);
-        //     fs.unlink(
-        //       file.destination + file.filename + " edited.webp",
-        //       function (err) {
-        //         if (err && err.code == "ENOENT") {
-        //           // file doens't exist
-        //           console.info("File doesn't exist, won't remove it.");
-        //         } else if (err) {
-        //           // other errors, e.g. maybe we don't have enough permission
-        //           console.error("Error occurred while trying to remove file");
-        //         } else {
-        //           console.info(`removed`);
-        //         }
-        //       }
-        //     );
-        //     fs.unlink(file.destination + file.filename, function (err) {
-        //       if (err && err.code == "ENOENT") {
-        //         // file doens't exist
-        //         console.info("File doesn't exist, won't remove it.");
-        //       } else if (err) {
-        //         // other errors, e.g. maybe we don't have enough permission
-        //         console.error("Error occurred while trying to remove file");
-        //       } else {
-        //         console.info(`removed`);
-        //       }
-        //     });
+    .toFile(
+      file.destination + file.filename + " edited.webp",
+      async (err, info) => {
+        if (err) console.log(err);
+        else {
+          console.log(info);
+          let obj = await checkImage(
+            file.destination + file.filename + " edited.webp"
+          );
+          console.log(obj);
+          if (obj.nudity >= 90 || obj.violence >= 90)
+            return res
+              .status(300)
+              .json({ message: "Inappropriate Content", values: obj });
+          else {
+            cloudinary.uploader.upload(
+              file.destination + file.filename + " edited.webp",
+              (err, result) => {
+                if (err) {
+                  console.log("error:", err);
+                  return res.status(400).json({ err });
+                }
+                console.log("result:", result);
+                fs.unlink(
+                  file.destination + file.filename + " edited.webp",
+                  function (err) {
+                    if (err && err.code == "ENOENT") {
+                      // file doens't exist
+                      console.info("File doesn't exist, won't remove it.");
+                    } else if (err) {
+                      // other errors, e.g. maybe we don't have enough permission
+                      console.error(
+                        "Error occurred while trying to remove file"
+                      );
+                    } else {
+                      console.info(`removed`);
+                    }
+                  }
+                );
+                fs.unlink(file.destination + file.filename, function (err) {
+                  if (err && err.code == "ENOENT") {
+                    // file doens't exist
+                    console.info("File doesn't exist, won't remove it.");
+                  } else if (err) {
+                    // other errors, e.g. maybe we don't have enough permission
+                    console.error("Error occurred while trying to remove file");
+                  } else {
+                    console.info(`removed`);
+                  }
+                });
 
-        //     return res.status(200).json({ result });
-        //   }
-        // );
-        // fs.unlink(file.destination + file.filename);
-        // fs.unlink(file.destination + file.filename + " edited.webp");
+                return res.status(200).json({ result });
+              }
+            );
+            fs.unlink(file.destination + file.filename);
+            fs.unlink(file.destination + file.filename + " edited.webp");
+          }
+        }
       }
-    });
+    );
 
   // console.log(req.body.title);
   // console.log(req.body.tags);
@@ -538,125 +557,90 @@ makeScreenshots = async (filePath) => {
   }
 };
 checkImage = async (path) => {
-  // let path = "./gun.webp";
-  let inappropriate = {};
-  // await checkNudity(path).then((data) => {
-  //   console.log(data);
-  //   // Object.assign(inappropriate, data);
-  // });
-  // let val = await checkNudity(path);
-  // console.log(val);
-  checkViolence(path).then((data) => {
-    console.log(data);
-    // Object.assign(inappropriate, data);
+  let violence = await checkViolence(path);
+  let nudity = await checkNudity(path);
+  let obj = { violence, nudity };
+  // console.log(obj);
+  return obj;
+};
+
+filereader = async (folderpath, files) => {
+  let Obj = {};
+  return await files.map(async function (fileName, i) {
+    // Do whatever you want to do with the file
+    let path = folderpath + "/" + fileName;
+    let obj = await checkImage(path);
+    Object.assign(Obj, { [i]: obj });
+    // checkNudity(path).then(() => checkViolence(path));
+    // console.log(Obj);
+    if (Object.keys(Obj).length === 5) {
+      // console.log(Obj);
+      return Obj;
+    }
   });
-  // console.log(inappropriate);
 };
 checkVideo = async (filePath) => {
-  await makeScreenshots(filePath);
-  let folderpath = path.join(__dirname, "videoScreenshots");
-  fs.readdir(folderpath, function (err, files) {
-    //listing all files using forEach
-    files.forEach(function (fileName) {
-      // Do whatever you want to do with the file
-      let path = folderpath + "/" + fileName;
-      checkNudity(path).then(() => checkViolence(path));
+  if (filePath !== undefined) {
+    let folderpath = path.join(__dirname, "../videoScreenshots");
+    fs.readdir(folderpath, async function (err, files) {
+      //listing all files using forEach
+      // console.log(files);
+      let finalObj = {};
+      await filereader(folderpath, files).then(async (data) => {
+        // console.log("data:", data);
+        // data.map((d) => {
+        //   d.then((value) => console.log("value:", value));
+        // });
+        console.log("data:", await data[data.length - 1]);
+      });
+      // console.log(finalObj);
+      // console.log(arr);
+      // returnarr;
     });
-  });
+  }
 };
-processData = async (path, model, tfn) => {
-  await fs.readFile(path, async (err, data) => {
-    if (err) throw err;
-    let tensor = await tfn.node.decodeJpeg(data).expandDims(0);
-    let output = await model.predict(tensor);
-    const values = await output.dataSync();
-    const array1 = await Array.from(values);
-    console.log("in function", array1[0]);
-    return { violence: array1[0] };
-  });
+
+processData = async (data, model, tfn) => {
+  let tensor = tfn.node.decodeJpeg(data).expandDims(0);
+  let output = model.predict(tensor);
+  const values = output.dataSync();
+  const array1 = Array.from(values);
+  return array1[0];
 };
+
 checkViolence = async (path) => {
   const tf = require("@tensorflow/tfjs");
   const tfn = require("@tensorflow/tfjs-node");
   const handler = tfn.io.fileSystem("./model1/model.json");
-  try {
-    let value = {};
-    const model = await tf.loadLayersModel(handler);
-    // var fileContent =
-    // const model = await tfn.node.loadModal("./min_nsfwjs/model.json");
-    // fs.readFile("./trial.jpg", (err, data) => {
-    //   console.log();
-    //   console.log(model.predict(tfn.node.decodeImage(data)));
-    // });
-    await sharp(path)
-      .resize({ height: 224, width: 224 })
-      .jpeg()
-      .toFile(path + " forChecking.jpg", async (err, data) => {
-        if (err) throw err;
-        console.log(data);
-        // let returnedVal = {};
-        //  function (path, cb) {
-        //   fs.readFile(path, async (err, data) => {
-        //     // console.log(data);
-        //     if (err) throw err;
-        //     let tensor = tfn.node.decodeJpeg(data).expandDims(0);
-        //     let output = await model.predict(tensor);
-        //     const values = output.dataSync();
-        //     const array1 = Array.from(values);
-        //     //   const v = output.argMax().dataSync()[0];
-        //     // console.log("Violence:", array1[0]);
-        //     value = { violence: array1[0] };
-        //     // return value;
-        //     cb(value);
-        //   });
-        // };
-        // console.log(processedData);
-        // processedData(path + " forChecking.jpg", function (data) {
-        //   return data;
-        //   // res.end(page);
-        // });
-        // return processedData;
-        // console.log("Violence:", returnVal);
-        var processedData = await processData(
-          path + " forChecking.jpg",
-          model,
-          tfn
-        );
-        console.log(processedData);
-      });
-    // console.log(value);
-  } catch (e) {
-    console.log(e);
-  }
+  const model = await tf.loadLayersModel(handler);
+
+  return sharp(path)
+    .resize({ height: 224, width: 224 })
+    .jpeg()
+    .toBuffer()
+    .then(async (data) => {
+      // console.log(data);
+      let v = await processData(data, model, tfn);
+      // let obj = { violence: v };
+      return v * 100;
+    });
 };
+
 checkNudity = async (path) => {
   const tf = require("@tensorflow/tfjs");
   const tfn = require("@tensorflow/tfjs-node");
   const handler = tfn.io.fileSystem("./model2/model.json");
-  try {
-    const model = await tf.loadLayersModel(handler);
-    // const model = await tfn.node.loadModal("./min_nsfwjs/model.json");
-    // fs.readFile("./trial.jpg", (err, data) => {
-    //   console.log();
-    //   console.log(model.predict(tfn.node.decodeImage(data)));
-    // });
-    sharp(path)
-      .resize({ height: 224, width: 224 })
-      .jpeg()
-      .toFile(path + " forChecking.jpg", (err, data) => {
-        fs.readFile(path + " forChecking.jpg", async (err, data) => {
-          console.log(data);
-          let tensor = tfn.node.decodeJpeg(data).expandDims(0);
-          let output = await model.predict(tensor);
-          // console.log(output);
-          const values = output.dataSync();
-          const array1 = Array.from(values);
-          //   const v = output.argMax().dataSync()[0];
-          console.log("Nudity:", array1[0]);
-          return array1[0];
-        });
-      });
-  } catch (e) {
-    console.log(e);
-  }
+  const model = await tf.loadLayersModel(handler);
+
+  return sharp(path)
+    .resize({ height: 224, width: 224 })
+    .jpeg()
+    .toBuffer()
+    .then(async (data) => {
+      // console.log(data);
+      let v = await processData(data, model, tfn);
+      // console.log(v);
+      // let obj = { nudity: v };
+      return v * 100;
+    });
 };
