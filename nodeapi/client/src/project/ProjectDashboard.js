@@ -65,6 +65,7 @@ class ProjectDashboard extends Component {
   //   // console.log(prevState);
   // }
   renderSlacks(slacks) {
+    if (slacks === undefined) return null;
     return Object.keys(slacks).map((key) => (
       <div>
         <div className="col mb-4">

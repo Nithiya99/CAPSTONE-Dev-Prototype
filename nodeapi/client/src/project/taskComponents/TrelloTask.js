@@ -149,7 +149,7 @@ class TrelloTask extends Component {
 
   get_card_label = (slackObject, task) => {
     let card_label = "";
-    if (slackObject[task.taskName] !== undefined) {
+    if (slackObject !== undefined && slackObject[task.taskName] !== undefined) {
       if (slackObject[task.taskName].days >= 0)
         card_label = slackObject[task.taskName].days + " days left";
       else
@@ -166,6 +166,7 @@ class TrelloTask extends Component {
     let color = "";
     // console.log(task.taskName, "Object:", slackObject[task.taskName]);
     if (
+      slackObject !== undefined &&
       slackObject[task.taskName] !== undefined &&
       slackObject[task.taskName].overdue &&
       (task.status === "PLANNED" || task.status === "WIP")
