@@ -61,6 +61,17 @@ exports.getPosts = (req, res) => {
     })
     .catch((err) => console.log(err));
 };
+function finalCheck(arr) {
+  let checkarr = [];
+  checkarr = arr.map((checkObj) => {
+    if (checkObj.nudity >= 90 || checkObj.violence >= 90) {
+      return true;
+    }
+  });
+  if (checkarr.includes(true)) return true;
+
+  return false;
+}
 exports.postVideo = async (req, res) => {
   const cloudinaryVideo = require("cloudinary").v2;
   cloudinaryVideo.config({
@@ -69,38 +80,53 @@ exports.postVideo = async (req, res) => {
     api_secret: "txbBMuRIGHQbmTYulTp7lXhHecA",
   });
   console.log(req.file);
-  console.log(req.body);
+  // console.log(req.body);
   let file = req.file;
   let path = file.destination + file.filename;
   await makeScreenshots(path);
-  let obj = await checkVideo(path);
-  console.log(obj);
-  // cloudinaryVideo.uploader.upload(
-  //   path,
-  //   {
-  //     resource_type: "video",
-  //     chunk_size: 6000000,
-  //   },
-  //   (err, result) => {
-  //     if (err) {
-  //       console.log("error:", err);
-  //       return res.status(400).json({ err });
-  //     }
-  //     console.log("result:", result);
-  //     fs.unlink(path, function (err) {
-  //       if (err && err.code == "ENOENT") {
-  //         // file doens't exist
-  //         console.info("File doesn't exist, won't remove it.");
-  //       } else if (err) {
-  //         // other errors, e.g. maybe we don't have enough permission
-  //         console.error("Error occurred while trying to remove file");
-  //       } else {
-  //         console.info(`removed`);
-  //       }
-  //     });
-  //     return res.status(200).json({ result });
-  //   }
-  // );
+  let finalArray = await checkVideo(path);
+  let result = finalCheck(finalArray);
+  if (!result) {
+    cloudinaryVideo.uploader.upload(
+      path,
+      {
+        resource_type: "video",
+        chunk_size: 6000000,
+      },
+      (err, result) => {
+        if (err) {
+          console.log("error:", err);
+          return res.status(400).json({ err });
+        }
+        console.log("result:", result);
+        fs.unlink(path, function (err) {
+          if (err && err.code == "ENOENT") {
+            // file doens't exist
+            console.info("File doesn't exist, won't remove it.");
+          } else if (err) {
+            // other errors, e.g. maybe we don't have enough permission
+            console.error("Error occurred while trying to remove file");
+          } else {
+            console.info(`removed`);
+          }
+        });
+        return res.status(200).json({ result });
+      }
+    );
+  } else {
+    fs.unlink(path, function (err) {
+      if (err && err.code == "ENOENT") {
+        // file doens't exist
+        console.info("File doesn't exist, won't remove it.");
+      } else if (err) {
+        // other errors, e.g. maybe we don't have enough permission
+        console.error("Error occurred while trying to remove file");
+      } else {
+        console.info(`removed`);
+      }
+    });
+    return res.status(300).json({ error: "Inappropriate Content" });
+  }
 };
 exports.videoPostMongo = (req, res) => {
   // console.log(req.body);
@@ -557,6 +583,7 @@ makeScreenshots = async (filePath) => {
   }
 };
 checkImage = async (path) => {
+  console.log(path);
   let violence = await checkViolence(path);
   let nudity = await checkNudity(path);
   let obj = { violence, nudity };
@@ -564,40 +591,40 @@ checkImage = async (path) => {
   return obj;
 };
 
-filereader = async (folderpath, files) => {
-  let Obj = {};
-  return await files.map(async function (fileName, i) {
-    // Do whatever you want to do with the file
-    let path = folderpath + "/" + fileName;
-    let obj = await checkImage(path);
-    Object.assign(Obj, { [i]: obj });
-    // checkNudity(path).then(() => checkViolence(path));
-    // console.log(Obj);
-    if (Object.keys(Obj).length === 5) {
-      // console.log(Obj);
-      return Obj;
-    }
+filereader = async (files) => {
+  let finalVal = [];
+  return Promise.all(
+    await files.map(async (pathFile) => {
+      let newFolderPath = path.join(__dirname, "../videoScreenshots", pathFile);
+      console.log(newFolderPath);
+      let val = await checkImage(newFolderPath);
+      console.log(val);
+      await finalVal.push(val);
+      return finalVal;
+    })
+  ).then((data) => {
+    return data[data.length - 1];
   });
 };
-checkVideo = async (filePath) => {
-  if (filePath !== undefined) {
-    let folderpath = path.join(__dirname, "../videoScreenshots");
-    fs.readdir(folderpath, async function (err, files) {
-      //listing all files using forEach
-      // console.log(files);
-      let finalObj = {};
-      await filereader(folderpath, files).then(async (data) => {
-        // console.log("data:", data);
-        // data.map((d) => {
-        //   d.then((value) => console.log("value:", value));
-        // });
-        console.log("data:", await data[data.length - 1]);
-      });
-      // console.log(finalObj);
-      // console.log(arr);
-      // returnarr;
+
+function getFilesFromDirectoryAsync(path, callback) {
+  return new Promise(async function (resolve, reject) {
+    await fs.readdir(path, function (err, content) {
+      if (err) return reject(callback(err));
+      resolve(callback(null, content));
     });
-  }
+  });
+}
+
+checkVideo = async (filePath) => {
+  let folderpath = path.join(__dirname, "../videoScreenshots");
+  return await getFilesFromDirectoryAsync(folderpath, async (err, files) => {
+    let finalVal = [];
+    finalVal = await filereader(files);
+    console.log("final checked vals :", finalVal);
+    return finalVal;
+  });
+  // console.log("result:", result);
 };
 
 processData = async (data, model, tfn) => {
@@ -611,7 +638,7 @@ processData = async (data, model, tfn) => {
 checkViolence = async (path) => {
   const tf = require("@tensorflow/tfjs");
   const tfn = require("@tensorflow/tfjs-node");
-  const handler = tfn.io.fileSystem("./model1/model.json");
+  const handler = tfn.io.fileSystem("./model2/model.json");
   const model = await tf.loadLayersModel(handler);
 
   return sharp(path)
@@ -629,7 +656,7 @@ checkViolence = async (path) => {
 checkNudity = async (path) => {
   const tf = require("@tensorflow/tfjs");
   const tfn = require("@tensorflow/tfjs-node");
-  const handler = tfn.io.fileSystem("./model2/model.json");
+  const handler = tfn.io.fileSystem("./model1/model.json");
   const model = await tf.loadLayersModel(handler);
 
   return sharp(path)
