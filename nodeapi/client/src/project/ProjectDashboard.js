@@ -26,6 +26,8 @@ import UserRecommendation from "./UserRecommendation";
 import moment from "moment";
 import RecommendedRolePeople from "./RecommendedRolePeople";
 import { ToastContainer } from "react-toastify";
+import StartIcon from "../images/victory.png";
+
 class ProjectDashboard extends Component {
   state = {
     expectedTime: {},
@@ -65,23 +67,113 @@ class ProjectDashboard extends Component {
   renderSlacks(slacks) {
     return Object.keys(slacks).map((key) => (
       <div>
-        Label: {key} | slack: {slacks[key].slack} | days: {slacks[key].days} |
+        <div className="col mb-4">
+          <div className="card">
+            <div className="card-body">
+              <div className="d-flex align-items-center">
+                <div className="d-flex flex-column flex-grow-1">
+                  <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
+                    {key}
+                  </div>
+                </div>
+                {slacks[key].overdue ? (
+                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                    Overdue
+                  </span>
+                ) : (
+                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                    On schedule
+                  </span>
+                )}
+              </div>
+
+              <p className="card-text pt-3">Days left: {slacks[key].days}</p>
+              <p className="card-text">
+                Number of Days you can Slack: {slacks[key].slack} [CHECK]
+              </p>
+              <p className="card-text">
+                Start By:{" "}
+                <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                  {moment(slacks[key].earliestStartDate).format("DD-MM-YYYY")}
+                </span>
+              </p>
+              <p className="card-text">
+                Due on:{" "}
+                <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                  {moment(slacks[key].earliestFinishDate).format("DD-MM-YYYY")}
+                </span>
+              </p>
+              <p className="card-text">
+                Assigned To:{" "}
+                <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
+                  LOADs
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        {/* Label: {key} | slack: {slacks[key].slack} | days: {slacks[key].days} |
         Overdue:
-        {slacks[key].overdue ? <>Overdue</> : <>On schedule</>}
+        {slacks[key].overdue ? <>Overdue</> : <>On schedule</>} */}
       </div>
     ));
   }
   renderCriticalPath(criticalPathArr, criticalPathObject) {
-    // console.log("criticalPathArr:", criticalPathArr);
-    // console.log("criticalPathObject:", criticalPathObject);
+    console.log("criticalPathArr:", criticalPathArr);
+    console.log("criticalPathObject:", criticalPathObject);
     return criticalPathArr.map((node, index) => (
-      <>
-        {/* {index !== 1 && index !== 2 ?*/}
-        {index !== criticalPathArr.length - 1
-          ? criticalPathObject[node].label.toString() + " , "
-          : criticalPathObject[node].label.toString() + " ."}
-        {/* : ""} */}
-      </>
+      <div className="col mb-4">
+        <div className="card">
+          <div className="card-body">
+            <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
+              {/* {index !== 1 && index !== 2 ?*/}
+              {index !== criticalPathArr.length - 1
+                ? criticalPathObject[node].label.toString()
+                : criticalPathObject[node].label.toString()}
+              {/* : ""} */}
+            </div>
+            <p className="card-text">
+              {index !== criticalPathArr.length - 1
+                ? criticalPathObject[node].taskDescription
+                : criticalPathObject[node].taskDescription}
+            </p>
+            <p className="card-text">
+              Status:{" "}
+              <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                {index !== criticalPathArr.length - 1
+                  ? criticalPathObject[node].status
+                  : criticalPathObject[node].status}
+              </span>
+            </p>
+            <p className="card-text">
+              Assigned To:{" "}
+              <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
+                {/* {index !== criticalPathArr.length - 1
+                  ? criticalPathObject[node].assignedTo.map((user) => {
+                      getUserById(user).then((data) => <>{data.user.name}</>);
+                    })
+                  : criticalPathObject[node].assignedTo.map((user) => {
+                      getUserById(user).then((data) => <>{data.user.name}</>);
+                    })} */}{" "}
+                LOAD
+              </span>
+            </p>
+            <p className="card-text">
+              Due Date:
+              <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                {index !== criticalPathArr.length - 1
+                  ? moment(criticalPathObject[node].created).format(
+                      "DD-MM-YYYY"
+                    )
+                  : moment(criticalPathObject[node].created).format(
+                      "DD-MM-YYYY"
+                    )}{" "}
+                Add Time
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
     ));
   }
   render() {
@@ -366,7 +458,7 @@ class ProjectDashboard extends Component {
                   </div>
                 </Tab.Pane>
                 <Tab.Pane eventKey="projStats">
-                  <div className="card card-stretch">
+                  <div className="card card-stretch  projectDashboard">
                     <div className="card-header">
                       <div className="card-title align-items-start flex-column">
                         <h4 className="card-label font-weight-bolder text-dark">
@@ -379,20 +471,20 @@ class ProjectDashboard extends Component {
                       </div>
                     </div>
                     <div className="card-body">
-                      <h4>No. of days:</h4>
+                      {/* <h4>No. of days:</h4>
                       <span>{duration}</span>
                       <h4>Estimated date:</h4>
-                      <span>{expectedDate.format("DD-MM-YYYY")}</span>
+                      <span>{expectedDate.format("DD-MM-YYYY")}</span> */}
                       {slacks !== undefined ? (
                         <>
-                          <h4>Tasks that can be slacked On:</h4>
-                          <div>{this.renderSlacks(slacks)}</div>
+                          {/* <h4>Tasks that can be slacked On:</h4>
+                          <div>{this.renderSlacks(slacks)}</div> */}
                         </>
                       ) : (
                         <></>
                       )}
                       <div>
-                        <div>
+                        {/* <div>
                           <h4>Critical Path:</h4>
                         </div>
                         <div>
@@ -405,7 +497,121 @@ class ProjectDashboard extends Component {
                           ) : (
                             <></>
                           )}
+                        </div> */}
+                      </div>
+                      <div className="row">
+                        <div className="col-md-4">
+                          <div className="d-flex align-items-center mb-9 bg-light-primary rounded p-5">
+                            <div className="d-flex flex-column flex-grow-1 mr-2">
+                              <div className="font-weight-bold text-dark-100 font-size-lg mb-1">
+                                Start Date:{" "}
+                              </div>
+                            </div>
+                            <span className="font-weight-bolder text-primary py-1 font-size-lg">
+                              LOAD
+                            </span>
+                          </div>
                         </div>
+                        <div className="col-md-4">
+                          <div className="d-flex align-items-center mb-9 bg-light-warning rounded p-5">
+                            <div className="d-flex flex-column flex-grow-1 mr-2">
+                              <div className="font-weight-bold text-dark-100 font-size-lg mb-1">
+                                Days Left:{" "}
+                              </div>
+                            </div>
+                            <span className="font-weight-bolder text-warning py-1 font-size-lg">
+                              {duration}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-md-4">
+                          <div className="d-flex align-items-center mb-9 bg-light-danger rounded p-5">
+                            <div className="d-flex flex-column flex-grow-1 mr-2">
+                              <div className="font-weight-bold text-dark-100 font-size-lg mb-1">
+                                End Date:{" "}
+                              </div>
+                            </div>
+                            <span className="font-weight-bolder text-danger py-1 font-size-lg">
+                              {expectedDate.format("DD-MM-YYYY")}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-3">
+                          <div className="d-flex align-items-center mb-9 bg-light-primary rounded p-5">
+                            <div className="d-flex flex-column flex-grow-1 mr-2">
+                              <div className="font-weight-bold text-dark-100 font-size-lg mb-1">
+                                To Do Tasks:{" "}
+                              </div>
+                            </div>
+                            <span className="font-weight-bolder text-primary py-1 font-size-lg">
+                              LOAD
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-md-3">
+                          <div className="d-flex align-items-center mb-9 bg-light-info rounded p-5">
+                            <div className="d-flex flex-column flex-grow-1 mr-2">
+                              <div className="font-weight-bold text-dark-100 font-size-lg mb-1">
+                                Ongoing Tasks:{" "}
+                              </div>
+                            </div>
+                            <span className="font-weight-bolder text-info py-1 font-size-lg">
+                              LOAD
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-md-3">
+                          <div className="d-flex align-items-center mb-9 bg-light-warning rounded p-5">
+                            <div className="d-flex flex-column flex-grow-1 mr-2">
+                              <div className="font-weight-bold text-dark-100 font-size-lg mb-1">
+                                Reviewing Tasks:{" "}
+                              </div>
+                            </div>
+                            <span className="font-weight-bolder text-warning py-1 font-size-lg">
+                              LOAD
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-md-3">
+                          <div className="d-flex align-items-center mb-9 bg-light-success rounded p-5">
+                            <div className="d-flex flex-column flex-grow-1 mr-2">
+                              <div className="font-weight-bold text-dark-100 font-size-lg mb-1">
+                                Completed Tasks:{" "}
+                              </div>
+                            </div>
+                            <span className="font-weight-bolder text-success py-1 font-size-lg">
+                              LOAD
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="border-top my-5"></div>
+                      <h4>Tasks of high priority</h4>
+                      <p className="text-muted">
+                        These tasks have to be competed within due date to
+                        ensure that the project gets completed on time
+                      </p>
+                      <div className="row row-cols-1 row-cols-md-3">
+                        {pert.criticalPath !== undefined &&
+                        criticalPath !== undefined ? (
+                          this.renderCriticalPath(
+                            pert.criticalPath,
+                            criticalPath
+                          )
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                      <div className="border-top my-5"></div>
+                      <h4>Tasks that have Slack Time</h4>
+                      <p className="text-muted">
+                        The following tasks have more time than initially
+                        assigned
+                      </p>
+                      <div className="row row-cols-1 row-cols-md-3">
+                        {this.renderSlacks(slacks)}
                       </div>
                     </div>
                   </div>

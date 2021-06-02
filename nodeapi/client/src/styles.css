@@ -137,7 +137,8 @@ body {
   justify-content: space-around;
 }
 
-.userPosts {
+.userPosts,
+.projectDashboard {
   height: 88vh !important;
   overflow: auto;
 }

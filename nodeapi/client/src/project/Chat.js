@@ -146,7 +146,7 @@ function Chat(props) {
                 </span>
               </div>
             </div>
-            <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left bubble-alt">
+            <div className="mt-2 text-dark-100 font-weight-bold font-size-lg  text-left bubble-alt">
               {message}
             </div>
           </div>
@@ -172,7 +172,7 @@ function Chat(props) {
                 </span>
               </div>
             </div>
-            <div className="mt-2 text-dark-50 font-weight-bold font-size-lg  text-left  bubble">
+            <div className="mt-2 text-dark-100 font-weight-bold font-size-lg  text-left  bubble">
               {message}
             </div>
           </div>
