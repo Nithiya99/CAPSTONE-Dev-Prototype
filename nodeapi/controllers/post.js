@@ -7,6 +7,7 @@ const sharp = require("sharp");
 const multer = require("multer");
 const path = require("path");
 const e = require("cors");
+const rimraf = require("rimraf");
 const fsPromises = require("fs").promises;
 // const fs = require("fs");
 // const sharp = require("sharp");
@@ -63,13 +64,14 @@ exports.getPosts = (req, res) => {
 };
 function finalCheck(arr) {
   let checkarr = [];
-  checkarr = arr.map((checkObj) => {
-    if (checkObj.nudity >= 90 || checkObj.violence >= 90) {
-      return true;
-    }
-  });
-  if (checkarr.includes(true)) return true;
-
+  if (arr !== undefined) {
+    checkarr = arr.map((checkObj) => {
+      if (checkObj.nudity >= 90 || checkObj.violence >= 90) {
+        return true;
+      }
+    });
+    if (checkarr.includes(true)) return true;
+  }
   return false;
 }
 exports.postVideo = async (req, res) => {
@@ -84,8 +86,13 @@ exports.postVideo = async (req, res) => {
   let file = req.file;
   let path = file.destination + file.filename;
   await makeScreenshots(path);
+  console.log("Path:", path);
   let finalArray = await checkVideo(path);
+  await rimraf("./videoScreenshots", function () {
+    console.log("done");
+  });
   let result = finalCheck(finalArray);
+  console.log(result);
   if (!result) {
     cloudinaryVideo.uploader.upload(
       path,
@@ -114,6 +121,7 @@ exports.postVideo = async (req, res) => {
       }
     );
   } else {
+    console.log("Video path:", path);
     fs.unlink(path, function (err) {
       if (err && err.code == "ENOENT") {
         // file doens't exist
@@ -125,7 +133,7 @@ exports.postVideo = async (req, res) => {
         console.info(`removed`);
       }
     });
-    return res.status(300).json({ error: "Inappropriate Content" });
+    return res.status(200).json({ error: "Inappropriate Content" });
   }
 };
 exports.videoPostMongo = (req, res) => {
@@ -192,6 +200,7 @@ exports.createPost = (req, res) => {
           postType: "image",
         });
   // console.log(project);
+  post.created = Date.now();
   post
     .save()
     .then((result) => {
@@ -334,11 +343,36 @@ exports.convertToWebp = (req, res) => {
             file.destination + file.filename + " edited.webp"
           );
           console.log(obj);
-          if (obj.nudity >= 90 || obj.violence >= 90)
+          if (obj.nudity >= 90 || obj.violence >= 90) {
+            fs.unlink(
+              file.destination + file.filename + " edited.webp",
+              function (err) {
+                if (err && err.code == "ENOENT") {
+                  // file doens't exist
+                  console.info("File doesn't exist, won't remove it.");
+                } else if (err) {
+                  // other errors, e.g. maybe we don't have enough permission
+                  console.error("Error occurred while trying to remove file");
+                } else {
+                  console.info(`removed`);
+                }
+              }
+            );
+            fs.unlink(file.destination + file.filename, function (err) {
+              if (err && err.code == "ENOENT") {
+                // file doens't exist
+                console.info("File doesn't exist, won't remove it.");
+              } else if (err) {
+                // other errors, e.g. maybe we don't have enough permission
+                console.error("Error occurred while trying to remove file");
+              } else {
+                console.info(`removed`);
+              }
+            });
             return res
-              .status(300)
+              .status(200)
               .json({ message: "Inappropriate Content", values: obj });
-          else {
+          } else {
             cloudinary.uploader.upload(
               file.destination + file.filename + " edited.webp",
               (err, result) => {

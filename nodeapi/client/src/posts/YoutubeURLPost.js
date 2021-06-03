@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import * as youtubeMeta from "youtube-metadata-from-url";
 import { createTextPost, createYoutubePost } from "./apiPosts";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Sentiment from "sentiment";
 import { getPosts } from "./../store/posts";
 import { useDispatch } from "react-redux";
@@ -63,6 +63,7 @@ const YoutubeURLPost = (props) => {
   //   console.log(text);
   return (
     <>
+      <ToastContainer />
       <Button
         onClick={() => {
           if (text !== "") handleShow();

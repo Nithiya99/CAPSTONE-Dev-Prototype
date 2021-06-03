@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ShareIcon from "@material-ui/icons/Share";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Heart from "react-animated-heart";
 import DefaultProfile from "../images/avatar.png";
 import { getCurrentUser, getProfilePic } from "./../user/apiUser";
@@ -217,7 +217,6 @@ class VideoPost extends Component {
     let counts = collect(liked_by).count();
     return (
       <>
-        <ToastContainer />
         <div className="card card-custom gutter-b">
           <div className="card-body">
             <div className="d-flex align-items-center pb-4">

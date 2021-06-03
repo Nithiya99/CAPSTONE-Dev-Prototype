@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ShareIcon from "@material-ui/icons/Share";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Heart from "react-animated-heart";
 import { getCurrentUser, getProfilePic } from "./../user/apiUser";
 import {
@@ -215,7 +215,6 @@ class TextPostView extends Component {
     let counts = collect(liked_by).count();
     return (
       <>
-        <ToastContainer />
         <div className="card card-custom gutter-b">
           <div className="card-body">
             <div className="d-flex align-items-center pb-4">

@@ -111,6 +111,9 @@ function DragDropImages(props) {
           data,
           settings
         );
+        if (response.data.message === "Inappropriate Content")
+          toast.error("Inappropriate Content");
+
         try {
           let result = await response.data.result;
           final_url.push(result.url);

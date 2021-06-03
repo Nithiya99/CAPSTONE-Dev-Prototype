@@ -99,6 +99,8 @@ export const createVideoPost = async (video, title, tags, project) => {
     data,
     settings
   );
+  console.log(response);
+  if (response.data.error !== undefined) return response.data;
   let result = response.data.result;
   if (result.url) {
     let url = result.url;
