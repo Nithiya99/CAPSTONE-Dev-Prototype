@@ -20,6 +20,7 @@ import {
   putPredecessors,
   putPosition,
   putExpectedTime,
+  addToKickOutCounter,
 } from "../apiProject";
 import jsPERT from "js-pert";
 import { Button } from "@material-ui/core";
@@ -34,9 +35,11 @@ import {
   setSlacks,
   setCriticalPath,
 } from "../../store/cpm";
+import { notificationAdded } from "../../store/notifications";
 import { updateTasks } from "../../store/tasks";
 import { getCurrentUser } from "./../../user/apiUser";
 import moment from "moment";
+import { toast, ToastContainer } from "react-toastify";
 const styles = (theme) => ({
   modal: {
     display: "flex",
@@ -300,6 +303,35 @@ class LayoutComponent extends Component {
           // console.log("days left:", days);
           // console.log("Overdue", days >= 0 ? false : true);
           // console.log(elem.data.label + " " + days + " " + pert.slack[elem.id]);
+          // console.log(days < 0 ? "overdue" : "not");
+          if (days < 0) {
+            // console.log("overdue:", days);
+            elem.data.assignedTo.map((person, i) => {
+              addToKickOutCounter(
+                elem.key,
+                person,
+                this.props.project._id
+              ).then((data) => {
+                if (i === elem.data.assignedTo.length - 1) {
+                  console.log(data.result.overdueCounter);
+                  let overdues = data.result.overdueCounter;
+                  Object.keys(overdues).map((user) => {
+                    if (overdues[user].length === 3) {
+                      console.log("time to kick out +_+");
+                      this.props.notificationAdded({
+                        userId: getCurrentUser()._id,
+                        message: `3 hits, time to kick out ${user}`,
+                        type: "KickOutUser",
+                        userObjId: user,
+                        project: this.props.project,
+                      });
+                      toast.error(`Warning : 3 overdues by ${user}`);
+                    }
+                  });
+                }
+              });
+            });
+          }
           slackObject[elem.data.label] = {
             slack: pert.slack[elem.id],
             days: days,
@@ -620,6 +652,7 @@ class LayoutComponent extends Component {
     // console.log("nodes:", nodes);
     return (
       <div>
+        {/* <ToastContainer /> */}
         <div className="container-fluid">
           <ReactFlow
             elements={elements}
@@ -680,6 +713,7 @@ const mapDispatchToProps = (dispatch) => ({
   setExpectedTime: (params) => dispatch(setExpectedTime(params)),
   setSlacks: (params) => dispatch(setSlacks(params)),
   setCriticalPath: (params) => dispatch(setCriticalPath(params)),
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
 });
 
 export default connect(

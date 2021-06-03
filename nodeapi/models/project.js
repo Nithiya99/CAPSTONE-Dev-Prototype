@@ -126,6 +126,10 @@ var projectSchema = new mongoose.Schema({
       to: ObjectId, // taskIds
     },
   ],
+  overdueCounter: {
+    type: Object,
+    default: {},
+  },
   estimatedTime: {
     type: Number,
   },

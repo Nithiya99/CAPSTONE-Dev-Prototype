@@ -607,3 +607,30 @@ export const putExpectedTime = (projectId, time) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const addToKickOutCounter = (taskId, person, projectId) => {
+  let token = JSON.parse(localStorage.getItem("jwt")).token;
+  let userId = JSON.parse(localStorage.getItem("jwt")).user._id;
+
+  let obj = {
+    userId: person,
+    taskId: taskId,
+  };
+  // console.log(obj);
+  return fetch(
+    `http://localhost:3000/project/kickoutCounter/${userId}/${projectId}`,
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(obj),
+    }
+  )
+    .then((data) => data.json())
+    .then((value) => {
+      return value;
+    });
+};

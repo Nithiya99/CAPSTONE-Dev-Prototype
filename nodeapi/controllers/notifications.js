@@ -7,7 +7,9 @@ exports.addNotification = (req, res) => {
     req.body.userObjId === undefined &&
     req.body.sentBy === undefined &&
     req.body.sentTo === undefined &&
-    req.body.roleId === undefined
+    req.body.roleId === undefined &&
+    req.body.project === undefined &&
+    req.body.role === undefined
   ) {
     user.notifications.push({
       message: req.body.notification,
@@ -22,6 +24,15 @@ exports.addNotification = (req, res) => {
       ? res.status(200).json({ user })
       : console.log("Notification added");
   } else {
+    if (req.body.project !== undefined) {
+      user.notifications.push({
+        message: req.body.notification,
+        read: false,
+        notifType: req.body.type ? req.body.type : "request",
+        project: req.body.project,
+        userObjId: req.body.userObjId,
+      });
+    }
     if (req.body.userObjId !== undefined) {
       user.notifications.push({
         message: req.body.notification,

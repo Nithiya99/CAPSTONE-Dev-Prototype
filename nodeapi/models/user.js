@@ -145,6 +145,7 @@ var userSchema = new mongoose.Schema({
       roleId: {
         type: ObjectId,
       },
+      project: {},
     },
   ],
   social: {

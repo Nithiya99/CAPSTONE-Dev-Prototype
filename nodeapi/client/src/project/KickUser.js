@@ -3,7 +3,8 @@ import { updateProject, leaveProject } from "./apiProject";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { isAuthenticated } from "./../auth/index";
 import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
-
+import { connect } from "react-redux";
+import { notificationAdded } from "../store/notifications";
 class LeaveProject extends Component {
   state = {};
   leaveproject = () => {
@@ -56,13 +57,32 @@ class LeaveProject extends Component {
         console.log(data.error);
       } else {
         const token = isAuthenticated().token;
-        leaveProject(userId, project._id, token).then((data) => {
-          if (data.error) {
-            console.log(data.error);
-          }
-        });
-        alert("kicked out..");
-        window.location.reload(false);
+        leaveProject(userId, project._id, token)
+          .then((data) => {
+            if (data.error) {
+              console.log(data.error);
+            }
+          })
+          .then(() => {
+            // this.props.notificationAdded({
+            //   userId: val.sentBy,
+            //   message: `Role (${res.role.roleName}) declined by ${
+            //     getCurrentUser().name
+            //   }`,
+            //   type: "RoleDeclinedInNotif",
+            //   projectId: val.projectId,
+            // });
+            this.props.notificationAdded({
+              userId: userId,
+              message: `You have been kicked out of ${project.title} :/`,
+              type: "KickedOut",
+              projectId: project._id,
+            });
+          })
+          .then(() => {
+            alert("kicked out..");
+            window.location.reload(false);
+          });
       }
     });
   };
@@ -92,5 +112,7 @@ class LeaveProject extends Component {
     );
   }
 }
-
-export default LeaveProject;
+const mapDispatchToProps = (dispatch) => ({
+  notificationAdded: (params) => dispatch(notificationAdded(params)),
+});
+export default connect(null, mapDispatchToProps)(LeaveProject);

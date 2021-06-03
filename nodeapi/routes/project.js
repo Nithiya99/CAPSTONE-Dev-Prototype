@@ -20,6 +20,7 @@ const {
   checkIfProjectExiststeacher,
   getProject,
   updateEstimatedTime,
+  kickOutCounterUpdate,
 } = require("../controllers/project");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -62,6 +63,11 @@ router.put(
   "/project/estimatedTime/:userId/:projectId",
   requireSignin,
   updateEstimatedTime
+);
+router.put(
+  "/project/kickoutCounter/:userId/:projectId",
+  requireSignin,
+  kickOutCounterUpdate
 );
 // router.put("/project/addFeedbackNotification/:userId",requireSignin,)
 // any route containing: userId, our app will first excute userById()

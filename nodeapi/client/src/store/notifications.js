@@ -25,7 +25,10 @@ const slice = createSlice({
           : undefined,
         action.payload.sentBy !== undefined ? action.payload.sentBy : undefined,
         action.payload.sentTo !== undefined ? action.payload.sentTo : undefined,
-        action.payload.roleId !== undefined ? action.payload.roleId : undefined
+        action.payload.roleId !== undefined ? action.payload.roleId : undefined,
+        action.payload.project !== undefined
+          ? action.payload.project
+          : undefined
       )
         .then((response) => {
           return response.json();

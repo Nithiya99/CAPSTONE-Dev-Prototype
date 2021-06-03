@@ -7,7 +7,8 @@ export const addNotification = (
   userObjId,
   sentBy,
   sentTo,
-  roleId
+  roleId,
+  project
 ) => {
   let token = JSON.parse(localStorage.getItem("jwt")).token;
   let obj = {
@@ -31,6 +32,9 @@ export const addNotification = (
   }
   if (roleId !== undefined) {
     obj["roleId"] = roleId;
+  }
+  if (project !== undefined) {
+    obj["project"] = project;
   }
   console.log("Obj:", obj);
   let settings = {

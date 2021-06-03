@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { getProject } from "../project/apiProject";
-import { Button } from "react-bootstrap";
+import { getProject, leaveProject } from "../project/apiProject";
+import { Button, Modal } from "react-bootstrap";
 import { getNotifications } from "../apiNotifications";
 import ReqIcon from "../images/request.png";
 import ReportIcon from "../images/report.png";
@@ -28,10 +28,12 @@ import { acceptRequest, declineRequest } from "./../project/apiProject";
 import { toast, ToastContainer } from "react-toastify";
 import { removeAndUpdateNotifications } from "./../store/notifications";
 import { removeNotificationId } from "./../apiNotifications";
+import RecommendedRolePeople from "../project/RecommendedRolePeople";
 const BASE_URL = process.env.REACT_APP_API_URL;
 class Notifications extends Component {
   state = {
     selected: "home",
+    show: false,
   };
   componentDidMount() {
     this.props.clearNotifications();
@@ -72,6 +74,35 @@ class Notifications extends Component {
       // console.log(obj);
       return obj;
     });
+  }
+  setShowTrue() {
+    this.setState({ show: true });
+  }
+  setShowFalse() {
+    this.setState({ show: false });
+  }
+  renderRoles(roles, userObjId, project) {
+    const { show } = this.state;
+    if (show === true) {
+      return roles.map((role) => {
+        // if (
+
+        // ) {
+        //   return <>role.roleName</>;
+        // }
+        if (
+          role.assignedTo !== undefined &&
+          role.assignedTo.toString() === userObjId.toString()
+        ) {
+          return (
+            <div>
+              <div>{role.roleName}</div>
+              <RecommendedRolePeople project={project} role={role} />
+            </div>
+          );
+        }
+      });
+    }
   }
   render() {
     let { notifications, segregatedNotifications } = this.props;
@@ -580,22 +611,116 @@ class Notifications extends Component {
                   </div>
                 );
               }
+              if (val.notifType === "KickedOut") {
+                return (
+                  <div
+                    className="alert alert-custom alert-notice alert-light-danger "
+                    role="alert"
+                  >
+                    <div className="alert-icon">
+                      <img
+                        src={ReportIcon}
+                        alt="Logo"
+                        style={{ height: "40px" }}
+                      />
+                    </div>
+                    <div className="alert-text">{val.message}</div>
+                  </div>
+                );
+              }
 
-              // return (
-              //   <div
-              //     className="alert alert-custom alert-notice alert-light-danger "
-              //     role="alert"
-              //   >
-              //     <div className="alert-icon">
-              //       <img
-              //         src={ReportIcon}
-              //         alt="Logo"
-              //         style={{ height: "40px" }}
-              //       />
-              //     </div>
-              //     <div className="alert-text">{val.message}</div>
-              //   </div>
-              // );
+              if (val.notifType === "KickOutUser") {
+                let show = false;
+                if (val.project !== undefined && val.userObjId !== undefined) {
+                  // console.log(val);
+                  return (
+                    <div
+                      className="alert alert-custom alert-notice alert-light-danger "
+                      role="alert"
+                    >
+                      <div className="alert-icon">
+                        <img
+                          src={ReportIcon}
+                          alt="Logo"
+                          style={{ height: "40px" }}
+                        />
+                      </div>
+                      <div
+                        className="alert-text"
+                        onClick={() => {
+                          let value = false;
+                          value = window.confirm(
+                            `are you sure you want to kick out @${val.userObjId}?`
+                          );
+                          if (value) {
+                            let token = JSON.parse(
+                              localStorage.getItem("jwt")
+                            ).token;
+                            leaveProject(val.userObjId, val.project._id, token)
+                              .then(() => {
+                                toast.success(`kicked user out!`);
+                              })
+                              .then(() => {
+                                this.setShowTrue();
+                                removeNotificationId(
+                                  getCurrentUser()._id,
+                                  val._id
+                                ).then((data) => {
+                                  if (data.user !== undefined) {
+                                    console.log("removed notif");
+                                    //  window.location.reload();
+                                  }
+                                });
+                              });
+                          }
+                          // .then((response) => {
+                          //   console.log(response);
+                          // });
+                          // console.log("alert res:", val);
+                          // if (val) this.setShowTrue();
+                        }}
+                      >
+                        {val.message}
+                      </div>
+                      <Modal
+                        show={this.state.show}
+                        onHide={this.setShowFalse.bind(this)}
+                      >
+                        <Modal.Header>hi</Modal.Header>
+                        <Modal.Body>
+                          <>
+                            {this.renderRoles(
+                              val.project.roles,
+                              val.userObjId,
+                              val.project
+                            )}
+                          </>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button onClick={this.setShowFalse.bind(this)}>
+                            Close
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                    </div>
+                  );
+                }
+              }
+              return (
+                <div
+                  className="alert alert-custom alert-notice alert-light-danger "
+                  role="alert"
+                >
+                  <div className="alert-icon">
+                    <img
+                      src={ReportIcon}
+                      alt="Logo"
+                      style={{ height: "40px" }}
+                    />
+                  </div>
+                  <div className="alert-text">{val.message}</div>
+                </div>
+              );
             })}
           </div>
         ))}

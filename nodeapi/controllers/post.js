@@ -672,7 +672,7 @@ processData = async (data, model, tfn) => {
 checkViolence = async (path) => {
   const tf = require("@tensorflow/tfjs");
   const tfn = require("@tensorflow/tfjs-node");
-  const handler = tfn.io.fileSystem("./model2/model.json");
+  const handler = tfn.io.fileSystem("./model1/model.json");
   const model = await tf.loadLayersModel(handler);
 
   return sharp(path)
@@ -690,7 +690,7 @@ checkViolence = async (path) => {
 checkNudity = async (path) => {
   const tf = require("@tensorflow/tfjs");
   const tfn = require("@tensorflow/tfjs-node");
-  const handler = tfn.io.fileSystem("./model1/model.json");
+  const handler = tfn.io.fileSystem("./model2/model.json");
   const model = await tf.loadLayersModel(handler);
 
   return sharp(path)

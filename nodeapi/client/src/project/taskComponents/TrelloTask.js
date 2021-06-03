@@ -152,9 +152,10 @@ class TrelloTask extends Component {
     if (slackObject !== undefined && slackObject[task.taskName] !== undefined) {
       if (slackObject[task.taskName].days >= 0)
         card_label = slackObject[task.taskName].days + " days left";
-      else
+      else {
         card_label =
           Math.abs(slackObject[task.taskName].days) + " days overdue";
+      }
     } else card_label = task.mostLikelyTime + " days left";
 
     if (task.status === "COMPLETED") card_label = "Completed";
@@ -359,6 +360,7 @@ class TrelloTask extends Component {
     const tasks = [...this.props.tasks];
     tasks.shift();
     tasks.shift();
+    // if(prevState.mytasks.length)
     if (prevState.mytasks.length !== tasks.length) {
       if (this.props.updateTrelloBoard) {
         // console.log(this.props.updateTrelloBoard);

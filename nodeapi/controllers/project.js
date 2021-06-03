@@ -514,9 +514,37 @@ exports.addFeedbackNotification = async (rating, projectId) => {
 exports.updateEstimatedTime = (req, res) => {
   let project = req.projectObject;
   project.estimatedTime = req.body.estimatedTime;
-  console.log(project);
+  // console.log(project);
   project.save((err, result) => {
     if (err) return res.status(400).json({ error: err });
     return res.status(200).json({ result });
   });
+};
+
+exports.kickOutCounterUpdate = (req, res) => {
+  const { taskId, userId } = req.body;
+  // console.log(req.projectObject);
+  // console.log(req.profile);
+  let project = req.projectObject;
+  let user = req.profile;
+  if (project.leader.toString() === user._id.toString()) {
+    // console.log(
+    //   "YASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSss"
+    // );
+    if (project.overdueCounter === undefined) {
+      project.overdueCounter = {};
+    }
+    if (project.overdueCounter[userId] === undefined) {
+      project.overdueCounter[userId] = [taskId];
+    } else {
+      if (!project.overdueCounter[userId].includes(taskId)) {
+        project.overdueCounter[userId].push(taskId);
+      }
+    }
+    console.log(project.overdueCounter);
+    project.save((err, result) => {
+      if (err) return res.status(400).json({ err });
+      return res.status(200).json({ result });
+    });
+  }
 };
