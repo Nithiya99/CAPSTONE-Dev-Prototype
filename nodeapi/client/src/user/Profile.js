@@ -312,7 +312,13 @@ class Profile extends Component {
                           </tr>
                           <tr>
                             <th>Skills</th>
-                            <td>{user.skills.join(" ")}</td>
+                            <td>
+                              {user.skills.map((skill) => (
+                                <span class="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text mr-1">
+                                  {skill}
+                                </span>
+                              ))}
+                            </td>
                           </tr>
                           <tr>
                             <th>Date of Birth</th>

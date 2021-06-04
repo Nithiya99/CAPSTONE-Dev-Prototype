@@ -218,7 +218,7 @@ class EditProfile extends Component {
                       Delete DP
                     </button>
                   </div>
-                  <h3>hello</h3>
+                  {/* <h3>hello</h3> */}
                 </div>
                 <form className="mt-5">
                   <h3 className="pd-5">Personal Info</h3>
