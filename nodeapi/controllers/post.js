@@ -133,7 +133,9 @@ exports.postVideo = async (req, res) => {
         console.info(`removed`);
       }
     });
-    return res.status(200).json({ error: "Inappropriate Content" });
+    return res
+      .status(200)
+      .json({ error: "Inappropriate Content", obj: finalArray });
   }
 };
 exports.videoPostMongo = (req, res) => {

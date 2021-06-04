@@ -111,26 +111,43 @@ function DragDropImages(props) {
           data,
           settings
         );
-        if (response.data.message === "Inappropriate Content")
-          toast.error("Inappropriate Content");
-
-        try {
-          let result = await response.data.result;
-          final_url.push(result.url);
-          if (final_url.length === images.length)
-            createPost(final_url, title, tags, project).then((data) => {
-              console.log(data);
-              if (data.error) {
-                toast.warning(data.error);
-              } else {
-                toast.success("Created post Successfully");
-                dispatch(getPosts());
-                history.push("/home");
-              }
-            });
-        } catch (e) {
-          console.log(e);
-          toast.warning("Please Try again");
+        if (response.data.message === "Inappropriate Content") {
+          let obj = response.data.values;
+          if (obj.nudity >= 90)
+            toast.error(
+              "Inappropriate Content.. Your post " +
+                (i + 1) +
+                " contains " +
+                obj.nudity.toFixed(2) +
+                "% nudity content"
+            );
+          else if (obj.violence >= 90)
+            toast.error(
+              "Inappropriate Content.. Your post " +
+                (i + 1) +
+                " contains " +
+                obj.violence.toFixed(2) +
+                "% violent content"
+            );
+        } else {
+          try {
+            let result = await response.data.result;
+            final_url.push(result.url);
+            if (final_url.length === images.length)
+              createPost(final_url, title, tags, project).then((data) => {
+                console.log(data);
+                if (data.error) {
+                  toast.warning(data.error);
+                } else {
+                  toast.success("Created post Successfully");
+                  dispatch(getPosts());
+                  history.push("/home");
+                }
+              });
+          } catch (e) {
+            console.log(e);
+            toast.warning("Please Try again");
+          }
         }
       });
     }

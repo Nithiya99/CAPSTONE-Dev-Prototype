@@ -32,6 +32,8 @@ class ProjectDashboard extends Component {
   state = {
     expectedTime: {},
     leaderName: "",
+    assignedTo: {},
+    assignedUser: {},
   };
   componentDidMount() {
     this.props.clearAll();
@@ -50,6 +52,22 @@ class ProjectDashboard extends Component {
     getUserById(project.leader).then((data) =>
       this.setState({ leaderName: data.user.name })
     );
+
+    let tasks = project.tasks;
+    let Obj = {};
+    tasks.map(async (task) => {
+      let names = [];
+      if (task.assignedTo !== undefined)
+        await task.assignedTo.map(async (user) => {
+          await getUserById(user).then((data) => {
+            names.push(data.user.name);
+          });
+        });
+      Object.assign(Obj, { [task._id]: names });
+    });
+    this.setState({
+      assignedUser: Obj,
+    });
   }
   // componentDidUpdate(prevState) {
   //   if (prevState.connections.length !== this.props.connections.length) {
@@ -68,51 +86,55 @@ class ProjectDashboard extends Component {
     if (slacks === undefined) return null;
     return Object.keys(slacks).map((key) => (
       <div>
-        <div className="col mb-4">
-          <div className="card">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="d-flex flex-column flex-grow-1">
-                  <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
-                    {key}
+        {slacks[key].slack > 0 && (
+          <div className="col mb-4">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex align-items-center">
+                  <div className="d-flex flex-column flex-grow-1">
+                    <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
+                      {key}
+                    </div>
                   </div>
+                  {slacks[key].overdue ? (
+                    <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                      Overdue
+                    </span>
+                  ) : (
+                    <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                      On schedule
+                    </span>
+                  )}
                 </div>
-                {slacks[key].overdue ? (
-                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                    Overdue
-                  </span>
-                ) : (
-                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                    On schedule
-                  </span>
-                )}
-              </div>
 
-              <p className="card-text pt-3">Days left: {slacks[key].days}</p>
-              <p className="card-text">
-                Number of Days you can Slack: {slacks[key].slack} [CHECK]
-              </p>
-              <p className="card-text">
-                Start By:{" "}
-                <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                  {moment(slacks[key].earliestStartDate).format("DD-MM-YYYY")}
-                </span>
-              </p>
-              <p className="card-text">
-                Due on:{" "}
-                <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                  {moment(slacks[key].earliestFinishDate).format("DD-MM-YYYY")}
-                </span>
-              </p>
-              <p className="card-text">
-                Assigned To:{" "}
-                <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
-                  LOADs
-                </span>
-              </p>
+                <p className="card-text pt-3">Days left: {slacks[key].days}</p>
+                <p className="card-text">
+                  Number of Days you can Slack: {slacks[key].slack} [CHECK]
+                </p>
+                <p className="card-text">
+                  Start By:{" "}
+                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                    {moment(slacks[key].earliestStartDate).format("DD-MM-YYYY")}
+                  </span>
+                </p>
+                <p className="card-text">
+                  Due on:{" "}
+                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                    {moment(slacks[key].earliestFinishDate).format(
+                      "DD-MM-YYYY"
+                    )}
+                  </span>
+                </p>
+                <p className="card-text">
+                  Assigned To:{" "}
+                  <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
+                    LOADs
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         {/* Label: {key} | slack: {slacks[key].slack} | days: {slacks[key].days} |
         Overdue:
         {slacks[key].overdue ? <>Overdue</> : <>On schedule</>} */}
@@ -122,6 +144,8 @@ class ProjectDashboard extends Component {
   renderCriticalPath(criticalPathArr, criticalPathObject) {
     console.log("criticalPathArr:", criticalPathArr);
     console.log("criticalPathObject:", criticalPathObject);
+    let str = "";
+    let assignedUser = this.state.assignedUser;
     return criticalPathArr.map((node, index) => (
       <div className="col mb-4">
         <div className="card">
@@ -149,27 +173,28 @@ class ProjectDashboard extends Component {
             <p className="card-text">
               Assigned To:{" "}
               <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
-                {/* {index !== criticalPathArr.length - 1
-                  ? criticalPathObject[node].assignedTo.map((user) => {
-                      getUserById(user).then((data) => <>{data.user.name}</>);
-                    })
-                  : criticalPathObject[node].assignedTo.map((user) => {
-                      getUserById(user).then((data) => <>{data.user.name}</>);
-                    })} */}{" "}
-                LOAD
+                {console.log(assignedUser[criticalPathObject[node]._id])}
+                {(str = "")}
+                {assignedUser[criticalPathObject[node]._id] !== undefined &&
+                  assignedUser[criticalPathObject[node]._id].map((user) => {
+                    str += user + " ";
+                  })}
+                {str}{" "}
               </span>
             </p>
             <p className="card-text">
               Due Date:
               <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                {index !== criticalPathArr.length - 1
+                {moment(criticalPathObject[node].created)
+                  .add(criticalPathObject[node].time, "days")
+                  .format("DD-MM-YY")}
+                {/* {index !== criticalPathArr.length - 1
                   ? moment(criticalPathObject[node].created).format(
                       "DD-MM-YYYY"
                     )
                   : moment(criticalPathObject[node].created).format(
                       "DD-MM-YYYY"
-                    )}{" "}
-                Add Time
+                    )}{" "} */}
               </span>
             </p>
           </div>
@@ -188,7 +213,7 @@ class ProjectDashboard extends Component {
     // 25/5 26/5     23/6
     // estimated date : 23/6
     // no of days left : 23/6 - 26/5
-
+    console.log(this.props.pert);
     let today = new Date();
     let day1 = new Date(today.toUTCString());
     // let day2 = new Date(project.created);
