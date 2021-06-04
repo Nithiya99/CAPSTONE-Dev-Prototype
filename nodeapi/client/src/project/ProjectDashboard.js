@@ -34,6 +34,10 @@ class ProjectDashboard extends Component {
     leaderName: "",
     assignedTo: {},
     assignedUser: {},
+    count1: 0,
+    count2: 0,
+    count3: 0,
+    count4: 0,
   };
   componentDidMount() {
     this.props.clearAll();
@@ -55,6 +59,10 @@ class ProjectDashboard extends Component {
 
     let tasks = project.tasks;
     let Obj = {};
+    let count1 = 0,
+      count2 = 0,
+      count3 = 0,
+      count4 = 0;
     tasks.map(async (task) => {
       let names = [];
       if (task.assignedTo !== undefined)
@@ -65,8 +73,20 @@ class ProjectDashboard extends Component {
         });
       Object.assign(Obj, { [task._id]: names });
     });
+    tasks.map((task) => {
+      if (task.status !== undefined) {
+        if (task.status === "PLANNED") count1++;
+        else if (task.status === "WIP") count2++;
+        else if (task.status === "Review") count3++;
+        else if (task.status === "COMPLETED") count4++;
+      }
+    });
     this.setState({
       assignedUser: Obj,
+      count1,
+      count2,
+      count3,
+      count4,
     });
   }
   // componentDidUpdate(prevState) {
@@ -534,7 +554,7 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-primary py-1 font-size-lg">
-                              LOAD
+                              {moment(project.created).format("DD-MM-YYYY")}
                             </span>
                           </div>
                         </div>
@@ -572,7 +592,7 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-primary py-1 font-size-lg">
-                              LOAD
+                              {this.state.count1}
                             </span>
                           </div>
                         </div>
@@ -584,7 +604,7 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-info py-1 font-size-lg">
-                              LOAD
+                              {this.state.count2}
                             </span>
                           </div>
                         </div>
@@ -596,7 +616,7 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-warning py-1 font-size-lg">
-                              LOAD
+                              {this.state.count3}
                             </span>
                           </div>
                         </div>
@@ -608,7 +628,7 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-success py-1 font-size-lg">
-                              LOAD
+                              {this.state.count4}
                             </span>
                           </div>
                         </div>
