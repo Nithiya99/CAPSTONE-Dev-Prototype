@@ -16,11 +16,15 @@ import { PdfDropZone } from "./PdfDropZone";
 import { checkProject } from "./../project/apiProject";
 import UserRecommender from "./UserRecommender";
 import RecommendationProject2 from "./RecommendationProject2";
+import RecommendationPDF from "./RecommendationPDF";
 import SkillsInput from "./../utils/signupbutton/Tagify/SkillsInput";
+import { Line } from "react-chartjs-2";
 class Recommendation extends Component {
   state = {
     key: "Database",
     projectSkills: [],
+    requiredSkills: [], //added
+    files: [], //added
     show: false,
     title: "",
     description: "",
@@ -50,6 +54,11 @@ class Recommendation extends Component {
     this.setState({ [proj]: event.target.value });
   };
 
+  setFiles(files) {
+    console.log(files);
+    this.setState({ files });
+  }
+
   clickSubmit = (event) => {
     event.preventDefault();
     this.setState({ loading: true });
@@ -62,7 +71,6 @@ class Recommendation extends Component {
     };
     try {
       checkProject(project).then((data) => {
-        console.log(data);
         if (data === undefined) return;
         if (data.error) {
           if (data.similar) {
@@ -95,8 +103,30 @@ class Recommendation extends Component {
   };
   componentDidMount() {}
   render() {
-    let { error, title, description, open } = this.state;
+    let { error, title, description, open, files, requiredSkills } = this.state;
     const { similar } = this.state;
+    let data = {};
+    if (similar !== undefined) {
+      let xaxis = [];
+      let yaxis = [];
+      similar.map((project) => {
+        xaxis.push(project.title);
+        yaxis.push(project.similarity);
+      });
+      data = {
+        labels: xaxis,
+        datasets: [
+          {
+            label: "similarity",
+            data: yaxis,
+            fill: false,
+            backgroundColor: "rgb(255, 99, 132)",
+            borderColor: "rgba(255, 99, 132, 0.2)",
+          },
+        ],
+      };
+    }
+    console.log("data:", data);
     return (
       <>
         <div
@@ -261,7 +291,12 @@ class Recommendation extends Component {
                                     >
                                       Check for Projects
                                     </button>
-                                    <Modal show={this.state.show}>
+                                    <Modal
+                                      show={this.state.show}
+                                      onHide={() =>
+                                        this.setState({ show: false })
+                                      }
+                                    >
                                       <Modal.Header>
                                         <Modal.Title>
                                           Similar projects
@@ -276,22 +311,27 @@ class Recommendation extends Component {
                                         {similar === undefined ? (
                                           <h1>No similar projects found</h1>
                                         ) : (
-                                          similar.map((project) => (
-                                            <p>
-                                              <h3>{project.title}</h3>
-                                              <h4>{project.description}</h4>
-                                              {/* <p>{_id}</p> */}
-                                              <Link
-                                                className="btn btn-info mr-2"
-                                                to={{
-                                                  pathname: `/joinproject`,
-                                                  state: { project: project },
-                                                }}
-                                              >
-                                                Go to project
-                                              </Link>
-                                            </p>
-                                          ))
+                                          <>
+                                            {similar.map((project) => (
+                                              <p>
+                                                <h3>{project.title}</h3>
+                                                <h4>{project.description}</h4>
+
+                                                {/* <p>{_id}</p> */}
+                                                <Link
+                                                  className="btn btn-info mr-2"
+                                                  to={{
+                                                    pathname: `/joinproject`,
+                                                    state: { project: project },
+                                                  }}
+                                                >
+                                                  Go to project
+                                                </Link>
+                                              </p>
+                                            ))}
+                                            Graph:
+                                            <Line data={data} />
+                                          </>
                                         )}
                                       </ModalBody>
                                     </Modal>
@@ -305,10 +345,24 @@ class Recommendation extends Component {
                     </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="Resume">
+                    <SkillsInput
+                      label={"Skills"}
+                      name={"skillsInput"}
+                      value={""}
+                      setSkills={(arr) => {
+                        this.setState({
+                          requiredSkills: arr,
+                        });
+                      }}
+                    />
                     <div className="text-center">
                       <div>Drop in the resumes here</div>
-                      <PdfDropZone />
+                      <PdfDropZone
+                        setFiles={this.setFiles.bind(this)}
+                        files={this.state.files}
+                      />
                     </div>
+                    <RecommendationPDF skills={requiredSkills} files={files} />
                   </Tab.Pane>
                 </Tab.Content>
               </div>

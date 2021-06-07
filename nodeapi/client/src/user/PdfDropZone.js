@@ -20,27 +20,29 @@ const handlePreviewIcon = (fileObject, classes) => {
     </>
   );
 };
-export const PdfDropZone = () => {
+export const PdfDropZone = (props) => {
   const [fileObjects, setFileObjects] = useState([]);
-  const [finalObj, setFinalObj] = useState({});
+  const [finalObj, setFinalObj] = useState([]);
   const findscore = (data) => {
-    console.log(data);
+    // console.log(data);
     array.map((obj) => {
       if (obj.Name === data.college) data["score"] = obj.Score;
     });
     let obj = finalObj;
-    let nameObj = { [data.name]: { ...data } };
-    Object.assign(obj, nameObj);
+    obj.push(data);
     setFinalObj(obj);
+    props.setFiles(finalObj);
+    //console.log(finalObj);
   };
-
   return (
     <>
       <DropzoneAreaBase
         fileObjects={fileObjects}
         acceptedFiles={[".pdf"]}
+        filesLimit={50}
         onAdd={(newFileObjs) => {
-          console.log("onAdd", newFileObjs);
+          // console.log("onAdd", newFileObjs);
+          setFinalObj([]);
           //   newFileObjs.map((file) => {
           //     let files = [...fileObjects];
           //     files.push(file);
@@ -52,12 +54,13 @@ export const PdfDropZone = () => {
           setFileObjects((newFileObjs) =>
             newFileObjs.filter((file) => file !== deleteFileObj)
           );
-          console.log("NewOnes:", fileObjects);
+          // console.log("NewOnes:", fileObjects);
         }}
         getPreviewIcon={handlePreviewIcon}
       />
       <Button
         onClick={() => {
+          // console.log(fileObjects);
           //   const data = new FormData();
           //   data.append("files", fileObjects);
           //   console.log(fileObjects);
@@ -71,6 +74,7 @@ export const PdfDropZone = () => {
               findscore(data);
             });
           });
+          setFileObjects([]);
         }}
       >
         Process

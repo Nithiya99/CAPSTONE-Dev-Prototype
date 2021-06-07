@@ -3,6 +3,7 @@ import { getCurrentUser, list } from "./../user/apiUser";
 import { Accordion, Card, Button, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import RoleList from "./../project/newProjectForm/RoleCreate";
+import { Bar } from "react-chartjs-2";
 const similarity = require("sentence-similarity");
 const similarityScore = require("similarity-score");
 
@@ -19,6 +20,7 @@ class UserRecommender extends Component {
       users: [],
       final_users: [],
       show: false,
+      showGraph: false,
       error: "",
     };
   }
@@ -127,6 +129,51 @@ class UserRecommender extends Component {
   };
 
   renderUsers(users) {
+    console.log(users);
+    const { showGraph } = this.state;
+    let names = [];
+    users.map((user) => {
+      names.push(user.name);
+    });
+    console.log(names);
+    let exacts = [];
+    users.map((user) => {
+      exacts.push(user.exact);
+    });
+    console.log(exacts);
+
+    const dataset = {
+      labels: names,
+      datasets: [
+        {
+          label: "My First Dataset",
+          fill: false,
+          borderColor: "rgb(75, 192, 192)",
+          tension: 0.1,
+          data: exacts,
+        },
+      ],
+    };
+    if (showGraph === true) {
+      return (
+        <div>
+          <Bar
+            data={dataset}
+            options={{
+              title: {
+                display: true,
+                text: "Matching Skills",
+                fontSize: 20,
+              },
+              legend: {
+                display: true,
+                position: "right",
+              },
+            }}
+          />
+        </div>
+      );
+    }
     return users.map((user, i) => (
       <div className="col">
         <div className="card mb-3">
@@ -166,6 +213,7 @@ class UserRecommender extends Component {
   render() {
     const { roleDetails, error } = this.state;
     const users = this.state.final_users;
+    let { showGraph } = this.state;
     // console.log(this.state.final_users);
     return (
       <div>
@@ -182,6 +230,7 @@ class UserRecommender extends Component {
               delete={this.clickOnDelete.bind(this)}
               roleDetails={roleDetails}
               onChange={this.handleRoleChange}
+              dontShow={true}
             />
             <div className="row">
               <button
@@ -199,6 +248,14 @@ class UserRecommender extends Component {
             <Button onClick={this.handleClose.bind(this)}>x</Button>
           </Modal.Header>
           <Modal.Body>
+            <Button
+              onClick={() => {
+                showGraph = !showGraph;
+                this.setState({ showGraph });
+              }}
+            >
+              View Graphs
+            </Button>
             {users.map((user, i) => {
               return this.renderRole(user.users, user.role, i);
             })}

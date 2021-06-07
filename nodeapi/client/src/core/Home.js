@@ -89,6 +89,7 @@ class Home extends Component {
 
   findSentiment(text) {
     const result = sentiment.analyze(text);
+    // console.log("Sentiment value : ", result.score);
     this.setState({
       sentimentScore: result.score,
     });

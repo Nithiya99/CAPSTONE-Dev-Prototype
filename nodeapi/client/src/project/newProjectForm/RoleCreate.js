@@ -4,6 +4,10 @@ import SkillsInput from "../../utils/signupbutton/Tagify/SkillsInput";
 const RoleList = (props) => {
   // if (props.skillDetails === undefined) return null;
   const { onChange } = props;
+  let { dontShow } = props;
+  if (dontShow === undefined) {
+    dontShow = false;
+  }
   return props.roleDetails.map((val, idx) => {
     let roleName = `roleName-${idx}`;
     let roleSkills = `roleSkills-${idx}`;
@@ -35,21 +39,25 @@ const RoleList = (props) => {
         </div>
         {/*</div>*/}
         <div className="form-group col-md-2 mt-4">
-          {idx === 0 ? (
-            <button
-              onClick={() => props.add()}
-              type="button"
-              className="btn btn-primary text-center"
-            >
-              <i className="fa fa-plus" aria-hidden="true" />
-            </button>
+          {dontShow === false ? (
+            idx === 0 ? (
+              <button
+                onClick={() => props.add()}
+                type="button"
+                className="btn btn-primary text-center"
+              >
+                <i className="fa fa-plus" aria-hidden="true" />
+              </button>
+            ) : (
+              <button
+                className="btn btn-danger"
+                onClick={() => props.delete(val)}
+              >
+                <i className="fa fa-minus" aria-hidden="true" />
+              </button>
+            )
           ) : (
-            <button
-              className="btn btn-danger"
-              onClick={() => props.delete(val)}
-            >
-              <i className="fa fa-minus" aria-hidden="true" />
-            </button>
+            <></>
           )}
         </div>
       </div>
