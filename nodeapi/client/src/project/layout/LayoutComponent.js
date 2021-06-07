@@ -37,7 +37,7 @@ import {
 } from "../../store/cpm";
 import { notificationAdded } from "../../store/notifications";
 import { updateTasks } from "../../store/tasks";
-import { getCurrentUser } from "./../../user/apiUser";
+import { getCurrentUser, getUserById } from "./../../user/apiUser";
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 const styles = (theme) => ({
@@ -58,6 +58,7 @@ class LayoutComponent extends Component {
     elements: [],
     tasks: [],
     nodes: [],
+    kickoutusers: [],
     pert: {},
     task: {},
     show: false,
@@ -313,19 +314,31 @@ class LayoutComponent extends Component {
                 this.props.project._id
               ).then((data) => {
                 if (i === elem.data.assignedTo.length - 1) {
-                  console.log(data.result.overdueCounter);
+                  // console.log(data.result.overdueCounter);
                   let overdues = data.result.overdueCounter;
-                  Object.keys(overdues).map((user) => {
-                    if (overdues[user].length === 3) {
+                  console.log(overdues);
+                  let { kickoutusers } = this.state;
+                  Object.keys(overdues).map(async (user) => {
+                    if (
+                      overdues[user].length === 1 &&
+                      user !== this.props.project.leader &&
+                      !kickoutusers.includes(user)
+                    ) {
                       console.log("time to kick out +_+");
+                      let userObj = await getUserById(user);
+                      // console.log(userObj);
+                      let username = userObj.user.name;
+                      // console.log();
+                      kickoutusers.push(user);
+                      this.setState({ kickoutusers });
                       this.props.notificationAdded({
                         userId: getCurrentUser()._id,
-                        message: `3 hits, time to kick out ${user}`,
+                        message: `3 hits, time to kick out ${username} in ${this.props.project.title}`,
                         type: "KickOutUser",
                         userObjId: user,
                         project: this.props.project,
                       });
-                      toast.error(`Warning : 3 overdues by ${user}`);
+                      toast.error(`Warning : 3 overdues by ${username}`);
                     }
                   });
                 }
@@ -333,6 +346,7 @@ class LayoutComponent extends Component {
             });
           }
           slackObject[elem.data.label] = {
+            id: elem.data._id,
             slack: pert.slack[elem.id],
             days: days,
             daysPassed: Math.round(

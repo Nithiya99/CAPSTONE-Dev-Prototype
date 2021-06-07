@@ -649,6 +649,7 @@ class Notifications extends Component {
                         className="alert-text"
                         onClick={() => {
                           let value = false;
+                          console.log("Clicked");
                           value = window.confirm(
                             `are you sure you want to kick out @${val.userObjId}?`
                           );

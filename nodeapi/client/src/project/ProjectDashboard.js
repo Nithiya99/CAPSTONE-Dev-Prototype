@@ -104,6 +104,11 @@ class ProjectDashboard extends Component {
   // }
   renderSlacks(slacks) {
     if (slacks === undefined) return null;
+    // console.log(slacks);
+    let assignedUser = this.state.assignedUser;
+    // console.log(assignedUser);
+    if (assignedUser === undefined) return null;
+    let str = "";
     return Object.keys(slacks).map((key) => (
       <div>
         {slacks[key].slack > 0 && (
@@ -148,7 +153,14 @@ class ProjectDashboard extends Component {
                 <p className="card-text">
                   Assigned To:{" "}
                   <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
-                    LOADs
+                    {/* {console.log(assignedUser, slacks)} */}
+                    {(str = "")}
+                    {/* {console.log()} */}
+                    {assignedUser[slacks[key].id] !== undefined &&
+                      assignedUser[slacks[key].id].map((user) => {
+                        str += user + " ";
+                      })}
+                    {str}
                   </span>
                 </p>
               </div>
@@ -164,63 +176,72 @@ class ProjectDashboard extends Component {
   renderCriticalPath(criticalPathArr, criticalPathObject) {
     console.log("criticalPathArr:", criticalPathArr);
     console.log("criticalPathObject:", criticalPathObject);
+    console.log("tasks:", this.props.tasks);
     let str = "";
     let assignedUser = this.state.assignedUser;
-    return criticalPathArr.map((node, index) => (
-      <div className="col mb-4">
-        <div className="card">
-          <div className="card-body">
-            <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
-              {/* {index !== 1 && index !== 2 ?*/}
-              {index !== criticalPathArr.length - 1
-                ? criticalPathObject[node].label.toString()
-                : criticalPathObject[node].label.toString()}
-              {/* : ""} */}
-            </div>
-            <p className="card-text">
-              {index !== criticalPathArr.length - 1
-                ? criticalPathObject[node].taskDescription
-                : criticalPathObject[node].taskDescription}
-            </p>
-            <p className="card-text">
-              Status:{" "}
-              <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                {index !== criticalPathArr.length - 1
-                  ? criticalPathObject[node].status
-                  : criticalPathObject[node].status}
-              </span>
-            </p>
-            <p className="card-text">
-              Assigned To:{" "}
-              <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
-                {console.log(assignedUser[criticalPathObject[node]._id])}
-                {(str = "")}
-                {assignedUser[criticalPathObject[node]._id] !== undefined &&
-                  assignedUser[criticalPathObject[node]._id].map((user) => {
-                    str += user + " ";
-                  })}
-                {str}{" "}
-              </span>
-            </p>
-            <p className="card-text">
-              Due Date:
-              <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                {moment(criticalPathObject[node].created)
-                  .add(criticalPathObject[node].time, "days")
-                  .format("DD-MM-YY")}
-                {/* {index !== criticalPathArr.length - 1
+    console.log(assignedUser);
+    if (assignedUser === undefined) return null;
+    console.log(criticalPathObject);
+    return criticalPathArr.map(
+      (node, index) =>
+        criticalPathObject[node].label.toString() !== "Lets Start Working" &&
+        criticalPathObject[node].label.toString() !== "Completed!!" && (
+          <div className="col mb-4">
+            <div className="card">
+              <div className="card-body">
+                <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
+                  {/* {index !== 1 && index !== 2 ?*/}
+                  {index !== criticalPathArr.length - 1
+                    ? criticalPathObject[node].label.toString()
+                    : criticalPathObject[node].label.toString()}
+                  {/* : ""} */}
+                </div>
+                <p className="card-text">
+                  {index !== criticalPathArr.length - 1
+                    ? criticalPathObject[node].taskDescription
+                    : criticalPathObject[node].taskDescription}
+                </p>
+                <p className="card-text">
+                  Status:
+                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                    {index !== criticalPathArr.length - 1
+                      ? criticalPathObject[node].status
+                      : criticalPathObject[node].status}
+                  </span>
+                </p>
+                <p className="card-text">
+                  Assigned To:
+                  <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
+                    {/* {console.log(assignedUser[criticalPathObject[node]._id])} */}
+                    {(str = "")}
+                    {assignedUser[criticalPathObject[node]._id] !== undefined &&
+                      assignedUser[criticalPathObject[node]._id].map((user) => {
+                        str += user + " ";
+                      })}
+                    {/* {console.log(assignedUser, criticalPathObject)} */}
+                    {str}
+                  </span>
+                </p>
+                <p className="card-text">
+                  Due Date:
+                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                    {moment(criticalPathObject[node].created)
+                      .add(criticalPathObject[node].time, "days")
+                      .format("DD-MM-YY")}
+                    {/* {index !== criticalPathArr.length - 1
                   ? moment(criticalPathObject[node].created).format(
                       "DD-MM-YYYY"
                     )
                   : moment(criticalPathObject[node].created).format(
                       "DD-MM-YYYY"
                     )}{" "} */}
-              </span>
-            </p>
+                  </span>
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    ));
+        )
+    );
   }
   render() {
     if (this.props.location.state.project === undefined) {
