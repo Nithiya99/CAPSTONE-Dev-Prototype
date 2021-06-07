@@ -69,9 +69,9 @@ class ProjectDashboard extends Component {
         await task.assignedTo.map(async (user) => {
           await getUserById(user).then((data) => {
             names.push(data.user.name);
+            Object.assign(Obj, { [task._id]: names.join(" ") });
           });
         });
-      Object.assign(Obj, { [task._id]: names });
     });
     tasks.map((task) => {
       if (task.status !== undefined) {
@@ -109,6 +109,7 @@ class ProjectDashboard extends Component {
     // console.log(assignedUser);
     if (assignedUser === undefined) return null;
     let str = "";
+    console.log(this.state.assignedUser);
     return Object.keys(slacks).map((key) => (
       <div>
         {slacks[key].slack > 0 && (
@@ -157,9 +158,7 @@ class ProjectDashboard extends Component {
                     {(str = "")}
                     {/* {console.log()} */}
                     {assignedUser[slacks[key].id] !== undefined &&
-                      assignedUser[slacks[key].id].map((user) => {
-                        str += user + " ";
-                      })}
+                      assignedUser[slacks[key].id]}
                     {str}
                   </span>
                 </p>
@@ -213,13 +212,8 @@ class ProjectDashboard extends Component {
                   Assigned To:
                   <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
                     {/* {console.log(assignedUser[criticalPathObject[node]._id])} */}
-                    {(str = "")}
                     {assignedUser[criticalPathObject[node]._id] !== undefined &&
-                      assignedUser[criticalPathObject[node]._id].map((user) => {
-                        str += user + " ";
-                      })}
-                    {/* {console.log(assignedUser, criticalPathObject)} */}
-                    {str}
+                      assignedUser[criticalPathObject[node]._id]}
                   </span>
                 </p>
                 <p className="card-text">
@@ -268,6 +262,7 @@ class ProjectDashboard extends Component {
       expectedTime,
       "days"
     );
+    console.log(this.props);
     const diffTime = Math.abs(expectedDate._d - day1);
     const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     // console.log("no. of days left:", duration);
@@ -410,48 +405,6 @@ class ProjectDashboard extends Component {
                             </span>
                           ))}
                         </div>
-                        <div className="d-flex flex-wrap align-items-center py-2">
-                          <div className="mr-12 d-flex flex-column mb-7">
-                            <span className="d-block font-weight-bold mb-4">
-                              Start Date
-                            </span>
-                            <span className="btn btn-light-primary btn-sm font-weight-bold btn-upper btn-text">
-                              {/* {projectCreatedDates[project._id]} */}
-                              {moment(createDate).format("DD-MM-YYYY")}
-                            </span>
-                          </div>
-                          <div className="mr-12 d-flex flex-column mb-7">
-                            <span className="d-block font-weight-bold mb-4">
-                              Due Date
-                            </span>
-                            <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                              {/* {projectEstimatedDates[project._id]} */}
-                              {expectedDate.format("DD-MM-YYYY")}
-                            </span>
-                          </div>
-                          <div className="flex-row-fluid mb-7">
-                            <span className="d-block font-weight-bold mb-4">
-                              Progress
-                            </span>
-                            <div className="d-flex align-items-center pt-2">
-                              <div className="progress progress-xs mt-2 mb-2 w-100">
-                                <div
-                                  className="progress-bar bg-warning"
-                                  role="progressbar"
-                                  style={{
-                                    width: `${project.completion_percentage}%`,
-                                  }}
-                                  aria-valuenow="50"
-                                  aria-valuemin="0"
-                                  aria-valuemax="100"
-                                ></div>
-                              </div>
-                              <span className="ml-3 font-weight-bolder">
-                                {project.completion_percentage}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
                         <table className="table table-light">
                           <thead>
                             <tr>
@@ -538,6 +491,28 @@ class ProjectDashboard extends Component {
                       </div>
                     </div>
                     <div className="card-body">
+                      <div className="flex-row-fluid mb-7">
+                        <span className="d-block font-weight-bold mb-4">
+                          Progress
+                        </span>
+                        <div className="d-flex align-items-center pt-2">
+                          <div className="progress progress-xs mt-2 mb-2 w-100">
+                            <div
+                              className="progress-bar bg-warning"
+                              role="progressbar"
+                              style={{
+                                width: `${project.completion_percentage}%`,
+                              }}
+                              aria-valuenow="50"
+                              aria-valuemin="0"
+                              aria-valuemax="100"
+                            ></div>
+                          </div>
+                          <span className="ml-3 font-weight-bolder">
+                            {project.completion_percentage}%
+                          </span>
+                        </div>
+                      </div>
                       {/* <h4>No. of days:</h4>
                       <span>{duration}</span>
                       <h4>Estimated date:</h4>
