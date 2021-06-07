@@ -89,19 +89,27 @@ class ProjectDashboard extends Component {
       count4,
     });
   }
-  // componentDidUpdate(prevState) {
-  //   if (prevState.connections.length !== this.props.connections.length) {
-  //     // if (this.props.pert.latestFinishTimes !== undefined)
-  //     //   console.log("end time:", this.props.pert.latestFinishTimes.__end);
-  //     const expectedTime =
-  //       this.props.pert.latestFinishTimes !== undefined
-  //         ? Math.floor(this.props.pert.latestFinishTimes.__end)
-  //         : "Not set yet";
-  //     this.setState({ expectedTime });
-  //     this.props.setExpectedTime({ expectedTime });
-  //   }
-  //   // console.log(prevState);
-  // }
+  componentDidUpdate(prevProps, prevState) {
+    // if (prevState.connections.length !== this.props.connections.length) {
+    //   // if (this.props.pert.latestFinishTimes !== undefined)
+    //   //   console.log("end time:", this.props.pert.latestFinishTimes.__end);
+    //   // const expectedTime =
+    //   //   this.props.pert.latestFinishTimes !== undefined
+    //   //     ? Math.floor(this.props.pert.latestFinishTimes.__end)
+    //   //     : "Not set yet";
+    //   // this.setState({ expectedTime });
+    //   // this.props.setExpectedTime({ expectedTime });
+    // }
+    if (prevProps !== this.props) {
+      console.log("prevProps:", prevProps);
+      console.log("this Props:", this.props);
+    }
+    if (prevState !== this.state) {
+      console.log("prevState:", prevState);
+      console.log("this state:", this.state);
+    }
+    // console.log(prevState);
+  }
   renderSlacks(slacks) {
     if (slacks === undefined) return null;
     // console.log(slacks);
@@ -111,18 +119,19 @@ class ProjectDashboard extends Component {
     let str = "";
     console.log(this.state.assignedUser);
     return Object.keys(slacks).map((key) => (
-      <div>
+      <>
         {slacks[key].slack > 0 && (
-          <div className="col mb-4">
-            <div className="card">
-              <div className="card-body">
-                <div className="d-flex align-items-center">
-                  <div className="d-flex flex-column flex-grow-1">
-                    <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
-                      {key}
+          <div>
+            <div className="col mb-4">
+              <div className="card">
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="d-flex flex-column flex-grow-1">
+                      <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
+                        [LOAD]
+                      </div>
                     </div>
-                  </div>
-                  {slacks[key].overdue ? (
+                    {/* {slacks[key].overdue ? (
                     <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
                       Overdue
                     </span>
@@ -130,38 +139,49 @@ class ProjectDashboard extends Component {
                     <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
                       On schedule
                     </span>
-                  )}
-                </div>
+                  )} */}
+                    <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                      [LOAD]
+                    </span>
+                  </div>
 
-                <p className="card-text pt-3">Days left: {slacks[key].days}</p>
-                <p className="card-text">
-                  Number of Days you can Slack: {slacks[key].slack} [CHECK]
-                </p>
-                <p className="card-text">
-                  Start By:{" "}
-                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                  <p className="card-text pt-3">
+                    {/* Days left: {slacks[key].days} */}
+                    [LOAD]
+                  </p>
+                  <p className="card-text">
+                    {/* Number of Days you can Slack: {slacks[key].slack}  */}
+                    [LOAD]
+                  </p>
+                  <p className="card-text">
+                    Start By:
+                    {/* <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
                     {moment(slacks[key].earliestStartDate).format("DD-MM-YYYY")}
-                  </span>
-                </p>
-                <p className="card-text">
-                  Due on:{" "}
-                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                    {moment(slacks[key].earliestFinishDate).format(
+                  </span> */}
+                    [LOAD]
+                  </p>
+                  <p className="card-text">
+                    Due on:{" "}
+                    <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                      {/* {moment(slacks[key].earliestFinishDate).format(
                       "DD-MM-YYYY"
-                    )}
-                  </span>
-                </p>
-                <p className="card-text">
-                  Assigned To:{" "}
-                  <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
-                    {/* {console.log(assignedUser, slacks)} */}
+                    )} */}
+                      [LOAD]
+                    </span>
+                  </p>
+                  <p className="card-text">
+                    Assigned To:{" "}
+                    <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
+                      {/* {console.log(assignedUser, slacks)}
                     {(str = "")}
-                    {/* {console.log()} */}
+                    {console.log()}
                     {assignedUser[slacks[key].id] !== undefined &&
                       assignedUser[slacks[key].id]}
-                    {str}
-                  </span>
-                </p>
+                    {str} */}
+                      [LOAD]
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -169,7 +189,7 @@ class ProjectDashboard extends Component {
         {/* Label: {key} | slack: {slacks[key].slack} | days: {slacks[key].days} |
         Overdue:
         {slacks[key].overdue ? <>Overdue</> : <>On schedule</>} */}
-      </div>
+      </>
     ));
   }
   renderCriticalPath(criticalPathArr, criticalPathObject) {
@@ -190,38 +210,43 @@ class ProjectDashboard extends Component {
               <div className="card-body">
                 <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
                   {/* {index !== 1 && index !== 2 ?*/}
-                  {index !== criticalPathArr.length - 1
+                  {/* {index !== criticalPathArr.length - 1
                     ? criticalPathObject[node].label.toString()
-                    : criticalPathObject[node].label.toString()}
+                    : criticalPathObject[node].label.toString()} */}
+                  [LOAD]
                   {/* : ""} */}
                 </div>
                 <p className="card-text">
-                  {index !== criticalPathArr.length - 1
+                  {/* {index !== criticalPathArr.length - 1
                     ? criticalPathObject[node].taskDescription
-                    : criticalPathObject[node].taskDescription}
+                    : criticalPathObject[node].taskDescription} */}
+                  [LOAD]
                 </p>
                 <p className="card-text">
                   Status:
                   <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                    {index !== criticalPathArr.length - 1
+                    {/* {index !== criticalPathArr.length - 1
                       ? criticalPathObject[node].status
-                      : criticalPathObject[node].status}
+                      : criticalPathObject[node].status} */}
+                    [LOAD]
                   </span>
                 </p>
                 <p className="card-text">
                   Assigned To:
                   <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
-                    {/* {console.log(assignedUser[criticalPathObject[node]._id])} */}
+                    {/* {console.log(assignedUser[criticalPathObject[node]._id])}
                     {assignedUser[criticalPathObject[node]._id] !== undefined &&
-                      assignedUser[criticalPathObject[node]._id]}
+                      assignedUser[criticalPathObject[node]._id]} */}
+                    [LOAD]
                   </span>
                 </p>
                 <p className="card-text">
                   Due Date:
                   <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                    {moment(criticalPathObject[node].created)
+                    {/* {moment(criticalPathObject[node].created)
                       .add(criticalPathObject[node].time, "days")
-                      .format("DD-MM-YY")}
+                      .format("DD-MM-YY")} */}
+                    [LOAD]
                     {/* {index !== criticalPathArr.length - 1
                   ? moment(criticalPathObject[node].created).format(
                       "DD-MM-YYYY"
@@ -546,11 +571,12 @@ class ProjectDashboard extends Component {
                           <div className="d-flex align-items-center mb-9 bg-light-primary rounded p-5">
                             <div className="d-flex flex-column flex-grow-1 mr-2">
                               <div className="font-weight-bold text-dark-100 font-size-lg mb-1">
-                                Start Date:{" "}
+                                Start Date:
                               </div>
                             </div>
                             <span className="font-weight-bolder text-primary py-1 font-size-lg">
-                              {moment(project.created).format("DD-MM-YYYY")}
+                              {/* {moment(project.created).format("DD-MM-YYYY")} */}
+                              [LOAD]
                             </span>
                           </div>
                         </div>
@@ -562,7 +588,8 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-warning py-1 font-size-lg">
-                              {duration}
+                              {/* {duration} */}
+                              [LOAD]
                             </span>
                           </div>
                         </div>
@@ -574,7 +601,8 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-danger py-1 font-size-lg">
-                              {expectedDate.format("DD-MM-YYYY")}
+                              {/* {expectedDate.format("DD-MM-YYYY")} */}
+                              [LOAD]
                             </span>
                           </div>
                         </div>
@@ -588,7 +616,8 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-primary py-1 font-size-lg">
-                              {this.state.count1}
+                              {/* {this.state.count1} */}
+                              [LOAD]
                             </span>
                           </div>
                         </div>
@@ -600,7 +629,8 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-info py-1 font-size-lg">
-                              {this.state.count2}
+                              {/* {this.state.count2} */}
+                              [LOAD]
                             </span>
                           </div>
                         </div>
@@ -612,7 +642,8 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-warning py-1 font-size-lg">
-                              {this.state.count3}
+                              {/* {this.state.count3} */}
+                              [LOAD]
                             </span>
                           </div>
                         </div>
@@ -624,7 +655,8 @@ class ProjectDashboard extends Component {
                               </div>
                             </div>
                             <span className="font-weight-bolder text-success py-1 font-size-lg">
-                              {this.state.count4}
+                              {/* {this.state.count4} */}
+                              [LOAD]
                             </span>
                           </div>
                         </div>

@@ -54,6 +54,8 @@ const slice = createSlice({
       state.elements = [];
       state.pert = {};
       state.expectedTime = 0;
+      state.slacks = {};
+      state.criticalPath = {};
     },
     setSlacks: (state, action) => {
       const slackObject = action.payload.slackObject;
