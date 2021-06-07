@@ -63,42 +63,59 @@ class EditModel extends Component {
           <Modal.Title>Edit Task</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <label>Name:</label>
-          <input
-            type={"text"}
-            defaultValue={task.taskName}
-            onChange={(e) => this.setState({ title: e.target.value })}
-          ></input>
-          <br></br>
-          <label>Description:</label>
-          <input
-            type={"text"}
-            defaultValue={task.taskDescription}
-            onChange={(e) => this.setState({ description: e.target.value })}
-          ></input>
-          <br></br>
-          <label>Optimistic Time:</label>
-          <input
-            type={"number"}
-            defaultValue={task.optimisticTime}
-            onChange={(e) => this.setState({ optimisticTime: e.target.value })}
-          ></input>
-          <br></br>
-          <label>Most Likely Time:</label>
-          <input
-            type={"number"}
-            defaultValue={task.mostLikelyTime}
-            onChange={(e) => this.setState({ mostLikelyTime: e.target.value })}
-          ></input>
-          <br></br>
+          <div className="form-group">
+            <label>Name:</label>
+            <input
+              type={"text"}
+              defaultValue={task.taskName}
+              onChange={(e) => this.setState({ title: e.target.value })}
+              className="form-control"
+            ></input>
+          </div>
+          <div className="form-group">
+            <label>Description:</label>
+            <input
+              type={"text"}
+              defaultValue={task.taskDescription}
+              className="form-control"
+              onChange={(e) => this.setState({ description: e.target.value })}
+            ></input>
+          </div>
+          <div className="form-group">
+            <label>Optimistic Time:</label>
+            <input
+              type={"number"}
+              defaultValue={task.optimisticTime}
+              className="form-control"
+              onChange={(e) =>
+                this.setState({ optimisticTime: e.target.value })
+              }
+            ></input>
+          </div>
 
-          <label>Pessimistic Time:</label>
-          <input
-            type={"number"}
-            defaultValue={task.pessimisticTime}
-            onChange={(e) => this.setState({ pessimisticTime: e.target.value })}
-          ></input>
-          <br></br>
+          <div className="form-group">
+            <label>Most Likely Time:</label>
+            <input
+              type={"number"}
+              defaultValue={task.mostLikelyTime}
+              className="form-control"
+              onChange={(e) =>
+                this.setState({ mostLikelyTime: e.target.value })
+              }
+            ></input>
+          </div>
+
+          <div className="form-group">
+            <label>Pessimistic Time:</label>
+            <input
+              type={"number"}
+              defaultValue={task.pessimisticTime}
+              className="form-control"
+              onChange={(e) =>
+                this.setState({ pessimisticTime: e.target.value })
+              }
+            ></input>
+          </div>
           <AssignPerson
             projectId={this.props.projectId}
             assignTo={this.assignTo}
