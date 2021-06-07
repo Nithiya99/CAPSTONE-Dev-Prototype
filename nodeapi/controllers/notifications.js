@@ -32,6 +32,12 @@ exports.addNotification = (req, res) => {
         project: req.body.project,
         userObjId: req.body.userObjId,
       });
+      user.newNotification = true;
+      // console.log(user.notifications);
+      user.save(); //(err) => {
+      return res.status !== undefined
+        ? res.status(200).json({ user })
+        : console.log("Notification added");
     }
     if (req.body.userObjId !== undefined) {
       user.notifications.push({

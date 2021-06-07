@@ -100,6 +100,8 @@ class Home extends Component {
     const { notifications, posts } = this.props;
     const { notificationGroupedObject, projects, youtubeUrl, text } =
       this.state;
+    let user = getUserById(getCurrentUser()._id);
+    console.log(projects, getCurrentUser()._id, user);
     // if (this.props.notifications.length > 0) {
     //   console.log("NOTIFICATIONS:");
     //   console.log(this.props.notifications);

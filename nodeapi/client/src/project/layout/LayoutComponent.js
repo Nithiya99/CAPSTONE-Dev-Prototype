@@ -320,7 +320,7 @@ class LayoutComponent extends Component {
                   let { kickoutusers } = this.state;
                   Object.keys(overdues).map(async (user) => {
                     if (
-                      overdues[user].length === 1 &&
+                      overdues[user].length === 3 &&
                       user !== this.props.project.leader &&
                       !kickoutusers.includes(user)
                     ) {

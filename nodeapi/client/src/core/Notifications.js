@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { getProject, leaveProject } from "../project/apiProject";
+import { getProject, leaveProject, updateProject } from "../project/apiProject";
 import { Button, Modal } from "react-bootstrap";
 import { getNotifications } from "../apiNotifications";
 import ReqIcon from "../images/request.png";
@@ -23,12 +23,13 @@ import {
   setNotifications,
 } from "../store/notifications";
 import FeedbackForm from "./../project/FeedbackForm";
-import { getCurrentUser } from "../user/apiUser";
+import { getCurrentUser, getUserById } from "../user/apiUser";
 import { acceptRequest, declineRequest } from "./../project/apiProject";
 import { toast, ToastContainer } from "react-toastify";
 import { removeAndUpdateNotifications } from "./../store/notifications";
 import { removeNotificationId } from "./../apiNotifications";
 import RecommendedRolePeople from "../project/RecommendedRolePeople";
+
 const BASE_URL = process.env.REACT_APP_API_URL;
 class Notifications extends Component {
   state = {
@@ -632,7 +633,7 @@ class Notifications extends Component {
               if (val.notifType === "KickOutUser") {
                 let show = false;
                 if (val.project !== undefined && val.userObjId !== undefined) {
-                  // console.log(val);
+                  console.log(val);
                   return (
                     <div
                       className="alert alert-custom alert-notice alert-light-danger "
@@ -650,30 +651,83 @@ class Notifications extends Component {
                         onClick={() => {
                           let value = false;
                           console.log("Clicked");
-                          value = window.confirm(
-                            `are you sure you want to kick out @${val.userObjId}?`
-                          );
-                          if (value) {
-                            let token = JSON.parse(
-                              localStorage.getItem("jwt")
-                            ).token;
-                            leaveProject(val.userObjId, val.project._id, token)
-                              .then(() => {
-                                toast.success(`kicked user out!`);
-                              })
-                              .then(() => {
-                                this.setShowTrue();
-                                removeNotificationId(
-                                  getCurrentUser()._id,
-                                  val._id
-                                ).then((data) => {
-                                  if (data.user !== undefined) {
-                                    console.log("removed notif");
-                                    //  window.location.reload();
-                                  }
+                          getUserById(val.userObjId).then((user) => {
+                            value = window.confirm(
+                              `are you sure you want to kick out @${user.user.username}?`
+                            );
+                            if (value) {
+                              let token = JSON.parse(
+                                localStorage.getItem("jwt")
+                              ).token;
+                              const project = { ...val.project };
+                              const userId = val.userObjId;
+                              console.log(project);
+                              let final_team = [],
+                                final_tasks = [],
+                                final_roles = [];
+                              let tasks = project.tasks;
+                              tasks.forEach((task) => {
+                                let final_task = { ...task };
+                                let taskmembs = [...task.assignedTo];
+                                let f_taskmembs = [];
+                                taskmembs.forEach((memb) => {
+                                  if (memb === userId)
+                                    f_taskmembs.push(project.leader);
+                                  else f_taskmembs.push(memb);
                                 });
+                                f_taskmembs = [...new Set(f_taskmembs)];
+                                final_task.assignedTo = f_taskmembs;
+                                console.log(final_task);
+                                final_tasks.push(final_task);
                               });
-                          }
+                              console.log(final_tasks);
+
+                              let membs = project.team;
+                              membs.forEach((user) => {
+                                if (user !== userId) final_team.push(user);
+                                console.log(final_team);
+                              });
+
+                              let roles = [...project.roles];
+                              roles.map((role) => {
+                                let r = { ...role };
+                                if (r.assignedTo === userId)
+                                  r.assignedTo = undefined;
+                                final_roles.push(r);
+                              });
+
+                              let proj = {
+                                title: project.title,
+                                description: project.description,
+                                skills: project.skills,
+                                roleDetails: final_roles,
+                                team: final_team,
+                                tasks: final_tasks,
+                              };
+                              updateProject(proj, val.project._id).then(() => {
+                                leaveProject(
+                                  val.userObjId,
+                                  val.project._id,
+                                  token
+                                )
+                                  .then(() => {
+                                    toast.success(`kicked user out!`);
+                                  })
+                                  .then(() => {
+                                    this.setShowTrue();
+                                    removeNotificationId(
+                                      getCurrentUser()._id,
+                                      val._id
+                                    ).then((data) => {
+                                      if (data.user !== undefined) {
+                                        console.log("removed notif");
+                                        //  window.location.reload();
+                                      }
+                                    });
+                                  });
+                              });
+                            }
+                          });
                           // .then((response) => {
                           //   console.log(response);
                           // });
