@@ -194,13 +194,17 @@ class ProjectDashboard extends Component {
           ) {
             let usernameArr = await this.userNameBuilder(task);
             let pertData = allIdPertData[idFromKeyObject[task._id]];
+            let startby = moment(task.created).add(
+              pertData.earliestStart,
+              "days"
+            );
             let obj = {
               [task._id]: {
                 taskName: task.taskName, //taskName
                 taskDescription: task.taskDescription, //taskName
                 daysLeft: slacks[task.taskName].days, // days left for task
                 assignedTo: usernameArr, // assigned To usernames
-                dueOn: moment(task.created)
+                dueOn: startby
                   .add(pertData.expectedTime, "days") // dueOn
                   .format("DD-MM-YY"),
                 status: task.status,
@@ -261,13 +265,17 @@ class ProjectDashboard extends Component {
             );
             days = pertData.slack !== 0 ? days + pertData.slack : days;
 
+            let startby = moment(task.created).add(
+              pertData.earliestStart,
+              "days"
+            );
             //Obj
             let obj = {
               [task._id]: {
                 taskName: task.taskName, //taskName
                 taskDescription: task.taskDescription, //taskDesc
-                started: moment(task.created).format("DD-MM-YY"), // started
-                dueOn: moment(task.created)
+                started: startby.format("DD-MM-YY"), //moment(task.created).format("DD-MM-YY"), // started
+                dueOn: startby
                   .add(pertData.expectedTime, "days") // dueOn
                   .format("DD-MM-YY"),
                 assignedTo: usernameArr, // assigned To user Names
