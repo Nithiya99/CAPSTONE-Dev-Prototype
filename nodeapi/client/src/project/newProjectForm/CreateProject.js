@@ -66,11 +66,11 @@ class CreateProject extends Component {
     });
   }
 
-  clickSubmit = (event) => {
+  clickSubmit = async (event) => {
     event.preventDefault();
-    this.setState({ loading: true });
+    this.setState({ loading: true, error: "" });
     let { title, description, skills, roleDetails } = this.state;
-    roleDetails.map((role, i) => {
+    await roleDetails.map((role, i) => {
       if (role.roleSkills.length === 0) {
         this.setState({ error: "Empty skills for role Number " + (i + 1) });
       }

@@ -183,21 +183,29 @@ class LayoutComponent extends Component {
     // console.log("props:", this.props.connections);
     // console.log("connections:");
     let ids = [];
-    this.props.connections.map((connection) => {
+    let promises = await this.props.connections.map((connection) => {
       // console.log(connection.source, connection.target);
-      if (!ids.includes(connection.source)) {
-        ids.push(connection.source.toString());
+      if (connection.source.toString() === "1") ids.push("1");
+      console.log(ids);
+      if (ids.includes(connection.source.toString())) {
+        if (!ids.includes(connection.source.toString())) {
+          ids.push(connection.source.toString());
+        }
+        if (!ids.includes(connection.target.toString())) {
+          ids.push(connection.target.toString());
+        }
       }
-      if (!ids.includes(connection.target)) {
-        ids.push(connection.target.toString());
-      }
+      return ids;
     });
+
+    let result = await Promise.all(promises);
+    // console.log(result, this.props.connections);
     // console.log("nodes:");
     let newNodes = [];
     nodes.map((node) => {
       if (ids.includes(node.id)) newNodes.push(node);
     });
-
+    console.log(newNodes);
     let tasksObject = ids.includes("1")
       ? {
           1: {
