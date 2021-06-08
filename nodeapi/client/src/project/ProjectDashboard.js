@@ -50,6 +50,8 @@ class ProjectDashboard extends Component {
   componentDidMount() {
     this.props.clearAll();
     this.props.clearFirstLayer();
+    this.props.clearSecondLayer();
+    this.props.clearThirdLayer();
     const { project } = this.props.location.state;
     getTasks(project._id).then((val) => {
       this.props.updateTasks({
@@ -187,6 +189,7 @@ class ProjectDashboard extends Component {
             task.taskName !== "Completed!!" &&
             slacks !== {} &&
             slacks[task.taskName] !== undefined &&
+            allIdPertData.criticalPath !== undefined &&
             allIdPertData.criticalPath.includes(idFromKeyObject[task._id])
           ) {
             let usernameArr = await this.userNameBuilder(task);
@@ -231,6 +234,7 @@ class ProjectDashboard extends Component {
             task.taskName !== "Completed!!" &&
             slacks !== {} &&
             slacks[task.taskName] !== undefined &&
+            allIdPertData.criticalPath !== undefined &&
             !allIdPertData.criticalPath.includes(idFromKeyObject[task._id])
           ) {
             let pertData = allIdPertData[idFromKeyObject[task._id]];

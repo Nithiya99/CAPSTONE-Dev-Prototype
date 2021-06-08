@@ -247,6 +247,7 @@ class LayoutComponent extends Component {
     try {
       // if (tasksObject[1] !== undefined) {
       // console.log(tasksObject[1]);
+      console.log(tasksObjectFinal);
       pert = jsPERT(tasksObjectFinal);
       this.props.setPert({ pert });
       console.log(this.props.pert);
@@ -429,7 +430,7 @@ class LayoutComponent extends Component {
         return pertValues;
       });
       let data = promises[promises.length - 1];
-
+      // console.log("all pert:", pert);
       this.props.setCriticalPath({ criticalPath: criticalPathData });
 
       this.props.setExpectedTime({

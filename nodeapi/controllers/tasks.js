@@ -157,23 +157,44 @@ exports.putPosition = (req, res) => {
 // };
 const sumItUp = async (project, sum) => {
   // console.log(project);
-  const { completion_percentage } = await Project.findById(project).exec();
-  sum += completion_percentage;
+  console.log("sumItUp:", sum);
+  try {
+    const { completion_percentage } = await Project.findById(project).exec();
+    console.log(completion_percentage);
+    sum += completion_percentage;
+    // console.log(sum);
+    return sum;
+  } catch (err) {
+    console.log(err);
+  }
   // console.log(`completion_percentage is ${completion_percentage}, updated sum is ${sum}`);
-  return sum;
 };
 const updateUserCompletion = async (user) => {
   // console.log(user);
   let sum = 0;
   for (var i = 0; i < user.projects.length; i++) {
     sum = await sumItUp(user.projects[i], sum);
+    if (i === user.projects.length - 1) {
+      console.log(
+        "Start:",
+        user.completion_percentage_of_all_projects,
+        user.projects.length
+      );
+      user.completion_percentage_of_all_projects = 0;
+      if (user.projects.length !== 0 && sum !== NaN) {
+        console.log("sum:", sum);
+        user.completion_percentage_of_all_projects = sum / user.projects.length;
+        console.log(
+          "End:",
+          user.completion_percentage_of_all_projects,
+          user.projects.length
+        );
+      }
+      user.save();
+    }
     // console.log(user.name + " " + user.project[i].title + " " + sum);
   }
   // console.log(sum);
-  user.completion_percentage_of_all_projects = 0;
-  if (user.projects.length !== 0)
-    user.completion_percentage_of_all_projects = sum / user.projects.length;
-  user.save();
 };
 
 async function proj_completion(project) {
