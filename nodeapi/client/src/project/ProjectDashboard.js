@@ -27,6 +27,14 @@ import moment from "moment";
 import RecommendedRolePeople from "./RecommendedRolePeople";
 import { ToastContainer } from "react-toastify";
 import StartIcon from "../images/victory.png";
+import {
+  clearFirstLayer,
+  clearSecondLayer,
+  clearThirdLayer,
+  setFirstLayer,
+  setSecondLayer,
+  setThirdLayer,
+} from "../store/projectStats";
 
 class ProjectDashboard extends Component {
   state = {
@@ -41,6 +49,7 @@ class ProjectDashboard extends Component {
   };
   componentDidMount() {
     this.props.clearAll();
+    this.props.clearFirstLayer();
     const { project } = this.props.location.state;
     getTasks(project._id).then((val) => {
       this.props.updateTasks({
@@ -89,7 +98,17 @@ class ProjectDashboard extends Component {
       count4,
     });
   }
-  componentDidUpdate(prevProps, prevState) {
+  userNameBuilder = async (task) => {
+    let names = [];
+    const promises = task.assignedTo.map(async (user) => {
+      let userObj = await getUserById(user);
+      return userObj.user.name;
+    });
+    const resolved = await Promise.all(promises);
+    return resolved;
+    // console.log(names);
+  };
+  async componentDidUpdate(prevProps, prevState) {
     // if (prevState.connections.length !== this.props.connections.length) {
     //   // if (this.props.pert.latestFinishTimes !== undefined)
     //   //   console.log("end time:", this.props.pert.latestFinishTimes.__end);
@@ -100,9 +119,169 @@ class ProjectDashboard extends Component {
     //   // this.setState({ expectedTime });
     //   // this.props.setExpectedTime({ expectedTime });
     // }
-    if (prevProps !== this.props) {
-      console.log("prevProps:", prevProps);
-      console.log("this Props:", this.props);
+    if (prevProps.tasks.length !== this.props.tasks.length) {
+      console.log("prevProps:", prevProps.tasks);
+      console.log("this Props:", this.props.tasks);
+      const { project } = this.props.location.state;
+      const { slacks, expectedTime, tasks, criticalPath } = this.props;
+      console.log("slacks:", slacks);
+
+      // First Layer
+
+      // Project Created date
+
+      let createDate = new Date(project.created);
+
+      // End Date
+
+      let expectedDate = moment(createDate, "DD-MM-YYYY").add(
+        expectedTime,
+        "days"
+      );
+
+      // Duration
+
+      let today = new Date();
+      let day1 = new Date(today.toUTCString());
+      const diffTime = Math.abs(expectedDate._d - day1);
+      const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // tasks todo, on progress, review, completed
+
+      let planned = 0,
+        inProgress = 0,
+        review = 0,
+        completed = 0;
+      if (tasks.length !== 0 && tasks !== undefined) {
+        // console.log("Tasks:", tasks);
+        tasks.map((task) => {
+          if (task.status !== undefined) {
+            if (task.status === "PLANNED") planned++;
+            if (task.status === "WIP") inProgress++;
+            if (task.status === "Review") review++;
+            if (task.status === "COMPLETED") completed++;
+          }
+        });
+      }
+      let firstLayerData = {
+        startDate: moment(project.created).format("DD-MM-YYYY"),
+        daysLeft: duration,
+        endDate: expectedDate.format("DD-MM-YYYY"),
+        toDoTasks: planned,
+        onGoingTasks: inProgress,
+        reviewingTasks: review,
+        completedTasks: completed,
+      };
+      this.props.setFirstLayer({ firstLayer: firstLayerData });
+
+      // Second Layer
+
+      let secondLayerData = {};
+      if (tasks.length !== 0 && tasks !== undefined) {
+        const { allIdPertData, idFromKeyObject } = this.props;
+        console.log("allIdPertData:", allIdPertData);
+        console.log("idFromKey:", idFromKeyObject);
+        const promises = await tasks.map(async (task) => {
+          if (
+            task.taskName !== "Lets Start Working" &&
+            task.taskName !== "Completed!!" &&
+            slacks !== {} &&
+            slacks[task.taskName] !== undefined &&
+            allIdPertData.criticalPath.includes(idFromKeyObject[task._id])
+          ) {
+            let usernameArr = await this.userNameBuilder(task);
+            let pertData = allIdPertData[idFromKeyObject[task._id]];
+            let obj = {
+              [task._id]: {
+                taskName: task.taskName, //taskName
+                taskDescription: task.taskDescription, //taskName
+                daysLeft: slacks[task.taskName].days, // days left for task
+                assignedTo: usernameArr, // assigned To usernames
+                dueOn: moment(task.created)
+                  .add(pertData.expectedTime, "days") // dueOn
+                  .format("DD-MM-YY"),
+                status: task.status,
+              },
+            };
+            Object.assign(secondLayerData, obj);
+          }
+        });
+        await Promise.all(promises);
+      }
+
+      console.log("second layer:", secondLayerData);
+      this.props.setSecondLayer({ secondLayer: secondLayerData });
+
+      // Third Layer
+
+      let thirdLayerData = {};
+      if (tasks.length !== 0 && tasks !== undefined) {
+        const { allIdPertData, idFromKeyObject } = this.props;
+        function inverse(obj) {
+          var retobj = {};
+          for (var key in obj) {
+            retobj[obj[key]] = key;
+          }
+          return retobj;
+        }
+        let keyFromIdObject = inverse(idFromKeyObject);
+        let promises = await tasks.map(async (task) => {
+          if (
+            task.taskName !== "Lets Start Working" &&
+            task.taskName !== "Completed!!" &&
+            slacks !== {} &&
+            slacks[task.taskName] !== undefined &&
+            !allIdPertData.criticalPath.includes(idFromKeyObject[task._id])
+          ) {
+            let pertData = allIdPertData[idFromKeyObject[task._id]];
+            // Username Array
+            let usernameArr = await this.userNameBuilder(task);
+            // For days left
+            let today = new Date();
+            let todayDate = new Date(today.toUTCString());
+            let createdDate = new Date(task.created);
+            let earliestFinish = moment(createdDate, "DD-MM-YYYY").add(
+              pertData.earliestFinish,
+              "days"
+            );
+            earliestFinish = earliestFinish._d;
+            let earliestStart = moment(createdDate, "DD-MM-YYYY").add(
+              pertData.earliestStart,
+              "days"
+            );
+            earliestStart = earliestStart._d;
+
+            //Overdue calc
+            let days = Math.round(
+              (earliestFinish - todayDate) / (1000 * 60 * 60 * 24)
+            );
+            days = pertData.slack !== 0 ? days + pertData.slack : days;
+
+            //Obj
+            let obj = {
+              [task._id]: {
+                taskName: task.taskName, //taskName
+                taskDescription: task.taskDescription, //taskDesc
+                started: moment(task.created).format("DD-MM-YY"), // started
+                dueOn: moment(task.created)
+                  .add(pertData.expectedTime, "days") // dueOn
+                  .format("DD-MM-YY"),
+                assignedTo: usernameArr, // assigned To user Names
+                daysLeft: Math.round(
+                  (earliestFinish - todayDate) / (1000 * 60 * 60 * 24)
+                ), // days left for task
+                slack: pertData.slack,
+                overdue: days < 0 ? "Overdue" : "On Schedule",
+              },
+            };
+            Object.assign(thirdLayerData, obj);
+          }
+        });
+        await Promise.all(promises);
+      }
+
+      console.log("third layer:", thirdLayerData);
+      this.props.setThirdLayer({ thirdLayer: thirdLayerData });
     }
     if (prevState !== this.state) {
       console.log("prevState:", prevState);
@@ -113,25 +292,38 @@ class ProjectDashboard extends Component {
   renderSlacks(slacks) {
     if (slacks === undefined) return null;
     // console.log(slacks);
-    let assignedUser = this.state.assignedUser;
-    // console.log(assignedUser);
-    if (assignedUser === undefined) return null;
-    let str = "";
-    console.log(this.state.assignedUser);
-    return Object.keys(slacks).map((key) => (
+    // let assignedUser = this.state.assignedUser;
+    // // console.log(assignedUser);
+    // if (assignedUser === undefined) return null;
+    // let str = "";
+    console.log(slacks);
+    // console.log(this.state.assignedUser);
+    const { projectStats, allIdPertData, idFromKeyObject } = this.props;
+    function inverse(obj) {
+      var retobj = {};
+      for (var key in obj) {
+        retobj[obj[key]] = key;
+      }
+      return retobj;
+    }
+    let keyFromIdObject = inverse(idFromKeyObject);
+    console.log(projectStats.thirdLayer);
+    let thirdLayer = projectStats.thirdLayer;
+    return Object.keys(thirdLayer).map((key) => (
       <>
-        {slacks[key].slack > 0 && (
-          <div>
-            <div className="col mb-4">
-              <div className="card">
-                <div className="card-body">
-                  <div className="d-flex align-items-center">
-                    <div className="d-flex flex-column flex-grow-1">
-                      <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
-                        [LOAD]
-                      </div>
+        <div>
+          <div className="col mb-4">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex align-items-center">
+                  <div className="d-flex flex-column flex-grow-1">
+                    <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
+                      {thirdLayer[key] !== undefined
+                        ? thirdLayer[key].taskName
+                        : "Loading..."}
                     </div>
-                    {/* {slacks[key].overdue ? (
+                  </div>
+                  {thirdLayer[key].overdue === "Overdue" ? (
                     <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
                       Overdue
                     </span>
@@ -139,128 +331,116 @@ class ProjectDashboard extends Component {
                     <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
                       On schedule
                     </span>
-                  )} */}
-                    <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                      [LOAD]
-                    </span>
-                  </div>
-
-                  <p className="card-text pt-3">
-                    {/* Days left: {slacks[key].days} */}
+                  )}
+                  {/* <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
                     [LOAD]
-                  </p>
-                  <p className="card-text">
-                    {/* Number of Days you can Slack: {slacks[key].slack}  */}
-                    [LOAD]
-                  </p>
-                  <p className="card-text">
-                    Start By:
-                    {/* <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                    {moment(slacks[key].earliestStartDate).format("DD-MM-YYYY")}
                   </span> */}
-                    [LOAD]
-                  </p>
-                  <p className="card-text">
-                    Due on:{" "}
-                    <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                      {/* {moment(slacks[key].earliestFinishDate).format(
-                      "DD-MM-YYYY"
-                    )} */}
-                      [LOAD]
-                    </span>
-                  </p>
-                  <p className="card-text">
-                    Assigned To:{" "}
-                    <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
-                      {/* {console.log(assignedUser, slacks)}
-                    {(str = "")}
-                    {console.log()}
-                    {assignedUser[slacks[key].id] !== undefined &&
-                      assignedUser[slacks[key].id]}
-                    {str} */}
-                      [LOAD]
-                    </span>
-                  </p>
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
-        {/* Label: {key} | slack: {slacks[key].slack} | days: {slacks[key].days} |
-        Overdue:
-        {slacks[key].overdue ? <>Overdue</> : <>On schedule</>} */}
-      </>
-    ));
-  }
-  renderCriticalPath(criticalPathArr, criticalPathObject) {
-    console.log("criticalPathArr:", criticalPathArr);
-    console.log("criticalPathObject:", criticalPathObject);
-    console.log("tasks:", this.props.tasks);
-    let str = "";
-    let assignedUser = this.state.assignedUser;
-    console.log(assignedUser);
-    if (assignedUser === undefined) return null;
-    console.log(criticalPathObject);
-    return criticalPathArr.map(
-      (node, index) =>
-        criticalPathObject[node].label.toString() !== "Lets Start Working" &&
-        criticalPathObject[node].label.toString() !== "Completed!!" && (
-          <div className="col mb-4">
-            <div className="card">
-              <div className="card-body">
-                <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
-                  {/* {index !== 1 && index !== 2 ?*/}
-                  {/* {index !== criticalPathArr.length - 1
-                    ? criticalPathObject[node].label.toString()
-                    : criticalPathObject[node].label.toString()} */}
-                  [LOAD]
-                  {/* : ""} */}
-                </div>
-                <p className="card-text">
-                  {/* {index !== criticalPathArr.length - 1
-                    ? criticalPathObject[node].taskDescription
-                    : criticalPathObject[node].taskDescription} */}
-                  [LOAD]
+
+                <p className="card-text pt-3">
+                  Days left: {thirdLayer[key].daysLeft}
                 </p>
                 <p className="card-text">
-                  Status:
+                  Number of Days you can Slack: {thirdLayer[key].slack}
+                </p>
+                <p className="card-text">
+                  Start By:
                   <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                    {/* {index !== criticalPathArr.length - 1
-                      ? criticalPathObject[node].status
-                      : criticalPathObject[node].status} */}
-                    [LOAD]
+                    {thirdLayer[key] !== undefined
+                      ? thirdLayer[key].started
+                      : "Loading..."}
+                  </span>
+                </p>
+                <p className="card-text">
+                  Due on:
+                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                    {/* {moment(slacks[key].earliestFinishDate).format(
+                  "DD-MM-YYYY"
+                )} */}
+                    {thirdLayer[key] !== undefined
+                      ? thirdLayer[key].dueOn
+                      : "Loading..."}
                   </span>
                 </p>
                 <p className="card-text">
                   Assigned To:
                   <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
-                    {/* {console.log(assignedUser[criticalPathObject[node]._id])}
-                    {assignedUser[criticalPathObject[node]._id] !== undefined &&
-                      assignedUser[criticalPathObject[node]._id]} */}
-                    [LOAD]
-                  </span>
-                </p>
-                <p className="card-text">
-                  Due Date:
-                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
-                    {/* {moment(criticalPathObject[node].created)
-                      .add(criticalPathObject[node].time, "days")
-                      .format("DD-MM-YY")} */}
-                    [LOAD]
-                    {/* {index !== criticalPathArr.length - 1
-                  ? moment(criticalPathObject[node].created).format(
-                      "DD-MM-YYYY"
-                    )
-                  : moment(criticalPathObject[node].created).format(
-                      "DD-MM-YYYY"
-                    )}{" "} */}
+                    {thirdLayer[key] !== undefined
+                      ? thirdLayer[key].assignedTo.toString()
+                      : "Loading..."}
                   </span>
                 </p>
               </div>
             </div>
           </div>
+        </div>
+      </>
+    ));
+  }
+  renderCriticalPath(criticalPathArr, criticalPathObject) {
+    const { projectStats, allIdPertData, idFromKeyObject } = this.props;
+    function inverse(obj) {
+      var retobj = {};
+      for (var key in obj) {
+        retobj[obj[key]] = key;
+      }
+      return retobj;
+    }
+    let keyFromIdObject = inverse(idFromKeyObject);
+    console.log(keyFromIdObject);
+    const secondLayer = projectStats.secondLayer;
+    console.log("Second layer in critical path : ", secondLayer);
+    if (allIdPertData.criticalPath !== undefined) {
+      console.log(allIdPertData.criticalPath);
+      return allIdPertData.criticalPath.map((nodeIndex) =>
+        nodeIndex !== "1" && nodeIndex !== "2" ? (
+          <div className="col mb-4">
+            <div className="card">
+              <div className="card-body">
+                <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
+                  {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                    ? secondLayer[keyFromIdObject[nodeIndex]].taskName
+                    : "Loading..."}
+                </div>
+                <p className="card-text">
+                  {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                    ? secondLayer[keyFromIdObject[nodeIndex]].taskDescription
+                    : "Loading..."}
+                </p>
+                <p className="card-text">
+                  Status:
+                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                    {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                      ? secondLayer[keyFromIdObject[nodeIndex]].status
+                      : "Loading..."}
+                  </span>
+                </p>
+                <p className="card-text">
+                  Assigned To:
+                  <span className="btn btn-light-info btn-sm font-weight-bold btn-upper btn-text">
+                    {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                      ? secondLayer[
+                          keyFromIdObject[nodeIndex]
+                        ].assignedTo.toString()
+                      : "Loading..."}
+                  </span>
+                </p>
+                <p className="card-text">
+                  Due Date:
+                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                    {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                      ? secondLayer[keyFromIdObject[nodeIndex]].dueOn
+                      : "Loading..."}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <></>
         )
-    );
+      );
+    }
   }
   render() {
     if (this.props.location.state.project === undefined) {
@@ -280,14 +460,15 @@ class ProjectDashboard extends Component {
     // let difference = Math.abs(day2 - day1);
     // let days = parseInt(difference / (1000 * 3600 * 24));
     // console.log(days);
-    const { expectedTime, slacks, criticalPath, pert } = this.props;
+    const { expectedTime, slacks, criticalPath, pert, projectStats } =
+      this.props;
     const { posts, leaderName } = this.state;
     let createDate = new Date(project.created);
     let expectedDate = moment(createDate, "DD-MM-YYYY").add(
       expectedTime,
       "days"
     );
-    console.log(this.props);
+    // console.log(this.props);
     const diffTime = Math.abs(expectedDate._d - day1);
     const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     // console.log("no. of days left:", duration);
@@ -295,6 +476,7 @@ class ProjectDashboard extends Component {
     // console.log(slacks);
     // if (slacks === undefined) return ;
     if (expectedTime === undefined) return null;
+    console.log("projectStats:", projectStats);
     return (
       <div className="pt-5">
         <ToastContainer />
@@ -576,7 +758,12 @@ class ProjectDashboard extends Component {
                             </div>
                             <span className="font-weight-bolder text-primary py-1 font-size-lg">
                               {/* {moment(project.created).format("DD-MM-YYYY")} */}
-                              [LOAD]
+                              {typeof projectStats.firstLayer.startDate ===
+                              "string"
+                                ? projectStats.firstLayer.startDate
+                                : moment(
+                                    projectStats.firstLayer.startDate
+                                  ).format("DD-MM-YYYY")}
                             </span>
                           </div>
                         </div>
@@ -589,7 +776,7 @@ class ProjectDashboard extends Component {
                             </div>
                             <span className="font-weight-bolder text-warning py-1 font-size-lg">
                               {/* {duration} */}
-                              [LOAD]
+                              {projectStats.firstLayer.daysLeft}
                             </span>
                           </div>
                         </div>
@@ -602,7 +789,12 @@ class ProjectDashboard extends Component {
                             </div>
                             <span className="font-weight-bolder text-danger py-1 font-size-lg">
                               {/* {expectedDate.format("DD-MM-YYYY")} */}
-                              [LOAD]
+                              {typeof projectStats.firstLayer.endDate ===
+                              "string"
+                                ? projectStats.firstLayer.endDate
+                                : moment(
+                                    projectStats.firstLayer.endDate
+                                  ).format("DD-MM-YYYY")}
                             </span>
                           </div>
                         </div>
@@ -617,7 +809,7 @@ class ProjectDashboard extends Component {
                             </div>
                             <span className="font-weight-bolder text-primary py-1 font-size-lg">
                               {/* {this.state.count1} */}
-                              [LOAD]
+                              {projectStats.firstLayer.toDoTasks}
                             </span>
                           </div>
                         </div>
@@ -630,7 +822,7 @@ class ProjectDashboard extends Component {
                             </div>
                             <span className="font-weight-bolder text-info py-1 font-size-lg">
                               {/* {this.state.count2} */}
-                              [LOAD]
+                              {projectStats.firstLayer.onGoingTasks}
                             </span>
                           </div>
                         </div>
@@ -643,7 +835,7 @@ class ProjectDashboard extends Component {
                             </div>
                             <span className="font-weight-bolder text-warning py-1 font-size-lg">
                               {/* {this.state.count3} */}
-                              [LOAD]
+                              {projectStats.firstLayer.reviewingTasks}
                             </span>
                           </div>
                         </div>
@@ -656,7 +848,7 @@ class ProjectDashboard extends Component {
                             </div>
                             <span className="font-weight-bolder text-success py-1 font-size-lg">
                               {/* {this.state.count4} */}
-                              [LOAD]
+                              {projectStats.firstLayer.completedTasks}
                             </span>
                           </div>
                         </div>
@@ -829,11 +1021,20 @@ const mapStateToProps = (state) => ({
   expectedTime: state.cpm.expectedTime,
   slacks: state.cpm.slacks,
   criticalPath: state.cpm.criticalPath,
+  projectStats: state.projectStats,
+  allIdPertData: state.cpm.allIdPertData,
+  idFromKeyObject: state.cpm.idFromKeyObject,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   updateTasks: (params) => dispatch(updateTasks(params)),
   clearAll: () => dispatch(clearAll()),
+  setFirstLayer: (params) => dispatch(setFirstLayer(params)),
+  clearFirstLayer: () => dispatch(clearFirstLayer()),
+  setSecondLayer: (params) => dispatch(setSecondLayer(params)),
+  clearSecondLayer: () => dispatch(clearSecondLayer()),
+  setThirdLayer: (params) => dispatch(setThirdLayer(params)),
+  clearThirdLayer: () => dispatch(clearThirdLayer()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectDashboard);

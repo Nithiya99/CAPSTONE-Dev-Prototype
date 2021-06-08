@@ -34,6 +34,8 @@ import {
   setExpectedTime,
   setSlacks,
   setCriticalPath,
+  setAllIdPertData,
+  setIdFromKey,
 } from "../../store/cpm";
 import { notificationAdded } from "../../store/notifications";
 import { updateTasks } from "../../store/tasks";
@@ -167,7 +169,7 @@ class LayoutComponent extends Component {
   // handleClose = () => {
   //   this.setState({ show: false });
   // };
-  pertCalc = () => {
+  pertCalc = async () => {
     // this.setState({ show: true });
     // console.log("inside pertCalc:", tasksObject);
     let nodes = this.props.nodes.map((elem) => ({
@@ -238,7 +240,7 @@ class LayoutComponent extends Component {
     });
     let tasksObjectFinal = tasksObject[tasksObject.length - 1];
     // console.log("TasksObject:");
-    // console.log(tasksObjectFinal);
+    // console.log("taskObject:", tasksObjectFinal);
     // console.log("Pert:");
     let pert = {};
     // console.log("gonna set pert");
@@ -250,6 +252,7 @@ class LayoutComponent extends Component {
       console.log(this.props.pert);
       // this.props.setSlacks({ slackObject: this.props.pert.slack });
       // console.log("slacks:");
+
       let slackObject = {};
       slackObject = newNodes.map((elem, index) => {
         // console.log(elem.id, pert.slack[elem.id]);
@@ -363,25 +366,77 @@ class LayoutComponent extends Component {
       console.log("slacks Object:", slackObject[slackObject.length - 1]);
       let obj = slackObject[slackObject.length - 1];
       this.props.setSlacks({ slackObject: obj });
-      let newNodesObject = {};
-      newNodesObject = newNodes.map((node) => {
-        newNodesObject[node.id] = node.data;
-        return newNodesObject;
+
+      let newNodesKeyObject = {};
+      newNodesKeyObject = newNodes.map((node) => {
+        newNodesKeyObject[node.key] = node.id;
+        return newNodesKeyObject;
       });
-      newNodesObject = newNodesObject[newNodesObject.length - 1];
+      newNodesKeyObject = newNodesKeyObject[newNodesKeyObject.length - 1];
+      // console.log("newNodesKeysObject:", newNodesKeyObject);
+      this.props.setIdFromKey({ idFromKeyObject: newNodesKeyObject });
+
+      let newNodesIdObject = {};
+      newNodesIdObject = newNodes.map((node) => {
+        newNodesIdObject[node.id] = node.data;
+        return newNodesIdObject;
+      });
+      newNodesIdObject = newNodesIdObject[newNodesIdObject.length - 1];
+      // console.log("newNodes:", newNodes);
       // console.log("newNodesObject:", newNodesObject);
       let criticalPathData = {};
       criticalPathData = pert.criticalPath.map((id) => {
-        criticalPathData[id] = newNodesObject[id];
+        criticalPathData[id] = newNodesIdObject[id];
         return criticalPathData;
       });
       criticalPathData = criticalPathData[criticalPathData.length - 1];
-      console.log("criticalPathDataObject:", criticalPathData);
+      console.log("Objects available:", newNodesIdObject, newNodesKeyObject);
+      // console.log("criticalPathDataObject:", criticalPathData);
+
+      // let pertValues = {};
+      // const promises = pert.criticalPath.map((id) => {
+      //   let obj = {
+      //     earliestStart: pert.earliestStartTimes[id],
+      //     earliestFinish: pert.earliestFinishTimes[id],
+      //     latestStart: pert.latestStartTimes[id],
+      //     latestFinish: pert.latestFinishTimes[id],
+      //     slack: pert.slack[id],
+      //     expectedTime: pert.activityParams[id].expectedTime,
+      //     variance: pert.activityParams[id].variance,
+      //   };
+      //   pertValues[newNodesIdObject[id]._id] = obj;
+      //   return pertValues;
+      // });
+      // pertValues = await Promise.all(promises);
+      let pertValues = {};
+      pertValues["criticalPath"] = pert.criticalPath;
+      let promises = await Object.keys(pert.network).map((key, index) => {
+        if (key !== "__start" && key !== "__end") {
+          // console.log(key);
+          // console.log(pert.earliestFinishTimes);
+          pertValues[key] = {
+            expectedTime: pert.activitiesParams[key].expectedTime,
+            variance: pert.activitiesParams[key].variance,
+            earliestFinish: pert.earliestFinishTimes[key],
+            earliestStart: pert.earliestStartTimes[key],
+            latestFinish: pert.latestFinishTimes[key],
+            latestStart: pert.latestStartTimes[key],
+            network: pert.network[key],
+            slack: pert.slack[key],
+          };
+          // if (index === Object.keys(pert.network).length - 3) return pertValues;
+        }
+        return pertValues;
+      });
+      let data = promises[promises.length - 1];
+
       this.props.setCriticalPath({ criticalPath: criticalPathData });
 
       this.props.setExpectedTime({
         expectedTime: Math.floor(this.props.pert.latestFinishTimes.__end),
       });
+
+      this.props.setAllIdPertData({ pertData: data });
       putExpectedTime(
         this.props.project._id,
         Math.floor(this.props.pert.latestFinishTimes.__end)
@@ -728,6 +783,8 @@ const mapDispatchToProps = (dispatch) => ({
   setSlacks: (params) => dispatch(setSlacks(params)),
   setCriticalPath: (params) => dispatch(setCriticalPath(params)),
   notificationAdded: (params) => dispatch(notificationAdded(params)),
+  setAllIdPertData: (params) => dispatch(setAllIdPertData(params)),
+  setIdFromKey: (params) => dispatch(setIdFromKey(params)),
 });
 
 export default connect(

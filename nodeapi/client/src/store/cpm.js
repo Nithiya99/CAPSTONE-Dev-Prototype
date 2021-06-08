@@ -14,6 +14,8 @@ const slice = createSlice({
     expectedTime: 0,
     slacks: {},
     criticalPath: {},
+    allIdPertData: {},
+    idFromKeyObject: {},
   },
   reducers: {
     nodeAdded: (state, action) => {
@@ -48,6 +50,14 @@ const slice = createSlice({
       // console.log(expectedTime);
       void (state.expectedTime = expectedTime);
     },
+    setAllIdPertData: (state, action) => {
+      const pertData = action.payload.pertData;
+      void (state.allIdPertData = pertData);
+    },
+    setIdFromKey: (state, action) => {
+      const idFromKeyObject = action.payload.idFromKeyObject;
+      void (state.idFromKeyObject = idFromKeyObject);
+    },
     clearAll: (state, action) => {
       state.nodes = [];
       state.connections = [];
@@ -78,5 +88,7 @@ export const {
   clearAll,
   setSlacks,
   setCriticalPath,
+  setAllIdPertData,
+  setIdFromKey,
 } = slice.actions;
 export default slice.reducer;
