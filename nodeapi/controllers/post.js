@@ -608,6 +608,7 @@ exports.deleteComment = (req, res) => {
 };
 makeScreenshots = async (filePath) => {
   try {
+    console.log(filePath);
     await ffmpeg(filePath).screenshots({
       timestamps: ["20%", "40%", "60%", "80%", "99%"],
       filename: "thumbnail-at-%s-seconds.png",
@@ -655,6 +656,10 @@ function getFilesFromDirectoryAsync(path, callback) {
 checkVideo = async (filePath) => {
   let folderpath = path.join(__dirname, "../videoScreenshots");
   return await getFilesFromDirectoryAsync(folderpath, async (err, files) => {
+    if (err) {
+      console.log(err);
+      // return;
+    }
     let finalVal = [];
     finalVal = await filereader(files);
     console.log("final checked vals :", finalVal);
