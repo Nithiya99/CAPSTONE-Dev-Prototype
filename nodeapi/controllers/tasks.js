@@ -157,10 +157,10 @@ exports.putPosition = (req, res) => {
 // };
 const sumItUp = async (project, sum) => {
   // console.log(project);
-  console.log("sumItUp:", sum);
+  // console.log("sumItUp:", sum);
   try {
     const { completion_percentage } = await Project.findById(project).exec();
-    console.log(completion_percentage);
+    // console.log(completion_percentage);
     sum += completion_percentage;
     // console.log(sum);
     return sum;
@@ -175,20 +175,20 @@ const updateUserCompletion = async (user) => {
   for (var i = 0; i < user.projects.length; i++) {
     sum = await sumItUp(user.projects[i], sum);
     if (i === user.projects.length - 1) {
-      console.log(
-        "Start:",
-        user.completion_percentage_of_all_projects,
-        user.projects.length
-      );
+      // console.log(
+      //   "Start:",
+      //   user.completion_percentage_of_all_projects,
+      //   user.projects.length
+      // );
       user.completion_percentage_of_all_projects = 0;
       if (user.projects.length !== 0 && sum !== NaN) {
-        console.log("sum:", sum);
+        // console.log("sum:", sum);
         user.completion_percentage_of_all_projects = sum / user.projects.length;
-        console.log(
-          "End:",
-          user.completion_percentage_of_all_projects,
-          user.projects.length
-        );
+        // console.log(
+        //   "End:",
+        //   user.completion_percentage_of_all_projects,
+        //   user.projects.length
+        // );
       }
       user.save();
     }
@@ -266,10 +266,21 @@ function removeItemOnce(arr, index) {
   return arr;
 }
 
-exports.deleteTasks = (req, res) => {
+exports.deleteTasks = async (req, res) => {
   let project = req.projectObject;
   let id = req.body.id;
+  // console.log("from delete tasks");
+  // console.log(project.tasks, id);
   project.tasks.map((task, index) => {
+    if (task.predecessors.includes(id)) {
+      task.predecessors.pull(id);
+      // console.log(
+      //   "task name ",
+      //   task.taskName,
+      //   "new predecessors:",
+      //   task.predecessors
+      // );
+    }
     if (task._id.toString() === id.toString()) {
       project.tasks = removeItemOnce(project.tasks, index);
     }
@@ -287,7 +298,7 @@ exports.deleteTasks = (req, res) => {
   // console.log(newcons);
   project.connections = newcons;
   // project.save();
-  proj_completion(project);
+  await proj_completion(project);
   return res.status(200).json({ project });
 };
 

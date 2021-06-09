@@ -508,6 +508,7 @@ export const deleteTask = (taskId, projectId) => {
   let Obj = {
     id: taskId,
   };
+  console.log("api project delete task", Obj);
   // console.log(task);
   return fetch(
     "http://localhost:8081/project/task/" +

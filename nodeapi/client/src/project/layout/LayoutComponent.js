@@ -261,7 +261,7 @@ class LayoutComponent extends Component {
       console.log(this.props.pert);
       // this.props.setSlacks({ slackObject: this.props.pert.slack });
       // console.log("slacks:");
-
+      console.log("Newnodes for slack:", newNodes);
       let slackObject = {};
       slackObject = newNodes.map((elem, index) => {
         // console.log(elem.id, pert.slack[elem.id]);

@@ -145,7 +145,7 @@ class ProjectDashboard extends Component {
 
       let today = new Date();
       let day1 = new Date(today.toUTCString());
-      const diffTime = Math.abs(expectedDate._d - day1);
+      const diffTime = expectedDate._d - day1;
       const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       // tasks todo, on progress, review, completed
@@ -788,7 +788,16 @@ class ProjectDashboard extends Component {
                             </div>
                             <span className="font-weight-bolder text-warning py-1 font-size-lg">
                               {/* {duration} */}
-                              {projectStats.firstLayer.daysLeft}
+                              {projectStats.firstLayer.daysLeft < 0 ? (
+                                <>
+                                  <span className="btn btn-light-danger btn-sm font-weight-bold btn-upper btn-text">
+                                    {Math.abs(projectStats.firstLayer.daysLeft)}{" "}
+                                    Days Overdue
+                                  </span>
+                                </>
+                              ) : (
+                                projectStats.firstLayer.daysLeft
+                              )}
                             </span>
                           </div>
                         </div>

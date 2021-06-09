@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import { listmytasks } from "../apiProject";
+import { getConnections, listmytasks, getTasks } from "../apiProject";
 import { getCurrentUser } from "./../../user/apiUser";
 import { updateTask } from "./../apiProject";
 import Board from "react-trello";
-import { deleteTask, getTasks } from "../apiProject";
+import { deleteTask } from "../apiProject";
 import { connect } from "react-redux";
 import { updateTasks, updateTrello } from "./../../store/tasks";
 import { toast, ToastContainer } from "react-toastify";
 import EditModel from "./EditModel";
 import moment from "moment";
+import { replaceConnections, replaceNodes } from "../../store/cpm";
 
 let data = {};
 let projleader = "";
@@ -23,6 +24,7 @@ class TrelloTask extends Component {
     isleader: false,
     show: false,
     alltasks: [],
+    elements: [],
     cardId: "",
     currentTask: {},
     flag: false,
@@ -69,15 +71,80 @@ class TrelloTask extends Component {
       window.location.reload(false);
     }
   };
-
   onCardDelete = async (cardId, laneId) => {
     if (projleader === getCurrentUser()._id) {
       let response = window.confirm("Are you Sure?");
       if (response) {
         await deleteTask(cardId, projectId);
+        // connections get from project
+
         await getTasks(projectId).then((data) => {
           this.props.updateTasks({ tasks: data.tasks });
           // console.log(data);
+        });
+        let ids = [];
+        let promises = await this.props.connections.map((connection) => {
+          // console.log(connection.source, connection.target);
+          if (connection.source.toString() === "1") ids.push("1");
+          console.log(ids);
+          if (ids.includes(connection.source.toString())) {
+            if (!ids.includes(connection.source.toString())) {
+              ids.push(connection.source.toString());
+            }
+            if (!ids.includes(connection.target.toString())) {
+              ids.push(connection.target.toString());
+            }
+          }
+          return ids;
+        });
+
+        let result = await Promise.all(promises);
+        // console.log(result, this.props.connections);
+        // console.log("nodes:");
+        const { nodes } = this.props;
+        let newNodes = [];
+        nodes.map((node) => {
+          if (ids.includes(node.id)) newNodes.push(node);
+        });
+        console.log(newNodes);
+        await getConnections(projectId).then((data) => {
+          let connections = [];
+          data.connections.map((link) => {
+            newNodes.map((elem) => {
+              if (elem.key !== undefined) {
+                if (link.from.toString() === elem.key.toString()) {
+                  this.setState({ source: elem });
+                }
+                if (link.to.toString() === elem.key.toString()) {
+                  this.setState({ target: elem });
+                }
+              }
+            });
+            let source = this.state.source;
+            let target = this.state.target;
+            console.log("source:", source);
+            console.log("target:", target);
+            if (source !== undefined && target !== undefined) {
+              let edge = {
+                id:
+                  "reactflow__edge-" +
+                  source.id.toString() +
+                  "null-" +
+                  target.id.toString() +
+                  "null",
+                source: source.id.toString(),
+                sourceHandle: null,
+                target: target.id.toString(),
+                targetHandle: null,
+                _id: link._id,
+              };
+              connections.push({ ...edge });
+              console.log("new Connections:", connections);
+            }
+            return "done";
+          });
+          // console.log(connections);
+          this.props.replaceConnections({ connections: connections });
         });
         // this.updateBoard();
       } else {
@@ -430,11 +497,15 @@ const mapStateToProps = (state) => ({
   tasks: state.tasks.tasks,
   updateTrelloBoard: state.tasks.updateTrelloBoard,
   slackObject: state.cpm.slacks,
+  connections: state.cpm.connections,
+  nodes: state.cpm.nodes,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   updateTasks: (params) => dispatch(updateTasks(params)),
   updateTrello: (params) => dispatch(updateTrello(params)),
+  replaceNodes: (params) => dispatch(replaceNodes(params)),
+  replaceConnections: (params) => dispatch(replaceConnections(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrelloTask);
