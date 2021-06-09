@@ -62,7 +62,7 @@ const MainRouter = () => {
               <Route path="/user/:userId" component={Profile}></Route>
               <Route path="/post/:postId" component={showPost}></Route>
               <Route path="/project/:projectId" component={viewProject}></Route>
-              <Route path="/recommendation" component={Recommendation}></Route>
+              {/* <Route path="/recommendation" component={Recommendation}></Route> */}
             </Switch>
           </div>
         </div>

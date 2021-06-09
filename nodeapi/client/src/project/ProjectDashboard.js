@@ -204,10 +204,11 @@ class ProjectDashboard extends Component {
                 taskDescription: task.taskDescription, //taskName
                 daysLeft: slacks[task.taskName].days, // days left for task
                 assignedTo: usernameArr, // assigned To usernames
+                started: startby.format("DD-MM-YY"), //moment(task.created).format("DD-MM-YY"), // started
                 dueOn: startby
                   .add(pertData.expectedTime, "days") // dueOn
                   .format("DD-MM-YY"),
-                status: task.status,
+                status: task.status, // status of task
               },
             };
             Object.assign(secondLayerData, obj);
@@ -409,23 +410,33 @@ class ProjectDashboard extends Component {
           <div className="col mb-4">
             <div className="card">
               <div className="card-body">
-                <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
-                  {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
-                    ? secondLayer[keyFromIdObject[nodeIndex]].taskName
-                    : "Loading..."}
+                <div className="d-flex align-items-center">
+                  <div className="d-flex flex-column flex-grow-1">
+                    <div className="text-dark-100 mb-1 font-size-lg font-weight-bolder">
+                      {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                        ? secondLayer[keyFromIdObject[nodeIndex]].taskName
+                        : "Loading..."}
+                    </div>
+                  </div>
+                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                    {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                      ? secondLayer[keyFromIdObject[nodeIndex]].status
+                      : "Loading..."}
+                  </span>
                 </div>
                 <p className="card-text">
                   {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
                     ? secondLayer[keyFromIdObject[nodeIndex]].taskDescription
                     : "Loading..."}
                 </p>
-                <p className="card-text">
-                  Status:
-                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
-                    {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
-                      ? secondLayer[keyFromIdObject[nodeIndex]].status
-                      : "Loading..."}
-                  </span>
+                <p className="card-text pt-3">
+                  Days left:{" "}
+                  {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                    ? secondLayer[keyFromIdObject[nodeIndex]].daysLeft
+                    : "Loading..."}
+                </p>
+                <p className="card-text text-danger">
+                  You cannot slack in this task.
                 </p>
                 <p className="card-text">
                   Assigned To:
@@ -434,6 +445,14 @@ class ProjectDashboard extends Component {
                       ? secondLayer[
                           keyFromIdObject[nodeIndex]
                         ].assignedTo.toString()
+                      : "Loading..."}
+                  </span>
+                </p>
+                <p className="card-text">
+                  Start By:
+                  <span className="btn btn-light-success btn-sm font-weight-bold btn-upper btn-text">
+                    {secondLayer[keyFromIdObject[nodeIndex]] !== undefined
+                      ? secondLayer[keyFromIdObject[nodeIndex]].started
                       : "Loading..."}
                   </span>
                 </p>
